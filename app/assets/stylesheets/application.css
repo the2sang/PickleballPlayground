@@ -5381,3 +5381,61 @@ lexxy-editor.lexxy-editor-field {
 .participant-popover__row  { display: flex; justify-content: space-between; gap: 12px; }
 .participant-popover__label { color: var(--hcp-cool-gray, #6b7280); }
 .participant-popover__value { font-weight: 500; }
+
+/* ── Club Account Card ──────────────────────────────────────── */
+.cl-account-card {
+  border: 1px solid var(--hcp-border-light);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.cl-account-card__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--hcp-light-bg);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hcp-mid-gray);
+  border-bottom: 1px solid var(--hcp-border-light);
+}
+.cl-account-card__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.cl-account-card__number {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hcp-black);
+  word-break: break-all;
+}
+.cl-account-card__copy {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--hcp-border-light);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--hcp-mid-gray);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.cl-account-card__copy:hover {
+  background: var(--hcp-light-bg);
+  color: var(--hcp-black);
+}
+
+/* ── Toast 애니메이션 오버라이드: 위에서 내려오고 오른쪽으로 사라짐 ── */
+@keyframes faw-toast-slideInRight {
+  from { transform: translateY(-300px); opacity: 0; }
+  to   { transform: translateY(0);      opacity: 1; }
+}
+@keyframes faw-toast-slideOutRight {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(110%); opacity: 0; }
+}

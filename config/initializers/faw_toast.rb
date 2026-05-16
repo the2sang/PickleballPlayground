@@ -2,7 +2,7 @@
 
 FawToast.configure do |config|
   # Duration in seconds for which the toast will be displayed
-  # config.duration_seconds = '7s'
+  config.duration_seconds = "2s"
 
   # Background color of the progress bar
   # config.progress_bar_bg = "rgba(0, 0, 0, 0.2)"

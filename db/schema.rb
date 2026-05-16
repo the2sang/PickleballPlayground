@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_16_142220) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_16_152052) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -34,6 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_142220) do
   end
 
   create_table "clubs", force: :cascade do |t|
+    t.string "bank_account"
     t.string "contact_email"
     t.string "contact_kakao"
     t.string "contact_phone"
