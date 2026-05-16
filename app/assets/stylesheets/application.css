@@ -4739,8 +4739,8 @@ lexxy-editor.lexxy-editor-field {
 
 .cl-card__fav {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0;
+  left: 0;
   z-index: 1;
 }
 
@@ -4748,10 +4748,10 @@ lexxy-editor.lexxy-editor-field {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  color: #9ca3af;
-  line-height: 1;
+  padding: 0;
+  color: #d1d5db;
+  line-height: 0;
+  display: block;
 }
 
 .cl-fav-btn:hover {
@@ -4764,7 +4764,7 @@ lexxy-editor.lexxy-editor-field {
 
 /* button_to generates a <form> — reset its styles */
 .cl-fav-btn form {
-  display: inline;
+  display: block;
 }
 
 .cl-fav-btn form button {
@@ -4773,7 +4773,8 @@ lexxy-editor.lexxy-editor-field {
   padding: 0;
   cursor: pointer;
   color: inherit;
-  line-height: 1;
+  line-height: 0;
+  display: block;
 }
 
 /* ── Badges ─────────────────────────────────────────────────── */
