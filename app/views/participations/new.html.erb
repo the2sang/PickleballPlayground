@@ -11,7 +11,7 @@
       </p>
       <h1 class="cl-hero__title">참가 신청</h1>
       <p class="cl-hero__subtitle">
-        <%= @game_session.scheduled_date.strftime("%Y년 %m월 %d일") %> &middot; <%= @game_session.venue_name %>
+        <%= format_session_date(@game_session.scheduled_date, style: :long) %> &middot; <%= @game_session.venue_name %>
       </p>
     </div>
 
@@ -19,6 +19,26 @@
       <div class="cl-alert cl-alert--warning" style="margin-bottom:16px;display:flex;align-items:flex-start;gap:8px;padding:12px 16px;border-radius:8px;background:var(--hcp-warning-soft,#fff8e1);border:1px solid var(--hcp-warning,#f59e0b);">
         <iconify-icon icon="lucide:alert-triangle" width="16" style="margin-top:2px;flex-shrink:0;"></iconify-icon>
         <span>클럽 관리자의 승인이 완료되지 않았습니다. <strong>게스트</strong>로 참가신청합니다.</span>
+      </div>
+    <% end %>
+
+    <% if @game_session.club.bank_account.present? %>
+      <div class="cl-account-card" data-controller="clipboard">
+        <div class="cl-account-card__header">
+          <iconify-icon icon="lucide:credit-card" width="14"></iconify-icon>
+          <span>클럽 계좌</span>
+        </div>
+        <div class="cl-account-card__body">
+          <span class="cl-account-card__number" data-clipboard-target="source"
+                data-clipboard-text="<%= @game_session.club.bank_account %>">
+            <%= @game_session.club.bank_account %>
+          </span>
+          <button type="button" class="cl-account-card__copy"
+                  data-clipboard-target="button"
+                  data-action="clipboard#copy">
+            복사
+          </button>
+        </div>
       </div>
     <% end %>
 

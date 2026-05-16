@@ -38,7 +38,7 @@
   <div class="cl-content">
     <div class="cl-section-header">
       <p class="cl-section-label">운동 세션</p>
-      <% if policy(@club).update? %>
+      <% if policy(@club).manage? %>
         <%= link_to new_game_session_path(club_id: @club.id),
               style: "font-size:12px; color:var(--hcp-mid-gray); display:inline-flex; align-items:center; gap:4px;" do %>
           <iconify-icon icon="lucide:plus" width="12"></iconify-icon> 세션 추가
@@ -64,7 +64,7 @@
               <div style="min-width:0;">
                 <p class="cl-list-item__title"><%= gs.title %></p>
                 <p class="cl-list-item__meta">
-                  <%= gs.scheduled_date.strftime("%Y.%m.%d") %> &middot;
+                  <%= format_session_date(gs.scheduled_date) %> &middot;
                   <%= gs.start_time.strftime("%H:%M") %>~<%= gs.end_time.strftime("%H:%M") %> &middot;
                   <%= gs.venue_name %>
                 </p>

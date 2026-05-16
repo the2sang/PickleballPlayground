@@ -30,7 +30,7 @@
                 <%= link_to p.game_session.title, game_session_path(p.game_session),
                       class: "cl-participation-item__title" %>
                 <p class="cl-participation-item__meta">
-                  <%= p.game_session.scheduled_date.strftime("%Y.%m.%d") %> &middot;
+                  <%= format_session_date(p.game_session.scheduled_date) %> &middot;
                   <%= p.game_session.venue_name %>
                 </p>
               </div>

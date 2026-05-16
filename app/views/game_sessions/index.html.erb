@@ -29,7 +29,7 @@
                 <p class="cl-list-item__club"><%= gs.club.name %></p>
                 <p class="cl-list-item__title"><%= gs.title %></p>
                 <p class="cl-list-item__meta">
-                  <%= gs.scheduled_date.strftime("%Y.%m.%d") %> &middot;
+                  <%= format_session_date(gs.scheduled_date) %> &middot;
                   <%= gs.venue_name %> &middot;
                   참가 <%= gs.confirmed_count %><% if gs.max_participants %>/<%= gs.max_participants %><% end %>명
                 </p>

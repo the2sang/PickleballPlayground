@@ -20,7 +20,7 @@
       <div class="cl-info-row">
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:calendar" width="14"></iconify-icon></span>
         <span class="cl-info-row__label">날짜</span>
-        <span class="cl-info-row__value"><%= @game_session.scheduled_date.strftime("%Y년 %m월 %d일") %></span>
+        <span class="cl-info-row__value"><%= format_session_date(@game_session.scheduled_date, style: :long) %></span>
       </div>
 
       <div class="cl-info-row">
@@ -77,6 +77,24 @@
           <span class="cl-info-row__icon"><iconify-icon icon="lucide:file-text" width="14"></iconify-icon></span>
           <span class="cl-info-row__label">메모</span>
           <span class="cl-info-row__value"><%= @game_session.notes %></span>
+        </div>
+      <% end %>
+
+      <% if @game_session.club.bank_account.present? %>
+        <div class="cl-info-row" data-controller="clipboard">
+          <span class="cl-info-row__icon"><iconify-icon icon="lucide:credit-card" width="14"></iconify-icon></span>
+          <span class="cl-info-row__label">클럽 계좌</span>
+          <span class="cl-info-row__value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span data-clipboard-target="source"
+                  data-clipboard-text="<%= @game_session.club.bank_account %>">
+              <%= @game_session.club.bank_account %>
+            </span>
+            <button type="button" class="cl-account-card__copy"
+                    data-clipboard-target="button"
+                    data-action="clipboard#copy">
+              복사
+            </button>
+          </span>
         </div>
       <% end %>
     </div>

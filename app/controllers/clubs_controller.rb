@@ -8,7 +8,7 @@ class ClubsController < ApplicationController
   SYLLABLE     = 588
 
   def index
-    clubs = policy_scope(Club)
+    clubs = policy_scope(Club).includes(:template_sessions)
     @query = params[:q].presence
 
     if Current.user
@@ -85,7 +85,7 @@ class ClubsController < ApplicationController
   private
 
   def set_club = @club = Club.find(params[:id])
-  def club_params = params.require(:club).permit(:name, :description, :contact_phone, :contact_email, :contact_kakao)
+  def club_params = params.require(:club).permit(:name, :description, :contact_phone, :contact_email, :contact_kakao, :bank_account)
 
   def club_matches?(club, query)
     text = "#{club.name} #{club.description}"
