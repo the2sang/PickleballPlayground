@@ -8,6 +8,7 @@ class ClubFavoritesController < ApplicationController
     @favorite = ClubFavorite.find_or_initialize_by(user: Current.user, club: @club)
     authorize @favorite
     @favorite.save!
+    set_favorite_view_vars
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to clubs_path }
@@ -18,6 +19,7 @@ class ClubFavoritesController < ApplicationController
     @favorite = ClubFavorite.find_by!(user: Current.user, club: @club)
     authorize @favorite
     @favorite.destroy!
+    set_favorite_view_vars
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to clubs_path }
@@ -26,8 +28,13 @@ class ClubFavoritesController < ApplicationController
 
   private
 
-  def set_club
-    @club = Club.find(params[:club_id])
+  def set_club = @club = Club.find(params[:club_id])
+
+  def set_favorite_view_vars
+    @favorited_club_ids = Current.user.club_favorites.pluck(:club_id).to_set
+    @member_club_ids    = Current.user.club_memberships
+                                       .where(status: %i[pending approved])
+                                       .pluck(:club_id).to_set
   end
 
   def favorite_forbidden
