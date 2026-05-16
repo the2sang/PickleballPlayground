@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   end
 
   resources :clubs do
+    resource :favorite, only: %i[create destroy], controller: "club_favorites"
     member { get :manage }
     resources :club_memberships, only: %i[index create update destroy], shallow: false
     resources :guest_applications, only: %i[new create], path: "guest"
