@@ -11,7 +11,7 @@
       </p>
       <h1 class="cl-hero__title">참가 신청</h1>
       <p class="cl-hero__subtitle">
-        <%= @game_session.scheduled_date.strftime("%Y년 %m월 %d일") %> &middot; <%= @game_session.venue_name %>
+        <%= format_session_date(@game_session.scheduled_date, style: :long) %> &middot; <%= @game_session.venue_name %>
       </p>
     </div>
 

@@ -57,8 +57,18 @@
             <div class="cl-card" style="background-image: linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)), url('<%= asset_path('card_first.png') %>');">
               <%= link_to club_path(club), class: "cl-card__stretched-link", aria: { label: club.name } do %><% end %>
               <div class="cl-card__top">
-                <div class="cl-card__icon">
-                  <iconify-icon icon="lucide:users" width="16"></iconify-icon>
+                <div class="cl-card__top-left">
+                  <div class="cl-card__icon">
+                    <iconify-icon icon="lucide:users" width="16"></iconify-icon>
+                  </div>
+                  <% days = club.operation_day_indices %>
+                  <% if days.any? %>
+                    <div class="cl-card__days">
+                      <% days.each do |d| %>
+                        <span class="cl-day-badge"><%= GameSession::DAYS_KO[d] %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
                 </div>
                 <span class="cl-badge cl-badge--neutral">회원 <%= club.club_memberships.approved.count %>명</span>
               </div>

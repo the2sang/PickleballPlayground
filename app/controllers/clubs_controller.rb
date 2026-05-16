@@ -8,7 +8,7 @@ class ClubsController < ApplicationController
   SYLLABLE     = 588
 
   def index
-    clubs = policy_scope(Club)
+    clubs = policy_scope(Club).includes(:template_sessions)
     @query = params[:q].presence
 
     if Current.user

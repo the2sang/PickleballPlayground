@@ -20,7 +20,7 @@
       <div class="cl-info-row">
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:calendar" width="14"></iconify-icon></span>
         <span class="cl-info-row__label">날짜</span>
-        <span class="cl-info-row__value"><%= @game_session.scheduled_date.strftime("%Y년 %m월 %d일") %></span>
+        <span class="cl-info-row__value"><%= format_session_date(@game_session.scheduled_date, style: :long) %></span>
       </div>
 
       <div class="cl-info-row">
