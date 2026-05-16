@@ -1,0 +1,65 @@
+<% content_for :title, "계정 설정" %>
+
+<div class="cl-page">
+  <div class="cl-content cl-content--narrow">
+    <div style="margin-bottom:32px;">
+      <h1 class="cl-hero__title">계정 설정</h1>
+      <p class="cl-hero__subtitle">이메일, 닉네임, 비밀번호를 변경할 수 있습니다.</p>
+    </div>
+
+    <% if notice %>
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:12px; font-size:13px; color:#166534; margin-bottom:16px;">
+        <iconify-icon icon="lucide:check-circle" style="vertical-align:-2px; margin-right:6px;"></iconify-icon>
+        <%= notice %>
+      </div>
+    <% end %>
+
+    <div class="cl-form-card">
+      <%= form_with model: @user, url: account_path, method: :patch, class: "cl-form" do |f| %>
+        <% if @user.errors.any? %>
+          <div class="cl-form__error">
+            <% @user.errors.full_messages.each do |msg| %>
+              <p><%= msg %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <h2 style="font-size:13px; font-weight:600; color:var(--hcp-mid-gray); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">기본 정보</h2>
+
+        <div class="cl-form__field">
+          <%= f.label :email_address, "이메일", class: "cl-form__label" %>
+          <%= f.email_field :email_address, class: "cl-form__input", autocomplete: "email" %>
+        </div>
+
+        <div class="cl-form__field">
+          <%= f.label :nickname, "닉네임", class: "cl-form__label" %>
+          <%= f.text_field :nickname, class: "cl-form__input" %>
+        </div>
+
+        <hr style="border:none; border-top:1px solid var(--hcp-border-light); margin:24px 0;">
+
+        <h2 style="font-size:13px; font-weight:600; color:var(--hcp-mid-gray); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">비밀번호 변경</h2>
+        <p style="font-size:12px; color:var(--hcp-cool-gray); margin-bottom:16px;">변경하지 않으려면 비워두세요.</p>
+
+        <div class="cl-form__field">
+          <label class="cl-form__label">현재 비밀번호</label>
+          <%= password_field_tag "user[current_password]", nil, class: "cl-form__input", autocomplete: "current-password" %>
+        </div>
+
+        <div class="cl-form__field">
+          <%= f.label :password, "새 비밀번호", class: "cl-form__label" %>
+          <%= f.password_field :password, class: "cl-form__input", autocomplete: "new-password", placeholder: "8자 이상" %>
+        </div>
+
+        <div class="cl-form__field">
+          <%= f.label :password_confirmation, "새 비밀번호 확인", class: "cl-form__label" %>
+          <%= f.password_field :password_confirmation, class: "cl-form__input", autocomplete: "new-password" %>
+        </div>
+
+        <div class="cl-form__actions">
+          <%= f.submit "저장하기", class: "cl-form__submit" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

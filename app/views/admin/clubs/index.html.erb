@@ -1,4 +1,4 @@
-<% content_for :title, "동호회 관리" %>
+<% content_for :title, "클럽 관리" %>
 
 <div class="page">
   <div class="page__header">
@@ -14,11 +14,11 @@
 
   <div class="admin-stats">
     <div class="admin-stats__card">
-      <div class="admin-stats__label">활성 동호회</div>
+      <div class="admin-stats__label">활성 클럽</div>
       <div class="admin-stats__value"><%= @approved_clubs.count %></div>
     </div>
     <div class="admin-stats__card">
-      <div class="admin-stats__label">정지된 동호회</div>
+      <div class="admin-stats__label">정지된 클럽</div>
       <div class="admin-stats__value" style="color: var(--hcp-danger)"><%= @suspended_clubs.count %></div>
     </div>
     <div class="admin-stats__card">
@@ -31,7 +31,7 @@
     <div class="admin-panel__header">
       <h2 class="admin-panel__title">
         <iconify-icon icon="lucide:check-circle" style="color: var(--hcp-success); vertical-align: -2px;"></iconify-icon>
-        활성 동호회
+        활성 클럽
       </h2>
       <span class="admin-badge" style="background: var(--hcp-success); color: #fff;"><%= @approved_clubs.count %></span>
     </div>
@@ -40,7 +40,7 @@
       <table class="admin-table">
         <thead>
           <tr>
-            <th>동호회명</th>
+            <th>클럽명</th>
             <th>개설자</th>
             <th>개설일</th>
             <th>상태</th>
@@ -62,7 +62,7 @@
                 <%= button_to admin_club_path(club), method: :patch, params: { status: "suspended" },
                     class: "btn btn--ghost btn--sm",
                     style: "color: var(--hcp-danger); border-color: var(--hcp-danger);",
-                    data: { turbo_confirm: "#{club.name} 동호회를 정지하시겠습니까?" } do %>
+                    data: { turbo_confirm: "#{club.name} 클럽를 정지하시겠습니까?" } do %>
                   <iconify-icon icon="lucide:pause-circle"></iconify-icon> 정지
                 <% end %>
               </td>
@@ -71,7 +71,7 @@
         </tbody>
       </table>
     <% else %>
-      <p class="empty-state">활성 동호회가 없습니다.</p>
+      <p class="empty-state">활성 클럽가 없습니다.</p>
     <% end %>
   </section>
 
@@ -79,7 +79,7 @@
     <div class="admin-panel__header">
       <h2 class="admin-panel__title">
         <iconify-icon icon="lucide:pause-circle" style="color: var(--hcp-danger); vertical-align: -2px;"></iconify-icon>
-        정지된 동호회
+        정지된 클럽
       </h2>
       <span class="admin-badge" style="background: var(--hcp-danger-bg); color: var(--hcp-danger);"><%= @suspended_clubs.count %></span>
     </div>
@@ -88,7 +88,7 @@
       <table class="admin-table">
         <thead>
           <tr>
-            <th>동호회명</th>
+            <th>클럽명</th>
             <th>개설자</th>
             <th>개설일</th>
             <th>상태</th>
@@ -113,7 +113,7 @@
         </tbody>
       </table>
     <% else %>
-      <p class="empty-state">정지된 동호회가 없습니다.</p>
+      <p class="empty-state">정지된 클럽가 없습니다.</p>
     <% end %>
   </section>
 </div>

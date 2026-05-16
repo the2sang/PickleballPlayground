@@ -21,6 +21,6 @@ class GuestApplicationsController < ApplicationController
   def set_club = @club = Club.find(params[:club_id])
 
   def guest_params
-    params.require(:guest_application).permit(:name, :phone, :email, :message)
+    params.require(:guest_application).permit(:name, :kakao_id, :email, :message)
   end
 end

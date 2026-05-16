@@ -66,7 +66,7 @@
         </div>
 
         <div class="nav__menu">
-          <%# PB동호회 — 로그인 + (동호회 관리자 or 사이트 관리자)만 표시 %>
+          <%# PB클럽 — 로그인 + (클럽 관리자 or 사이트 관리자)만 표시 %>
           <% if authenticated? && (current_user&.admin? || managed_clubs.any?) %>
           <div class="nav__group"
                data-controller="nav-group"
@@ -76,13 +76,13 @@
                     data-nav-group-target="trigger"
                     aria-expanded="false"
                     aria-haspopup="true">
-              <span class="nav__group-label">동호회관리</span>
+              <span class="nav__group-label">클럽관리</span>
               <iconify-icon icon="lucide:users" class="nav__group-icon"></iconify-icon>
               <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
             </button>
             <div class="nav__dropdown" data-nav-group-target="dropdown">
               <%= link_to clubs_path, class: "nav__dropdown-item" do %>
-                <iconify-icon icon="lucide:flag"></iconify-icon><span>동호회</span>
+                <iconify-icon icon="lucide:flag"></iconify-icon><span>클럽</span>
               <% end %>
               <%= link_to game_sessions_path, class: "nav__dropdown-item" do %>
                 <iconify-icon icon="lucide:calendar-days"></iconify-icon><span>운동 세션</span>
@@ -131,13 +131,13 @@
                     data-action="click->nav-search#open">
               <iconify-icon icon="lucide:search"></iconify-icon>
             </button>
-            <%= form_with url: tech_infos_path, method: :get, class: "nav-search",
+            <%= form_with url: clubs_path, method: :get, class: "nav-search",
                   data: { "nav-search-target": "form" } do |f| %>
               <iconify-icon icon="lucide:search" class="nav-search__icon"></iconify-icon>
               <%= f.text_field :q,
                   class: "nav-search__input",
-                  placeholder: "기술정보 검색...",
-                  value: params[:q],
+                  placeholder: "클럽 검색...",
+                  value: (params[:q] if request.path.start_with?("/clubs")),
                   autocomplete: "off",
                   data: { "nav-search-target": "input" } %>
               <span class="nav-search__hint"><kbd>⌘K</kbd></span>
@@ -154,11 +154,31 @@
           <div class="nav__divider"></div>
 
           <% if authenticated? %>
-            <span class="nav__nickname nav-hide-mobile"><%= Current.session.user.nickname %></span>
-            <%= button_to session_path, method: :delete, class: "btn btn--logout btn--sm" do %>
-              <iconify-icon icon="lucide:log-out" class="nav-only-mobile"></iconify-icon>
-              <span class="nav-hide-mobile">Log out</span>
-            <% end %>
+            <div class="nav__group"
+                 data-controller="nav-group"
+                 data-action="mouseenter->nav-group#hover mouseleave->nav-group#hoverOut">
+              <button class="nav__group-btn"
+                      data-action="click->nav-group#tap"
+                      data-nav-group-target="trigger"
+                      aria-expanded="false"
+                      aria-haspopup="true">
+                <iconify-icon icon="lucide:user-circle" class="nav__group-icon"></iconify-icon>
+                <span class="nav__group-label nav-hide-mobile"><%= Current.session.user.nickname %></span>
+                <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
+              </button>
+              <div class="nav__dropdown nav__dropdown--right" data-nav-group-target="dropdown">
+                <%= link_to edit_profile_path, class: "nav__dropdown-item" do %>
+                  <iconify-icon icon="lucide:clipboard-list"></iconify-icon><span>참가 정보 수정</span>
+                <% end %>
+                <%= link_to edit_account_path, class: "nav__dropdown-item" do %>
+                  <iconify-icon icon="lucide:settings"></iconify-icon><span>계정 설정</span>
+                <% end %>
+                <div class="nav__dropdown-divider"></div>
+                <%= button_to session_path, method: :delete, class: "nav__dropdown-logout" do %>
+                  <iconify-icon icon="lucide:log-out"></iconify-icon><span>Log out</span>
+                <% end %>
+              </div>
+            </div>
           <% else %>
             <%= link_to new_session_path, class: "btn btn--secondary btn--sm" do %>
               <iconify-icon icon="lucide:log-in" class="nav-only-mobile"></iconify-icon>

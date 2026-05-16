@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :registration, only: %i[ new create ]
   resource :profile, only: %i[ edit update ]
+  resource :account, only: %i[ edit update ]
 
   resource :focus, only: %i[show] do
     resource :settings, controller: "focus/settings", only: %i[show update]

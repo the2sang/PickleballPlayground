@@ -1,15 +1,15 @@
-<% content_for :title, "동호회 수정" %>
+<% content_for :title, "클럽 수정" %>
 
 <div class="cl-page">
   <div class="cl-content cl-content--form">
     <div style="margin-bottom:32px;">
       <p class="cl-hero__eyebrow">
-        <%= link_to "동호회", clubs_path %>
+        <%= link_to "클럽", clubs_path %>
         <span class="sep">/</span>
         <%= link_to @club.name, club_path(@club) %>
         <span class="sep">/</span> 수정
       </p>
-      <h1 class="cl-hero__title">동호회 정보 수정</h1>
+      <h1 class="cl-hero__title">클럽 정보 수정</h1>
     </div>
     <div class="cl-form-card">
       <%= render "form", club: @club %>

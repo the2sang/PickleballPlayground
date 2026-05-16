@@ -433,6 +433,51 @@ body {
   flex-shrink: 0;
 }
 
+.nav__dropdown--right {
+  left: auto;
+  right: 0;
+}
+
+.nav__dropdown-divider {
+  height: 1px;
+  background: var(--hcp-border-light);
+  margin: 4px 0;
+}
+
+.nav__dropdown-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--hcp-cool-gray);
+  background: none;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.12s, background 0.12s;
+}
+
+.nav__dropdown-logout:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.nav__dropdown-logout form {
+  display: contents;
+}
+
+.nav__dropdown-logout form button {
+  display: contents;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+}
+
 /* ── Nav Search Wrapper ────────────────────────────────── */
 .nav__search-wrapper {
   display: flex;
@@ -4650,6 +4695,54 @@ lexxy-editor.lexxy-editor-field {
   margin: 0 auto;
   padding: 40px 24px;
 }
+
+/* ── Club Search Bar ─────────────────────────────────────── */
+.cl-search-bar {
+  margin-top: 20px;
+}
+.cl-search-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--hcp-border-light);
+  border-radius: 8px;
+  padding: 0 12px;
+  max-width: 480px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cl-search-bar__inner:focus-within {
+  border-color: var(--hcp-border-mid);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.08);
+}
+.cl-search-bar__icon {
+  color: var(--hcp-cool-gray);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.cl-search-bar__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 13px;
+  color: var(--hcp-black);
+  outline: none;
+}
+.cl-search-bar__input::placeholder { color: var(--hcp-cool-gray); }
+.cl-search-bar__clear {
+  color: var(--hcp-cool-gray);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+.cl-search-bar__clear:hover { color: var(--hcp-charcoal); }
+.cl-search-result-info {
+  font-size: 13px;
+  color: var(--hcp-cool-gray);
+  margin-bottom: 16px;
+}
+.cl-search-result-info strong { color: var(--hcp-black); }
 .cl-content--narrow {
   max-width: 480px;
   padding-top: 48px;
@@ -4682,19 +4775,29 @@ lexxy-editor.lexxy-editor-field {
 }
 
 .cl-card {
-  background: #ffffff;
+  background-color: #ffffff;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border: 1px solid var(--hcp-border-light);
   border-radius: 12px;
   padding: 20px;
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
   transition: border-color 0.12s, box-shadow 0.12s;
 }
 .cl-card:hover {
   border-color: var(--hcp-border-mid);
   box-shadow: 0 2px 8px rgba(9,9,11,0.06);
   text-decoration: none;
+}
+.cl-card__stretched-link {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 12px;
 }
 .cl-card__top {
   display: flex;
@@ -4716,11 +4819,17 @@ lexxy-editor.lexxy-editor-field {
   transition: background 0.12s;
 }
 .cl-card:hover .cl-card__icon { background: #e4e4e7; }
+.cl-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 4px;
+}
 .cl-card__name {
   font-size: 13px;
   font-weight: 600;
   color: var(--hcp-black);
-  margin-bottom: 4px;
+  margin: 0;
 }
 .cl-card__desc {
   font-size: 12px;
@@ -4737,11 +4846,10 @@ lexxy-editor.lexxy-editor-field {
   position: relative;
 }
 
-.cl-card__fav {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+.cl-card__fav-inline {
+  position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .cl-fav-btn {
@@ -4760,6 +4868,9 @@ lexxy-editor.lexxy-editor-field {
 
 .cl-fav-btn--active {
   color: #f59e0b;
+  background: #fef3c7;
+  border-radius: 6px;
+  padding: 3px;
 }
 
 /* button_to generates a <form> — reset its styles */
@@ -4775,6 +4886,31 @@ lexxy-editor.lexxy-editor-field {
   color: inherit;
   line-height: 0;
   display: block;
+}
+
+.cl-card__kakao {
+  position: relative;
+  z-index: 1;
+  margin-top: 10px;
+}
+
+.cl-card__kakao-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #FEE500;
+  color: #3A1D1D;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.cl-card__kakao-btn:hover {
+  background: #F0D800;
 }
 
 /* ── Badges ─────────────────────────────────────────────────── */
@@ -4877,6 +5013,13 @@ lexxy-editor.lexxy-editor-field {
 .cl-list-item__count {
   font-size: 11px;
   color: var(--hcp-cool-gray);
+}
+
+.cl-session-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--hcp-cool-gray);
+  text-align: center;
 }
 
 /* ── Info Card (session detail) ─────────────────────────────── */
