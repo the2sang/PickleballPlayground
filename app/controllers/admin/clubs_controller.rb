@@ -16,7 +16,7 @@ module Admin
       @club = Club.find(params[:id])
       authorize [ :admin, @club ]
       @club.update!(status: params[:status])
-      redirect_to admin_clubs_path, notice: "동호회 상태가 변경되었습니다."
+      redirect_to admin_clubs_path, notice: "클럽 상태가 변경되었습니다."
     end
   end
 end

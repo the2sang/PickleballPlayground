@@ -22,7 +22,7 @@
         <%= button_to admin_club_path(@club), method: :patch, params: { status: "suspended" },
             class: "btn btn--ghost btn--sm",
             style: "color: var(--hcp-danger); border-color: var(--hcp-danger);",
-            data: { turbo_confirm: "#{@club.name} 동호회를 정지하시겠습니까?" } do %>
+            data: { turbo_confirm: "#{@club.name} 클럽를 정지하시겠습니까?" } do %>
           <iconify-icon icon="lucide:pause-circle"></iconify-icon> 정지
         <% end %>
       <% else %>
