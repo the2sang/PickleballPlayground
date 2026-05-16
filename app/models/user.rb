@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :owned_groups, class_name: "Group", foreign_key: :owner_id, dependent: :nullify, inverse_of: :owner
   has_many :club_memberships, dependent: :destroy
   has_many :clubs_as_member, through: :club_memberships, source: :club
+  has_many :club_favorites, dependent: :destroy
+  has_many :favorited_clubs, through: :club_favorites, source: :club
   has_many :participations, dependent: :destroy
 
   def group_member_ids
