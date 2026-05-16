@@ -4739,8 +4739,8 @@ lexxy-editor.lexxy-editor-field {
 
 .cl-card__fav {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 12px;
+  right: 12px;
   z-index: 1;
 }
 
