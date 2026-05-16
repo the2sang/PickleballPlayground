@@ -4,7 +4,25 @@ class ClubsController < ApplicationController
   before_action :set_club,        only: %i[show edit update destroy manage]
 
   def index
-    @clubs = policy_scope(Club).order(:name)
+    clubs = policy_scope(Club)
+    if Current.user
+      fav_ids = Current.user.club_favorites.pluck(:club_id)
+      @member_club_ids    = Current.user.club_memberships
+                                         .where(status: %i[pending approved])
+                                         .pluck(:club_id).to_set
+      @favorited_club_ids = fav_ids.to_set
+      @clubs = if fav_ids.any?
+        clubs.order(
+          Arel.sql("CASE WHEN id IN (#{fav_ids.join(',')}) THEN 0 ELSE 1 END, name ASC")
+        )
+      else
+        clubs.order(:name)
+      end
+    else
+      @member_club_ids    = Set.new
+      @favorited_club_ids = Set.new
+      @clubs = clubs.order(:name)
+    end
   end
 
   def show
