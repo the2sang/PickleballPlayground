@@ -4732,6 +4732,50 @@ lexxy-editor.lexxy-editor-field {
   overflow: hidden;
 }
 
+/* ── Club Card Wrapper + Favorite Button ─────────────────── */
+.cl-card-wrapper {
+  position: relative;
+}
+
+.cl-card__fav {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+}
+
+.cl-fav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: #9ca3af;
+  line-height: 1;
+}
+
+.cl-fav-btn:hover {
+  color: #f59e0b;
+}
+
+.cl-fav-btn--active {
+  color: #f59e0b;
+}
+
+/* button_to generates a <form> — reset its styles */
+.cl-fav-btn form {
+  display: inline;
+}
+
+.cl-fav-btn form button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  line-height: 1;
+}
+
 /* ── Badges ─────────────────────────────────────────────────── */
 .cl-badge {
   display: inline-flex;

@@ -1,0 +1,6 @@
+<%= turbo_stream.replace "club-fav-#{@club.id}" do %>
+  <%= render "club_favorites/button",
+        club: @club,
+        favorited_club_ids: Current.user.club_favorites.pluck(:club_id).to_set,
+        member_club_ids: Current.user.club_memberships.where(status: %i[pending approved]).pluck(:club_id).to_set %>
+<% end %>

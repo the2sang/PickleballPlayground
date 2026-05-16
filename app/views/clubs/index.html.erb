@@ -28,16 +28,24 @@
     <% else %>
       <div class="cl-grid">
         <% @clubs.each do |club| %>
-          <%= link_to club_path(club), class: "cl-card" do %>
-            <div class="cl-card__top">
-              <div class="cl-card__icon">
-                <iconify-icon icon="lucide:users" width="16"></iconify-icon>
-              </div>
-              <span class="cl-badge cl-badge--neutral">회원 <%= club.club_memberships.approved.count %>명</span>
+          <div class="cl-card-wrapper">
+            <div id="club-fav-<%= club.id %>" class="cl-card__fav">
+              <%= render "club_favorites/button",
+                    club: club,
+                    favorited_club_ids: @favorited_club_ids,
+                    member_club_ids: @member_club_ids %>
             </div>
-            <p class="cl-card__name"><%= club.name %></p>
-            <p class="cl-card__desc"><%= club.description.presence || "소개가 없습니다." %></p>
-          <% end %>
+            <%= link_to club_path(club), class: "cl-card" do %>
+              <div class="cl-card__top">
+                <div class="cl-card__icon">
+                  <iconify-icon icon="lucide:users" width="16"></iconify-icon>
+                </div>
+                <span class="cl-badge cl-badge--neutral">회원 <%= club.club_memberships.approved.count %>명</span>
+              </div>
+              <p class="cl-card__name"><%= club.name %></p>
+              <p class="cl-card__desc"><%= club.description.presence || "소개가 없습니다." %></p>
+            <% end %>
+          </div>
         <% end %>
       </div>
     <% end %>
