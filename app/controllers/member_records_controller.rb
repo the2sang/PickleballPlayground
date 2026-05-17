@@ -42,10 +42,10 @@ class MemberRecordsController < ApplicationController
 
   def template
     authorize :member_record, :template?
-    xlsx = MemberRecords::TemplateService.call
-    send_data xlsx,
-      filename: "회원명부_양식_#{Date.today.strftime('%Y%m%d')}.xlsx",
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    csv = MemberRecords::TemplateService.call
+    send_data "\xEF\xBB\xBF#{csv}",
+      filename: "회원명부_양식_#{Date.today.strftime('%Y%m%d')}.csv",
+      type: "text/csv; charset=utf-8",
       disposition: "attachment"
   end
 

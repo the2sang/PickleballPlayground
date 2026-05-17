@@ -5,7 +5,7 @@ class GameSessionsController < ApplicationController
   before_action :set_game_session, only: %i[show edit update destroy]
 
   def index
-    @game_sessions = policy_scope(GameSession).order(scheduled_date: :desc)
+    @game_sessions = policy_scope(GameSession).where("scheduled_date >= ?", Date.today).order(scheduled_date: :asc)
   end
 
   def show

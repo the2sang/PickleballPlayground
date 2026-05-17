@@ -146,11 +146,6 @@
               <%= link_to puzzle_path, class: "nav__dropdown-item" do %>
                 <iconify-icon icon="lucide:puzzle"></iconify-icon><span>퍼즐조각맞추기</span>
               <% end %>
-              <% if current_user&.admin? %>
-                <%= link_to member_records_path, class: "nav__dropdown-item" do %>
-                  <iconify-icon icon="lucide:clipboard-list"></iconify-icon><span>회원명부관리</span>
-                <% end %>
-              <% end %>
             </div>
           </div>
           <% end %>
@@ -178,10 +173,27 @@
           </div>
 
           <% if current_user&.admin? %>
-            <%= link_to admin_root_path, class: "nav__group-btn" do %>
+          <div class="nav__group"
+               data-controller="nav-group"
+               data-action="mouseenter->nav-group#hover mouseleave->nav-group#hoverOut">
+            <button class="nav__group-btn"
+                    data-action="click->nav-group#tap"
+                    data-nav-group-target="trigger"
+                    aria-expanded="false"
+                    aria-haspopup="true">
               <iconify-icon icon="lucide:shield-half" class="nav__group-icon"></iconify-icon>
               <span class="nav__group-label">사이트관리자</span>
-            <% end %>
+              <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
+            </button>
+            <div class="nav__dropdown nav__dropdown--right" data-nav-group-target="dropdown">
+              <%= link_to admin_root_path, class: "nav__dropdown-item" do %>
+                <iconify-icon icon="lucide:shield-half"></iconify-icon><span>관리자 대시보드</span>
+              <% end %>
+              <%= link_to member_records_path, class: "nav__dropdown-item" do %>
+                <iconify-icon icon="lucide:clipboard-list"></iconify-icon><span>회원명부관리</span>
+              <% end %>
+            </div>
+          </div>
           <% end %>
 
 

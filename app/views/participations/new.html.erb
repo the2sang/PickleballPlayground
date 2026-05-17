@@ -34,9 +34,9 @@
             <%= @game_session.club.bank_account %>
           </span>
           <button type="button" class="cl-account-card__copy"
-                  data-clipboard-target="button"
                   data-action="clipboard#copy">
-            복사
+            <iconify-icon icon="lucide:copy" width="14" data-clipboard-target="copyIcon"></iconify-icon>
+            <iconify-icon icon="lucide:check" width="14" data-clipboard-target="checkIcon" hidden></iconify-icon>
           </button>
         </div>
       </div>

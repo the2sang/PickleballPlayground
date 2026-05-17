@@ -21,7 +21,7 @@
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
       <%= link_to template_member_records_path, class: "btn btn--sm btn--neutral" do %>
         <iconify-icon icon="lucide:download" width="13"></iconify-icon>
-        양식 다운로드
+        양식 다운로드 (CSV)
       <% end %>
 
       <%= form_with url: import_member_records_path, method: :post, multipart: true, style: "display:flex; gap:8px; align-items:center;" do |f| %>

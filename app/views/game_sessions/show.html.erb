@@ -12,6 +12,43 @@
   </div>
 
   <div class="cl-content" style="max-width:720px;">
+    <%
+      my_participation = Current.user &&
+        @game_session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
+    %>
+    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <% if my_participation %>
+          <% if policy(my_participation).destroy? %>
+            <%= button_to game_session_participation_path(@game_session, my_participation),
+                  method: :delete,
+                  form: { data: { turbo_confirm: "참가 신청을 취소하시겠습니까?" } },
+                  class: "btn btn--secondary btn--sm" do %>
+              <iconify-icon icon="lucide:x-circle" width="13"></iconify-icon>
+              참가 취소하기
+            <% end %>
+          <% else %>
+            <span class="btn btn--secondary btn--sm" style="opacity:0.5;cursor:not-allowed;">
+              <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+              참가 신청됨
+            </span>
+            <span style="font-size:12px;color:var(--hcp-cool-gray);">운동 종료 후 취소 불가</span>
+          <% end %>
+        <% elsif @game_session.open? %>
+          <%= link_to new_game_session_participation_path(@game_session), class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+            참가 신청하기
+          <% end %>
+        <% end %>
+      </div>
+      <% if @game_session.open? && !my_participation %>
+        <%= link_to new_club_guest_application_path(@game_session.club, game_session_id: @game_session.id), class: "btn btn--secondary btn--sm" do %>
+          <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
+          게스트 참가
+        <% end %>
+      <% end %>
+    </div>
+
     <div class="cl-info-card">
       <div class="cl-info-card__header">
         <p class="cl-info-card__header-label">세션 정보</p>
@@ -58,6 +95,24 @@
         </span>
       </div>
 
+      <% if @game_session.club.bank_account.present? %>
+        <div class="cl-info-row" data-controller="clipboard">
+          <span class="cl-info-row__icon"><iconify-icon icon="lucide:credit-card" width="14"></iconify-icon></span>
+          <span class="cl-info-row__label">클럽 계좌</span>
+          <span class="cl-info-row__value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span data-clipboard-target="source"
+                  data-clipboard-text="<%= @game_session.club.bank_account %>">
+              <%= @game_session.club.bank_account %>
+            </span>
+            <button type="button" class="cl-account-card__copy"
+                    data-action="clipboard#copy">
+              <iconify-icon icon="lucide:copy" width="14" data-clipboard-target="copyIcon"></iconify-icon>
+              <iconify-icon icon="lucide:check" width="14" data-clipboard-target="checkIcon" hidden></iconify-icon>
+            </button>
+          </span>
+        </div>
+      <% end %>
+
       <div class="cl-info-row">
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:users" width="14"></iconify-icon></span>
         <span class="cl-info-row__label">참가 현황</span>
@@ -77,24 +132,6 @@
           <span class="cl-info-row__icon"><iconify-icon icon="lucide:file-text" width="14"></iconify-icon></span>
           <span class="cl-info-row__label">메모</span>
           <span class="cl-info-row__value"><%= @game_session.notes %></span>
-        </div>
-      <% end %>
-
-      <% if @game_session.club.bank_account.present? %>
-        <div class="cl-info-row" data-controller="clipboard">
-          <span class="cl-info-row__icon"><iconify-icon icon="lucide:credit-card" width="14"></iconify-icon></span>
-          <span class="cl-info-row__label">클럽 계좌</span>
-          <span class="cl-info-row__value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span data-clipboard-target="source"
-                  data-clipboard-text="<%= @game_session.club.bank_account %>">
-              <%= @game_session.club.bank_account %>
-            </span>
-            <button type="button" class="cl-account-card__copy"
-                    data-clipboard-target="button"
-                    data-action="clipboard#copy">
-              복사
-            </button>
-          </span>
         </div>
       <% end %>
     </div>
@@ -141,9 +178,9 @@
 
       gender_badge = ->(u) {
         case u.gender
-        when "male"   then { icon: "lucide:mars",        icon_color: "#fff", bg: "#1e90ff", text_color: "#fff" }
-        when "female" then { icon: "lucide:venus",       icon_color: "#fff", bg: "#ff6347", text_color: "#fff" }
-        else               { icon: "lucide:circle-help", icon_color: "#9ca3af", bg: nil,    text_color: nil    }
+        when "male"   then { icon: "lucide:mars",        icon_color: "#fff", bg: "#84cc16", text_color: "#fff" }
+        when "female" then { icon: "lucide:venus",       icon_color: "#fff", bg: "#84cc16", text_color: "#fff" }
+        else               { icon: "lucide:circle-help", icon_color: "#84cc16", bg: nil,    text_color: nil    }
         end
       }
     %>
@@ -237,8 +274,6 @@
               <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);text-align:left;">
                 <th style="padding:8px 16px;font-weight:600;color:var(--hcp-cool-gray);">이름</th>
                 <th style="padding:8px 16px;font-weight:600;color:var(--hcp-cool-gray);">구분</th>
-                <th style="padding:8px 16px;font-weight:600;color:var(--hcp-cool-gray);">상태</th>
-                <th style="padding:8px 16px;font-weight:600;color:var(--hcp-cool-gray);">운동레벨</th>
                 <th style="padding:8px 16px;"></th>
               </tr>
             </thead>
@@ -252,16 +287,6 @@
                       <iconify-icon icon="<%= ml[:icon] %>" width="11" style="margin-right:2px;"></iconify-icon>
                       <%= ml[:text] %>
                     </span>
-                  </td>
-                  <td style="padding:10px 16px;">
-                    <% if p.waitlisted? %>
-                      <span class="cl-badge cl-badge--neutral" style="opacity:0.7;">대기</span>
-                    <% else %>
-                      <span class="cl-badge cl-badge--neutral"><%= session_label %></span>
-                    <% end %>
-                  </td>
-                  <td style="padding:10px 16px;color:var(--hcp-cool-gray);">
-                    <%= sport_level_labels[p.user.sport_level] %>
                   </td>
                   <td style="padding:10px 16px;text-align:right;">
                     <%= button_to game_session_participation_path(@game_session, p),
@@ -283,33 +308,5 @@
       </div>
     <% end %>
 
-    <%
-      my_participation = Current.user &&
-        @game_session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
-    %>
-    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <% if my_participation %>
-        <% if policy(my_participation).destroy? %>
-          <%= button_to game_session_participation_path(@game_session, my_participation),
-                method: :delete,
-                form: { data: { turbo_confirm: "참가 신청을 취소하시겠습니까?" } },
-                class: "btn btn--secondary btn--sm" do %>
-            <iconify-icon icon="lucide:x-circle" width="13"></iconify-icon>
-            참가 취소하기
-          <% end %>
-        <% else %>
-          <span class="btn btn--secondary btn--sm" style="opacity:0.5;cursor:not-allowed;">
-            <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
-            참가 신청됨
-          </span>
-          <span style="font-size:12px;color:var(--hcp-cool-gray);">운동 종료 후 취소 불가</span>
-        <% end %>
-      <% elsif @game_session.open? %>
-        <%= link_to new_game_session_participation_path(@game_session), class: "btn btn--primary btn--sm" do %>
-          <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
-          참가 신청하기
-        <% end %>
-      <% end %>
-    </div>
   </div>
 </div>
