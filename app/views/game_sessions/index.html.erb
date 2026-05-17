@@ -31,17 +31,22 @@
                 <p class="cl-list-item__meta">
                   <%= format_session_date(gs.scheduled_date) %> &middot;
                   <%= gs.venue_name %> &middot;
-                  참가 <%= gs.confirmed_count %><% if gs.max_participants %>/<%= gs.max_participants %><% end %>명
+                  참가신청자 - <%= gs.confirmed_count %>명
                 </p>
               </div>
             </div>
             <div class="cl-list-item__right">
               <% if gs.full? %>
                 <span class="cl-badge cl-badge--neutral">마감</span>
-              <% elsif gs.fee > 0 %>
-                <span class="cl-badge cl-badge--dark"><%= number_with_delimiter(gs.fee) %>원</span>
               <% else %>
-                <span class="cl-badge cl-badge--neutral">무료</span>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+                  <span style="font-size:10px; color:var(--hcp-cool-gray);">게스트 참가비</span>
+                  <% if gs.fee > 0 %>
+                    <span class="cl-badge cl-badge--dark"><%= number_with_delimiter(gs.fee) %>원</span>
+                  <% else %>
+                    <span class="cl-badge cl-badge--neutral">무료</span>
+                  <% end %>
+                </div>
               <% end %>
             </div>
           <% end %>

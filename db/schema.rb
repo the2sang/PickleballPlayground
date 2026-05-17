@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_16_152052) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_17_054813) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -154,6 +154,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_152052) do
     t.integer "work_minutes", null: false
     t.index ["user_id", "request_date"], name: "index_manpower_records_on_user_id_and_request_date"
     t.index ["user_id"], name: "index_manpower_records_on_user_id"
+  end
+
+  create_table "member_records", force: :cascade do |t|
+    t.string "address"
+    t.date "birth_date"
+    t.date "club_joined_at"
+    t.string "club_name"
+    t.datetime "created_at", null: false
+    t.string "gender"
+    t.string "name", null: false
+    t.string "phone"
+    t.date "pickleball_started_at"
+    t.boolean "privacy_agreed", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_name"], name: "index_member_records_on_club_name"
+    t.index ["name"], name: "index_member_records_on_name"
   end
 
   create_table "memos", force: :cascade do |t|

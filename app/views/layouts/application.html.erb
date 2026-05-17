@@ -5,11 +5,13 @@
 
     <title><%= [content_for(:title), "Pickleball Playground"].compact_blank.join(" — ") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="format-detection" content="telephone=no,email=no,address=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="피클볼">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <meta name="turbo-cache-control" content="no-cache">
 
     <%= yield :head %>
 
@@ -33,10 +35,16 @@
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
       }
+      document.addEventListener("turbo:before-visit", function() {
+        if (typeof Turbo !== "undefined") { Turbo.cache.clear(); }
+      });
+      window.addEventListener("pageshow", function(e) {
+        if (e.persisted) { window.location.reload(); }
+      });
     </script>
   </head>
 
-  <body data-controller="pwa-install">
+  <body data-controller="pwa-install" data-turbo-cache="false">
     <%# iOS 홈 화면 추가 안내 모달 (전역) %>
     <div class="pwa-ios-modal" data-pwa-install-target="iosModal" hidden>
       <div class="pwa-ios-modal__backdrop" data-action="click->pwa-install#hideIosModal"></div>
@@ -60,13 +68,12 @@
       <div class="nav__inner">
         <div class="nav__left">
           <%= link_to root_path, class: "nav__logo" do %>
-            <span class="nav__logo-mark">P</span>
-            <span class="nav__logo-text nav-hide-mobile">PICKLEBALL PLAYGROUND</span>
+            <span class="nav__logo-text">PICKLEBALL</span>
           <% end %>
         </div>
 
         <div class="nav__menu">
-          <%# PB클럽 — 로그인 + (클럽 관리자 or 사이트 관리자)만 표시 %>
+          <%# 바로가기 — 로그인 + (클럽 관리자 or 사이트 관리자)만 표시 %>
           <% if authenticated? && (current_user&.admin? || managed_clubs.any?) %>
           <div class="nav__group"
                data-controller="nav-group"
@@ -76,7 +83,7 @@
                     data-nav-group-target="trigger"
                     aria-expanded="false"
                     aria-haspopup="true">
-              <span class="nav__group-label">클럽관리</span>
+              <span class="nav__group-label">바로가기</span>
               <iconify-icon icon="lucide:users" class="nav__group-icon"></iconify-icon>
               <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
             </button>
@@ -90,16 +97,11 @@
               <%= link_to my_participations_path, class: "nav__dropdown-item" do %>
                 <iconify-icon icon="lucide:clipboard-list"></iconify-icon><span>내 신청</span>
               <% end %>
-              <% managed_clubs.each do |club| %>
-                <%= link_to manage_club_path(club), class: "nav__dropdown-item nav__dropdown-item--manage" do %>
-                  <iconify-icon icon="lucide:settings-2"></iconify-icon><span><%= club.name %> 관리</span>
-                <% end %>
-              <% end %>
             </div>
           </div>
-          <% end %>
 
-          <%# Utils %>
+          <%# 클럽관리 — 관리 중인 클럽이 있을 때만 표시 %>
+          <% if managed_clubs.any? %>
           <div class="nav__group"
                data-controller="nav-group"
                data-action="mouseenter->nav-group#hover mouseleave->nav-group#hoverOut">
@@ -108,7 +110,32 @@
                     data-nav-group-target="trigger"
                     aria-expanded="false"
                     aria-haspopup="true">
-              <span class="nav__group-label">Utils</span>
+              <span class="nav__group-label">클럽관리</span>
+              <iconify-icon icon="lucide:settings-2" class="nav__group-icon"></iconify-icon>
+              <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
+            </button>
+            <div class="nav__dropdown" data-nav-group-target="dropdown">
+              <% managed_clubs.each do |club| %>
+                <%= link_to manage_club_path(club), class: "nav__dropdown-item nav__dropdown-item--manage" do %>
+                  <iconify-icon icon="lucide:settings-2"></iconify-icon><span><%= club.name %> 관리</span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+          <% end %>
+          <% end %>
+
+          <%# Utils %>
+          <% if authenticated? %>
+          <div class="nav__group"
+               data-controller="nav-group"
+               data-action="mouseenter->nav-group#hover mouseleave->nav-group#hoverOut">
+            <button class="nav__group-btn"
+                    data-action="click->nav-group#tap"
+                    data-nav-group-target="trigger"
+                    aria-expanded="false"
+                    aria-haspopup="true">
+              <span class="nav__group-label">유틸리티</span>
               <iconify-icon icon="lucide:wrench" class="nav__group-icon"></iconify-icon>
               <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
             </button>
@@ -119,8 +146,14 @@
               <%= link_to puzzle_path, class: "nav__dropdown-item" do %>
                 <iconify-icon icon="lucide:puzzle"></iconify-icon><span>퍼즐조각맞추기</span>
               <% end %>
+              <% if current_user&.admin? %>
+                <%= link_to member_records_path, class: "nav__dropdown-item" do %>
+                  <iconify-icon icon="lucide:clipboard-list"></iconify-icon><span>회원명부관리</span>
+                <% end %>
+              <% end %>
             </div>
           </div>
+          <% end %>
         </div>
 
         <div class="nav__right">
@@ -145,8 +178,9 @@
           </div>
 
           <% if current_user&.admin? %>
-            <%= link_to admin_root_path, class: "nav__icon-btn nav__icon-btn--admin", title: "관리자" do %>
-              <iconify-icon icon="lucide:shield-half"></iconify-icon>
+            <%= link_to admin_root_path, class: "nav__group-btn" do %>
+              <iconify-icon icon="lucide:shield-half" class="nav__group-icon"></iconify-icon>
+              <span class="nav__group-label">사이트관리자</span>
             <% end %>
           <% end %>
 
@@ -182,11 +216,11 @@
           <% else %>
             <%= link_to new_session_path, class: "btn btn--secondary btn--sm" do %>
               <iconify-icon icon="lucide:log-in" class="nav-only-mobile"></iconify-icon>
-              <span class="nav-hide-mobile">Log in</span>
+              <span class="nav-hide-mobile">로그인</span>
             <% end %>
             <%= link_to new_registration_path, class: "btn btn--primary btn--sm" do %>
               <iconify-icon icon="lucide:user-plus" class="nav-only-mobile"></iconify-icon>
-              <span class="nav-hide-mobile">Join</span>
+              <span class="nav-hide-mobile">회원가입</span>
             <% end %>
           <% end %>
         </div>

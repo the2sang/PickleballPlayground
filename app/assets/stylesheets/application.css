@@ -57,12 +57,12 @@
   --content-editor:    810px;
 
   /* better-auth nav tokens */
-  --nav-bg:       #ffffff;
-  --nav-border:   #e4e4e7;
-  --nav-text:     #18181b;
-  --nav-muted:    #71717a;
-  --nav-hover-bg: #f4f4f5;
-  --nav-icon-color: #71717a;
+  --nav-bg:       #84cc16;
+  --nav-border:   rgba(255, 255, 255, 0.2);
+  --nav-text:     #ffffff;
+  --nav-muted:    rgba(255, 255, 255, 0.75);
+  --nav-hover-bg: rgba(255, 255, 255, 0.15);
+  --nav-icon-color: rgba(255, 255, 255, 0.85);
 }
 
 /* ── Iconify Icon Base ──────────────────────────────────── */
@@ -102,7 +102,7 @@ body {
 /* ── Navigation ─────────────────────────────────────────── */
 .nav {
   height: var(--nav-height);
-  background-color: var(--nav-bg);
+  background: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
   display: flex;
   align-items: center;
@@ -152,7 +152,8 @@ body {
   white-space: nowrap;
 }
 
-.nav__logo:hover { color: var(--hcp-black); text-decoration: none; }
+.nav__logo:hover { color: #ffffff; text-decoration: none; opacity: 0.9; }
+.nav__logo-img { height: 36px; width: auto; display: block; }
 
 .nav__logo-mark {
   width: 22px;
@@ -238,21 +239,21 @@ body {
 .nav-search__input {
   width: 100%;
   height: 32px;
-  background: var(--hcp-light-bg);
-  border: 1px solid var(--nav-border);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 6px;
   padding: 0 60px 0 30px;
   font-size: 13px;
-  color: var(--nav-text);
+  color: #ffffff;
   transition: border-color 0.15s, background 0.15s;
   outline: none;
 }
 
-.nav-search__input::placeholder { color: var(--nav-muted); }
+.nav-search__input::placeholder { color: rgba(255, 255, 255, 0.65); }
 
 .nav-search__input:focus {
-  border-color: var(--hcp-vagrant);
-  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .nav-search__hint {
@@ -1016,6 +1017,14 @@ body.auth-body {
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.02em;
+}
+
+.auth-logo__img {
+  height: 48px;
+  width: auto;
+  padding: 8px 16px;
+  background: #84cc16;
+  border-radius: 12px;
 }
 
 .auth-title {
@@ -2582,8 +2591,8 @@ lexxy-editor.lexxy-editor-field {
   .page { padding: 24px 16px; }
   .nav  { padding: 0 12px; }
 
-  /* Logo: hide text, keep T mark */
-  .nav__logo-text { display: none; }
+  /* Logo: keep text visible on mobile */
+  .nav__logo-text { font-size: 16px; }
 
   /* Search: reduce size on mobile */
   .nav-search--open { max-width: 160px; }
@@ -5010,7 +5019,7 @@ lexxy-editor.lexxy-editor-field {
 }
 .cl-list-item:hover .cl-list-item__icon { background: #e4e4e7; }
 .cl-list-item__club {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--hcp-cool-gray);
   margin-bottom: 2px;
 }

@@ -39,9 +39,8 @@
     <div class="cl-section-header">
       <p class="cl-section-label">운동 세션</p>
       <% if policy(@club).manage? %>
-        <%= link_to new_game_session_path(club_id: @club.id),
-              style: "font-size:12px; color:var(--hcp-mid-gray); display:inline-flex; align-items:center; gap:4px;" do %>
-          <iconify-icon icon="lucide:plus" width="12"></iconify-icon> 세션 추가
+        <%= link_to new_game_session_path(club_id: @club.id), class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 세션 추가
         <% end %>
       <% end %>
     </div>
@@ -74,11 +73,6 @@
               <span class="cl-list-item__count"><%= gs.confirmed_count %><% if gs.max_participants %>/<%= gs.max_participants %><% end %>명</span>
               <% if gs.full? %>
                 <span class="cl-badge cl-badge--neutral">마감</span>
-              <% elsif !Current.user || !Current.user.club_memberships.exists?(club: @club) %>
-                <%= link_to new_club_guest_application_path(@club, game_session_id: gs.id),
-                      class: "btn btn--primary btn--sm" do %>
-                  <iconify-icon icon="lucide:user-plus" width="12"></iconify-icon> 게스트 신청
-                <% end %>
               <% end %>
             </div>
           </div>

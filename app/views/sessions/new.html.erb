@@ -1,6 +1,8 @@
 <div class="auth-container">
   <div class="auth-logo">
-    <div class="auth-logo__mark">T</div>
+    <%= link_to root_path do %>
+      <%= image_tag "lesgo_logo.png", height: 48, alt: "LesGO", class: "auth-logo__img" %>
+    <% end %>
   </div>
 
   <h1 class="auth-title">다시 오셨군요</h1>

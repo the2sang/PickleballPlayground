@@ -58,6 +58,13 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
+  resources :member_records, except: %i[show] do
+    collection do
+      get  :template
+      post :import
+    end
+  end
+
   get "puzzle", to: "pages#puzzle"
   root "clubs#index"
 end
