@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_17_054813) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_17_065602) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -57,6 +57,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_054813) do
     t.integer "user_id", null: false
     t.index ["tech_info_id"], name: "index_comments_on_tech_info_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "flash_meetup_participations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "flash_meetup_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["flash_meetup_id", "user_id"], name: "idx_flash_meetup_participations_unique_active", unique: true, where: "status != 2"
+    t.index ["flash_meetup_id"], name: "index_flash_meetup_participations_on_flash_meetup_id"
+    t.index ["user_id"], name: "index_flash_meetup_participations_on_user_id"
+  end
+
+  create_table "flash_meetups", force: :cascade do |t|
+    t.string "address"
+    t.string "allowed_age_groups", default: "", null: false
+    t.datetime "created_at", null: false
+    t.integer "gender_filter", default: 0, null: false
+    t.string "kakao_open_chat_url"
+    t.integer "level_filter", default: 0, null: false
+    t.integer "max_participants"
+    t.datetime "scheduled_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.string "venue_name", null: false
+    t.index ["scheduled_at"], name: "index_flash_meetups_on_scheduled_at"
+    t.index ["user_id"], name: "index_flash_meetups_on_user_id"
   end
 
   create_table "game_sessions", force: :cascade do |t|
@@ -340,6 +367,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_054813) do
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "comments", "tech_infos"
   add_foreign_key "comments", "users"
+  add_foreign_key "flash_meetup_participations", "flash_meetups"
+  add_foreign_key "flash_meetup_participations", "users"
+  add_foreign_key "flash_meetups", "users"
   add_foreign_key "game_sessions", "clubs"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"

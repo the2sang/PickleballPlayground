@@ -41,6 +41,9 @@ Rails.application.routes.draw do
   resources :game_sessions, only: %i[index show new create edit update destroy] do
     resources :participations, only: %i[new create destroy], shallow: false
   end
+  resources :flash_meetups, only: %i[index show new create edit update destroy] do
+    resources :flash_meetup_participations, only: %i[create destroy], shallow: false
+  end
   namespace :my do
     resources :participations, only: %i[index destroy]
   end

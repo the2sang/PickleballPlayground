@@ -1,0 +1,77 @@
+<% content_for :title, "번개모임" %>
+
+<%
+  gender_labels    = { "all_genders" => nil, "male_only" => "남성만", "female_only" => "여성만" }
+  level_labels     = { "all_levels" => nil, "intermediate_plus" => "중급↑", "advanced_only" => "상급" }
+%>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow">Flash Meetup</p>
+      <h1 class="cl-hero__title">번개모임</h1>
+      <p class="cl-hero__subtitle">누구나 모임을 개설하고 함께 운동해요.</p>
+    </div>
+  </div>
+
+  <div class="cl-content">
+    <% if authenticated? %>
+      <div style="text-align:right;margin-bottom:16px;">
+        <%= link_to new_flash_meetup_path, class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+          번개모임 개설
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @flash_meetups.empty? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:zap" width="20"></iconify-icon>
+        </div>
+        <p class="cl-empty__text">예정된 번개모임이 없습니다.</p>
+        <% if authenticated? %>
+          <%= link_to "첫 번개모임 개설하기", new_flash_meetup_path, class: "btn btn--primary btn--sm", style: "margin-top:12px;" %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="cl-list">
+        <% @flash_meetups.each do |fm| %>
+          <%= link_to flash_meetup_path(fm), class: "cl-list-item" do %>
+            <div class="cl-list-item__left">
+              <div class="cl-list-item__icon">
+                <iconify-icon icon="lucide:zap" width="15"></iconify-icon>
+              </div>
+              <div style="min-width:0;">
+                <p class="cl-list-item__club"><%= fm.user.display_name %> 개설</p>
+                <p class="cl-list-item__title"><%= fm.venue_name %></p>
+                <p class="cl-list-item__meta">
+                  <%= fm.scheduled_at.strftime("%Y.%m.%d(%a) %H:%M") %> &middot;
+                  참가 <%= fm.confirmed_count %>명
+                  <% if fm.max_participants.present? %>
+                    / <%= fm.max_participants %>명
+                  <% end %>
+                </p>
+              </div>
+            </div>
+            <div class="cl-list-item__right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <% if fm.full? %>
+                <span class="cl-badge cl-badge--neutral">마감</span>
+              <% else %>
+                <span class="cl-badge cl-badge--green">모집 중</span>
+              <% end %>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+                <% if (label = gender_labels[fm.gender_filter]) %>
+                  <span class="cl-badge cl-badge--neutral" style="font-size:11px;"><%= label %></span>
+                <% end %>
+                <% if (label = level_labels[fm.level_filter]) %>
+                  <span class="cl-badge cl-badge--neutral" style="font-size:11px;"><%= label %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

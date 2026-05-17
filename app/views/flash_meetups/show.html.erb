@@ -1,0 +1,284 @@
+<% content_for :title, @flash_meetup.venue_name %>
+
+<%
+  sport_level_labels = { "beginner" => "초급", "beginner_intermediate" => "초중급",
+                          "intermediate" => "중급", "intermediate_advanced" => "중상급", "advanced" => "상급" }
+  gender_labels      = { "unspecified" => "미설정", "male" => "남성", "female" => "여성", "other" => "기타" }
+  age_group_labels   = { "twenties" => "20대", "thirties" => "30대", "forties" => "40대",
+                          "fifties" => "50대", "sixties_plus" => "60대 이상" }
+  filter_gender_labels = { "all_genders" => "성별 무관", "male_only" => "남성만", "female_only" => "여성만" }
+  filter_level_labels  = { "all_levels" => "실력 무관", "intermediate_plus" => "중급 이상", "advanced_only" => "상급만" }
+
+  confirmed  = @flash_meetup.flash_meetup_participations.select(&:confirmed?)
+  waitlisted = @flash_meetup.flash_meetup_participations.select(&:waitlisted?)
+
+  gender_badge = ->(u) {
+    case u.gender
+    when "male"   then { icon: "lucide:mars",        bg: "#84cc16", icon_color: "#fff", text_color: "#fff" }
+    when "female" then { icon: "lucide:venus",        bg: "#84cc16", icon_color: "#fff", text_color: "#fff" }
+    else               { icon: "lucide:circle-help",  bg: nil,       icon_color: "#84cc16", text_color: nil }
+    end
+  }
+
+  is_organizer = Current.user && @flash_meetup.user == Current.user
+%>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow">
+        <%= link_to "번개모임", flash_meetups_path %>
+        <span class="sep">/</span>
+      </p>
+      <h1 class="cl-hero__title"><%= @flash_meetup.venue_name %></h1>
+      <p class="cl-hero__subtitle">
+        <iconify-icon icon="lucide:user" width="13" style="vertical-align:-2px;"></iconify-icon>
+        <%= @flash_meetup.user.display_name %> 개설
+      </p>
+    </div>
+  </div>
+
+  <div class="cl-content" style="max-width:720px;">
+
+    <%# ── 신청 / 취소 버튼 영역 ── %>
+    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <% if @my_participation && !@my_participation.cancelled? %>
+          <% if policy(@my_participation).destroy? %>
+            <%= button_to flash_meetup_flash_meetup_participation_path(@flash_meetup, @my_participation),
+                  method: :delete,
+                  form: { data: { turbo_confirm: "참가 신청을 취소하시겠습니까?" } },
+                  class: "btn btn--secondary btn--sm" do %>
+              <iconify-icon icon="lucide:x-circle" width="13"></iconify-icon>
+              <%= @my_participation.waitlisted? ? "대기 취소" : "참가 취소" %>
+            <% end %>
+          <% else %>
+            <span class="btn btn--secondary btn--sm" style="opacity:0.5;cursor:not-allowed;">
+              <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+              <%= @my_participation.waitlisted? ? "대기 등록됨" : "참가 신청됨" %>
+            </span>
+          <% end %>
+        <% elsif authenticated? && policy(FlashMeetupParticipation.new).create? %>
+          <% if @flash_meetup.eligible?(Current.user) %>
+            <% if @flash_meetup.full? %>
+              <%= button_to flash_meetup_flash_meetup_participations_path(@flash_meetup),
+                    method: :post, class: "btn btn--secondary btn--sm" do %>
+                <iconify-icon icon="lucide:clock" width="13"></iconify-icon>
+                대기 신청
+              <% end %>
+            <% else %>
+              <%= button_to flash_meetup_flash_meetup_participations_path(@flash_meetup),
+                    method: :post, class: "btn btn--primary btn--sm" do %>
+                <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+                참가 신청
+              <% end %>
+            <% end %>
+          <% else %>
+            <span class="btn btn--secondary btn--sm" style="opacity:0.5;cursor:not-allowed;"
+                  title="참가 자격 조건을 확인하세요">
+              <iconify-icon icon="lucide:lock" width="13"></iconify-icon>
+              참가 불가
+            </span>
+          <% end %>
+        <% elsif !authenticated? %>
+          <%= link_to new_session_path, class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:log-in" width="13"></iconify-icon>
+            로그인 후 신청
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if is_organizer %>
+        <div style="display:flex;gap:8px;">
+          <%= link_to edit_flash_meetup_path(@flash_meetup), class: "btn btn--secondary btn--sm" do %>
+            <iconify-icon icon="lucide:pencil" width="13"></iconify-icon>
+            수정
+          <% end %>
+          <%= button_to flash_meetup_path(@flash_meetup), method: :delete,
+                form: { data: { turbo_confirm: "번개모임을 삭제하시겠습니까? 참가 신청자 정보도 모두 삭제됩니다." } },
+                class: "btn btn--secondary btn--sm" do %>
+            <iconify-icon icon="lucide:trash-2" width="13"></iconify-icon>
+            삭제
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── 모임 정보 카드 ── %>
+    <div class="cl-info-card">
+      <div class="cl-info-card__header">
+        <p class="cl-info-card__header-label">모임 정보</p>
+      </div>
+
+      <div class="cl-info-row">
+        <span class="cl-info-row__icon"><iconify-icon icon="lucide:calendar" width="14"></iconify-icon></span>
+        <span class="cl-info-row__label">일시</span>
+        <span class="cl-info-row__value">
+          <%= @flash_meetup.scheduled_at.strftime("%Y년 %m월 %d일(%a) %H:%M") %>
+        </span>
+      </div>
+
+      <div class="cl-info-row">
+        <span class="cl-info-row__icon"><iconify-icon icon="lucide:map-pin" width="14"></iconify-icon></span>
+        <span class="cl-info-row__label">장소</span>
+        <span class="cl-info-row__value">
+          <%= @flash_meetup.venue_name %>
+          <% if @flash_meetup.address.present? %>
+            <span class="cl-info-row__muted">&nbsp;(<%= @flash_meetup.address %>)</span>
+          <% end %>
+        </span>
+      </div>
+
+      <div class="cl-info-row">
+        <span class="cl-info-row__icon"><iconify-icon icon="lucide:users" width="14"></iconify-icon></span>
+        <span class="cl-info-row__label">참가 현황</span>
+        <span class="cl-info-row__value">
+          <%= @flash_meetup.confirmed_count %>명
+          <% if @flash_meetup.max_participants.present? %>
+            <span class="cl-info-row__muted">/ 정원 <%= @flash_meetup.max_participants %>명</span>
+          <% end %>
+          <% if @flash_meetup.full? %>
+            &nbsp;<span class="cl-badge cl-badge--neutral">마감</span>
+          <% end %>
+          <% if waitlisted.any? %>
+            &nbsp;<span style="font-size:12px;color:var(--hcp-cool-gray);">대기 <%= waitlisted.size %>명</span>
+          <% end %>
+        </span>
+      </div>
+
+      <div class="cl-info-row">
+        <span class="cl-info-row__icon"><iconify-icon icon="lucide:filter" width="14"></iconify-icon></span>
+        <span class="cl-info-row__label">참가 조건</span>
+        <span class="cl-info-row__value" style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="cl-badge cl-badge--neutral"><%= filter_gender_labels[@flash_meetup.gender_filter] %></span>
+          <span class="cl-badge cl-badge--neutral"><%= filter_level_labels[@flash_meetup.level_filter] %></span>
+          <% if @flash_meetup.allowed_age_group_list.any? %>
+            <% @flash_meetup.allowed_age_group_list.each do |ag| %>
+              <span class="cl-badge cl-badge--neutral"><%= age_group_labels[ag] %></span>
+            <% end %>
+          <% else %>
+            <span class="cl-badge cl-badge--neutral">연령 무관</span>
+          <% end %>
+        </span>
+      </div>
+
+      <% if @flash_meetup.kakao_open_chat_url.present? && authenticated? %>
+        <div class="cl-info-row">
+          <span class="cl-info-row__icon"><iconify-icon icon="lucide:message-circle" width="14"></iconify-icon></span>
+          <span class="cl-info-row__label">오픈카톡</span>
+          <span class="cl-info-row__value">
+            <%= link_to "카카오 오픈채팅 참여", @flash_meetup.kakao_open_chat_url,
+                  target: "_blank", rel: "noopener noreferrer",
+                  class: "btn btn--secondary btn--sm" %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── 참가자 목록 ── %>
+    <% if confirmed.any? || waitlisted.any? %>
+      <div class="cl-info-card" style="margin-top:16px;">
+        <div class="cl-info-card__header">
+          <p class="cl-info-card__header-label">
+            참가자 (<%= confirmed.size %>명)
+            <% if waitlisted.any? %>
+              &nbsp;·&nbsp;<span style="color:var(--hcp-cool-gray);">대기 <%= waitlisted.size %>명</span>
+            <% end %>
+          </p>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;">
+          <% confirmed.each do |p| %>
+            <% u = p.user; gb = gender_badge.call(u) %>
+            <% badge_style = "font-size:13px;#{gb[:bg] ? "background:#{gb[:bg]};border-color:#{gb[:bg]};color:#{gb[:text_color]};" : ""}" %>
+            <span class="cl-badge cl-badge--neutral"
+                  style="<%= badge_style %>"
+                  data-controller="participant-popover"
+                  data-participant-popover-name-value="<%= u.display_name %>"
+                  data-participant-popover-sport-level-value="<%= sport_level_labels[u.sport_level] %>"
+                  data-participant-popover-gender-value="<%= gender_labels[u.gender] %>"
+                  data-participant-popover-age-group-value="<%= age_group_labels[u.age_group] %>"
+                  data-participant-popover-region-value="<%= u.region.presence || '—' %>"
+                  data-participant-popover-type-value="참가"
+                  data-action="click->participant-popover#show">
+              <iconify-icon icon="<%= gb[:icon] %>" width="11" style="margin-right:3px;color:<%= gb[:icon_color] %>;flex-shrink:0;"></iconify-icon>
+              <%= u.display_name %>
+            </span>
+          <% end %>
+
+          <% waitlisted.each do |p| %>
+            <% u = p.user; gb = gender_badge.call(u) %>
+            <% badge_style = "font-size:13px;opacity:0.65;#{gb[:bg] ? "background:#{gb[:bg]};border-color:#{gb[:bg]};color:#{gb[:text_color]};" : ""}" %>
+            <span class="cl-badge cl-badge--neutral"
+                  style="<%= badge_style %>"
+                  data-controller="participant-popover"
+                  data-participant-popover-name-value="<%= u.display_name %>"
+                  data-participant-popover-sport-level-value="<%= sport_level_labels[u.sport_level] %>"
+                  data-participant-popover-gender-value="<%= gender_labels[u.gender] %>"
+                  data-participant-popover-age-group-value="<%= age_group_labels[u.age_group] %>"
+                  data-participant-popover-region-value="<%= u.region.presence || '—' %>"
+                  data-participant-popover-type-value="대기"
+                  data-action="click->participant-popover#show">
+              <iconify-icon icon="<%= gb[:icon] %>" width="11" style="margin-right:3px;color:<%= gb[:icon_color] %>;flex-shrink:0;"></iconify-icon>
+              <iconify-icon icon="lucide:clock" width="10" style="margin-right:2px;opacity:0.8;"></iconify-icon>
+              <%= u.display_name %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# ── 개설자 관리 패널 ── %>
+    <% if is_organizer %>
+      <%
+        active_participations = @flash_meetup.flash_meetup_participations.reject(&:cancelled?)
+      %>
+      <div class="cl-info-card" style="margin-top:16px;border:1px solid var(--hcp-accent,#4f46e5);">
+        <div class="cl-info-card__header" style="background:var(--hcp-accent-soft,#eef2ff);">
+          <p class="cl-info-card__header-label" style="color:var(--hcp-accent,#4f46e5);">
+            <iconify-icon icon="lucide:zap" width="14" style="margin-right:4px;"></iconify-icon>
+            개설자 — 참가자 관리
+          </p>
+        </div>
+        <% if active_participations.any? %>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);text-align:left;">
+                <th style="padding:8px 16px;font-weight:600;color:var(--hcp-cool-gray);">이름</th>
+                <th style="padding:8px 16px;font-weight:600;color:var(--hcp-cool-gray);">상태</th>
+                <th style="padding:8px 16px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% active_participations.each do |p| %>
+                <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+                  <td style="padding:10px 16px;font-weight:500;"><%= p.user.display_name %></td>
+                  <td style="padding:10px 16px;">
+                    <% if p.confirmed? %>
+                      <span class="cl-badge cl-badge--green">확정</span>
+                    <% else %>
+                      <span class="cl-badge cl-badge--neutral">대기</span>
+                    <% end %>
+                  </td>
+                  <td style="padding:10px 16px;text-align:right;">
+                    <%= button_to flash_meetup_flash_meetup_participation_path(@flash_meetup, p),
+                          method: :delete,
+                          form: { data: { turbo_confirm: "#{p.user.display_name}님의 참가를 취소하시겠습니까?" } },
+                          class: "btn btn--secondary btn--sm",
+                          style: "padding:4px 10px;font-size:12px;" do %>
+                      <iconify-icon icon="lucide:x" width="11"></iconify-icon>
+                      취소 대행
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p style="padding:16px;color:var(--hcp-cool-gray);font-size:13px;">신청자가 없습니다.</p>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>

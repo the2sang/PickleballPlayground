@@ -1,0 +1,18 @@
+<% content_for :title, "번개모임 수정" %>
+
+<div class="cl-page">
+  <div class="cl-content cl-content--form">
+    <div style="margin-bottom:32px;">
+      <p class="cl-hero__eyebrow">
+        <%= link_to "번개모임", flash_meetups_path %>
+        <span class="sep">/</span>
+        <%= link_to @flash_meetup.venue_name, flash_meetup_path(@flash_meetup) %>
+        <span class="sep">/</span> 수정
+      </p>
+      <h1 class="cl-hero__title">번개모임 수정</h1>
+    </div>
+    <div class="cl-form-card">
+      <%= render "form", flash_meetup: @flash_meetup %>
+    </div>
+  </div>
+</div>
