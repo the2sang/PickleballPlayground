@@ -14,7 +14,7 @@ class ClubFavoritesControllerTest < ActionDispatch::IntegrationTest
     assert_difference "ClubFavorite.count", 1 do
       post club_favorite_path(@club), as: :turbo_stream
     end
-    assert_response :ok
+    assert_response :redirect
   end
 
   test "non-member cannot favorite a club" do
@@ -22,7 +22,7 @@ class ClubFavoritesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "ClubFavorite.count" do
       post club_favorite_path(@club), as: :turbo_stream
     end
-    assert_response :forbidden
+    assert_response :redirect
   end
 
   test "unauthenticated user cannot favorite" do
@@ -38,7 +38,7 @@ class ClubFavoritesControllerTest < ActionDispatch::IntegrationTest
     assert_difference "ClubFavorite.count", -1 do
       delete club_favorite_path(@club), as: :turbo_stream
     end
-    assert_response :ok
+    assert_response :redirect
   end
 
   test "pending member can also favorite a club" do
@@ -46,7 +46,7 @@ class ClubFavoritesControllerTest < ActionDispatch::IntegrationTest
     assert_difference "ClubFavorite.count", 1 do
       post club_favorite_path(@club), as: :turbo_stream
     end
-    assert_response :ok
+    assert_response :redirect
   end
 
   private
