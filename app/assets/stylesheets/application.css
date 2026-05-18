@@ -5218,6 +5218,24 @@ lexxy-editor.lexxy-editor-field {
 }
 .cl-form__actions .btn { flex: 1; }
 
+/* ── DUPR Lookup ──────────────────────────────────────────── */
+.dupr-lookup__result--success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-weight: 600;
+}
+.dupr-lookup__result--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+.dupr-lookup__result--loading {
+  background: #f8fafc;
+  border: 1px solid var(--hcp-border-light);
+  color: var(--hcp-cool-gray);
+}
+
 /* ── Empty State ────────────────────────────────────────────── */
 .cl-empty {
   display: flex;

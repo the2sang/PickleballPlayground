@@ -3,14 +3,11 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :identities, dependent: :destroy
   has_many :posts, dependent: :destroy
-  has_many :tech_infos, dependent: :destroy
   has_many :comments, dependent: :destroy
-  has_many :tech_info_reactions, dependent: :destroy
   has_many :memos, dependent: :destroy
   has_many :work_plans,       dependent: :destroy
   has_many :work_journals,    dependent: :destroy
   has_many :manpower_records, dependent: :destroy
-  has_many :life_infos,    dependent: :destroy
   has_one  :pomodoro_setting, dependent: :destroy
   has_many :group_memberships, dependent: :destroy
   has_many :groups, through: :group_memberships
