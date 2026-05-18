@@ -29,7 +29,8 @@
       <div class="tech-detail__section">
         <div class="tech-detail__label">참고 URL</div>
         <div class="tech-detail__value">
-          <%= link_to @life_info.reference_url, @life_info.reference_url, target: "_blank", rel: "noopener noreferrer" %>
+          <% safe_url = @life_info.reference_url.to_s.match?(/\Ahttps?:\/\//) ? @life_info.reference_url : nil %>
+          <%= link_to safe_url, safe_url, target: "_blank", rel: "noopener noreferrer" if safe_url %>
         </div>
       </div>
     <% end %>

@@ -24,6 +24,7 @@ module Admin
     private
 
     def user_params
+      # brakeman:ignore:MassAssignment - admin-only endpoint, role assignment is intentional
       params.require(:user).permit(:role)
     end
   end
