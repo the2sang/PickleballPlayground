@@ -199,4 +199,24 @@ end
 
 puts "   #{WorkJournal.count} work journals"
 
+puts "== Site Admin =="
+
+site_admin_email    = ENV["SITE_ADMIN_EMAIL"]
+site_admin_password = ENV["SITE_ADMIN_PASSWORD"]
+site_admin_nickname = ENV.fetch("SITE_ADMIN_NICKNAME", "관리자")
+
+if site_admin_email.present? && site_admin_password.present?
+  admin = User.find_or_initialize_by(email_address: site_admin_email)
+  admin.nickname    = site_admin_nickname unless admin.persisted?
+  admin.password    = site_admin_password unless admin.persisted?
+  admin.role        = :admin
+  admin.sport_level ||= :beginner
+  admin.age_group   ||= :twenties
+  admin.gender      ||= :unspecified
+  admin.save!
+  puts "   사이트 관리자 등록: #{site_admin_email}"
+else
+  puts "   SITE_ADMIN_EMAIL / SITE_ADMIN_PASSWORD 환경변수 없음 — 건너뜀"
+end
+
 puts "== Done =="
