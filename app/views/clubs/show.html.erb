@@ -61,7 +61,12 @@
                 <iconify-icon icon="lucide:dumbbell" width="14"></iconify-icon>
               </div>
               <div style="min-width:0;">
-                <p class="cl-list-item__title"><%= gs.title %></p>
+                <p class="cl-list-item__title">
+                  <%= gs.title %>
+                  <% if gs.scheduled_date.to_date == Date.today %>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
+                  <% end %>
+                </p>
                 <p class="cl-list-item__meta">
                   <%= format_session_date(gs.scheduled_date) %> &middot;
                   <%= gs.start_time.strftime("%H:%M") %>~<%= gs.end_time.strftime("%H:%M") %> &middot;

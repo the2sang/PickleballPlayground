@@ -87,6 +87,8 @@ html {
   font-size: 12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -94,7 +96,8 @@ body {
   background-color: #ffffff;
   color: var(--hcp-black);
   line-height: 1.63;
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -515,6 +518,8 @@ body {
 /* ── Site Content ──────────────────────────────────────── */
 .site-content {
   flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* ── Page Layout ───────────────────────────────────────── */
@@ -980,6 +985,8 @@ a:hover {
 body.auth-body {
   background-color: #f5f5f5;
   min-height: 100vh;
+  height: auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 }
@@ -4648,12 +4655,18 @@ lexxy-editor.lexxy-editor-field {
 
 /* ── Page Shell ────────────────────────────────────────────── */
 .cl-page {
-  min-height: calc(100vh - var(--nav-height));
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
   background-color: #fafafa;
 }
+.cl-page::-webkit-scrollbar { display: none; }
 
 /* ── Hero Section ──────────────────────────────────────────── */
 .cl-hero {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background-color: #ffffff;
   border-bottom: 1px solid var(--hcp-border-light);
 }

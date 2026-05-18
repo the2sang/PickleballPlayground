@@ -27,7 +27,7 @@
   <div class="cl-hero">
     <div class="cl-hero__inner">
       <p class="cl-hero__eyebrow">
-        <%= link_to "번개모임", flash_meetups_path %>
+        <%= link_to "운동모임", flash_meetups_path %>
         <span class="sep">/</span>
       </p>
       <h1 class="cl-hero__title"><%= @flash_meetup.venue_name %></h1>
@@ -95,7 +95,7 @@
             수정
           <% end %>
           <%= button_to flash_meetup_path(@flash_meetup), method: :delete,
-                form: { data: { turbo_confirm: "번개모임을 삭제하시겠습니까? 참가 신청자 정보도 모두 삭제됩니다." } },
+                form: { data: { turbo_confirm: "운동모임을 삭제하시겠습니까? 참가 신청자 정보도 모두 삭제됩니다." } },
                 class: "btn btn--secondary btn--sm" do %>
             <iconify-icon icon="lucide:trash-2" width="13"></iconify-icon>
             삭제
@@ -112,11 +112,25 @@
 
       <div class="cl-info-row">
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:calendar" width="14"></iconify-icon></span>
-        <span class="cl-info-row__label">일시</span>
+        <span class="cl-info-row__label">시작</span>
         <span class="cl-info-row__value">
-          <%= @flash_meetup.scheduled_at.strftime("%Y년 %m월 %d일(%a) %H:%M") %>
+          <%= format_session_date(@flash_meetup.scheduled_at, style: :long) + @flash_meetup.scheduled_at.strftime(" %H:%M") %>
         </span>
       </div>
+      <% if @flash_meetup.ends_at.present? %>
+      <%
+        duration_minutes = ((@flash_meetup.ends_at - @flash_meetup.scheduled_at) / 60).to_i
+        duration_text = duration_minutes >= 60 ? "#{duration_minutes / 60}시간#{duration_minutes % 60 > 0 ? " #{duration_minutes % 60}분" : ""}" : "#{duration_minutes}분"
+      %>
+      <div class="cl-info-row">
+        <span class="cl-info-row__icon"><iconify-icon icon="lucide:clock" width="14"></iconify-icon></span>
+        <span class="cl-info-row__label">종료</span>
+        <span class="cl-info-row__value">
+          <%= @flash_meetup.ends_at.strftime("%H:%M") %>
+          <span class="cl-info-row__muted">&nbsp;(총 <%= duration_text %>)</span>
+        </span>
+      </div>
+      <% end %>
 
       <div class="cl-info-row">
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:map-pin" width="14"></iconify-icon></span>

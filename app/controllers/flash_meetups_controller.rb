@@ -56,7 +56,7 @@ class FlashMeetupsController < ApplicationController
 
   def flash_meetup_params
     p = params.require(:flash_meetup).permit(
-      :venue_name, :address, :scheduled_at, :max_participants,
+      :venue_name, :address, :scheduled_at, :ends_at, :max_participants,
       :gender_filter, :level_filter, :kakao_open_chat_url,
       allowed_age_groups: []
     )

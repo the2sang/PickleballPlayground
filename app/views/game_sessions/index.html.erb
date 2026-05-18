@@ -1,10 +1,10 @@
-<% content_for :title, "운동 세션" %>
+<% content_for :title, "클럽 운동 세션" %>
 
 <div class="cl-page">
   <div class="cl-hero">
     <div class="cl-hero__inner">
       <p class="cl-hero__eyebrow">Sessions</p>
-      <h1 class="cl-hero__title">운동 세션</h1>
+      <h1 class="cl-hero__title">클럽 운동 세션</h1>
       <p class="cl-hero__subtitle">참가 가능한 모든 운동 세션을 확인하세요.</p>
     </div>
   </div>
@@ -26,7 +26,12 @@
                 <iconify-icon icon="lucide:dumbbell" width="15"></iconify-icon>
               </div>
               <div style="min-width:0;">
-                <p class="cl-list-item__club"><%= gs.club.name %></p>
+                <p class="cl-list-item__club">
+                  <%= gs.club.name %>
+                  <% if gs.scheduled_date.to_date == Date.today %>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
+                  <% end %>
+                </p>
                 <p class="cl-list-item__title"><%= gs.title %></p>
                 <p class="cl-list-item__meta">
                   <%= format_session_date(gs.scheduled_date) %> &middot;

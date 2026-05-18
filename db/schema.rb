@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_17_065602) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_17_072530) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -74,6 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_065602) do
     t.string "address"
     t.string "allowed_age_groups", default: "", null: false
     t.datetime "created_at", null: false
+    t.datetime "ends_at"
     t.integer "gender_filter", default: 0, null: false
     t.string "kakao_open_chat_url"
     t.integer "level_filter", default: 0, null: false

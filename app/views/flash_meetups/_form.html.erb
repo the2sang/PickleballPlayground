@@ -23,9 +23,15 @@
     </div>
   </div>
 
-  <div class="cl-form__field">
-    <%= f.label :scheduled_at, "모임 일시", class: "cl-form__label" %>
-    <%= f.datetime_local_field :scheduled_at, class: "cl-form__input" %>
+  <div class="cl-form__grid">
+    <div class="cl-form__field">
+      <%= f.label :scheduled_at, "시작 시간", class: "cl-form__label" %>
+      <%= f.datetime_local_field :scheduled_at, class: "cl-form__input" %>
+    </div>
+    <div class="cl-form__field">
+      <%= f.label :ends_at, "종료 시간", class: "cl-form__label" %>
+      <%= f.datetime_local_field :ends_at, class: "cl-form__input" %>
+    </div>
   </div>
 
   <div class="cl-form__field">

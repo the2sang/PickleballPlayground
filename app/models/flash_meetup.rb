@@ -11,6 +11,8 @@ class FlashMeetup < ApplicationRecord
 
   validates :venue_name, presence: true
   validates :scheduled_at, presence: true
+  validates :ends_at, presence: true
+  validate :ends_at_after_scheduled_at
   validates :gender_filter, presence: true
   validates :level_filter, presence: true
   validates :max_participants, numericality: { greater_than: 0, allow_nil: true }
@@ -42,6 +44,11 @@ class FlashMeetup < ApplicationRecord
   end
 
   private
+
+  def ends_at_after_scheduled_at
+    return if ends_at.blank? || scheduled_at.blank?
+    errors.add(:ends_at, "은 시작 시간 이후여야 합니다") if ends_at <= scheduled_at
+  end
 
   def gender_eligible?(user)
     return true if gender_all_genders?
