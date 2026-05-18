@@ -7,11 +7,11 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "sport_level enum values are defined" do
-    assert_equal %w[beginner intermediate advanced pro], User.sport_levels.keys
+    assert_equal %w[beginner beginner_intermediate intermediate intermediate_advanced advanced], User.sport_levels.keys
   end
 
   test "age_group enum values are defined" do
-    assert_equal %w[twenties thirties forties fifties sixties_plus], User.age_groups.keys
+    assert_equal %w[twenties thirties forties fifties sixties_plus teens], User.age_groups.keys
   end
 
   test "gender enum values are defined" do

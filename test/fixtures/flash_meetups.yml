@@ -1,11 +1,20 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  user: one
+  venue_name: "올림픽공원 코트 A"
+  address: "서울시 송파구 올림픽로 424"
+  scheduled_at: "2099-12-31 10:00:00"
+  max_participants: 10
+  gender_filter: all_genders
+  level_filter: all_levels
+  allowed_age_groups: "[]"
+
+two:
+  user: two
+  venue_name: "강남 실내코트"
+  scheduled_at: "2099-12-31 14:00:00"
+  max_participants: 8
+  gender_filter: all_genders
+  level_filter: all_levels
+  allowed_age_groups: "[]"
