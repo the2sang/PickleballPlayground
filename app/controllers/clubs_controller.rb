@@ -38,7 +38,13 @@ class ClubsController < ApplicationController
 
   def show
     authorize @club
-    @game_sessions = policy_scope(GameSession).where(club: @club).order(scheduled_date: :desc)
+    @query = params[:q].presence
+    sessions = policy_scope(GameSession)
+      .where(club: @club)
+      .where("scheduled_date >= ?", Date.today)
+      .order(scheduled_date: :asc)
+    sessions = sessions.where("title LIKE ?", "%#{@query}%") if @query
+    @game_sessions = sessions
   end
 
   def new
