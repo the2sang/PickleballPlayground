@@ -51,7 +51,9 @@
               <div style="min-width:0;">
                 <p class="cl-list-item__club">
                   <%= gs.club.name %>
-                  <% if gs.scheduled_date.to_date == Date.today %>
+                  <% if gs.session_ended? %>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;background:#e5e7eb;color:#6b7280;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">종료</span>
+                  <% elsif gs.scheduled_date.to_date == Date.today %>
                     <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
                   <% end %>
                 </p>

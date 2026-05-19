@@ -9,7 +9,6 @@ class GameSessionsController < ApplicationController
     sessions = policy_scope(GameSession)
       .joins(:club)
       .includes(:club)
-      .where("scheduled_date >= ?", Date.today)
       .order(scheduled_date: :asc)
     sessions = sessions.where("clubs.name LIKE ?", "%#{@query}%") if @query
     @game_sessions = sessions
