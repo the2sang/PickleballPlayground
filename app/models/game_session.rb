@@ -1,6 +1,7 @@
 class GameSession < ApplicationRecord
   belongs_to :club
   has_many :participations, dependent: :destroy
+  has_many :comments, as: :commentable, dependent: :destroy
   belongs_to :template, class_name: "GameSession", optional: true
   has_many :instances, class_name: "GameSession", foreign_key: :template_id, dependent: :nullify
 

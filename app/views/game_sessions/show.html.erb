@@ -308,5 +308,8 @@
       </div>
     <% end %>
 
+    <%= render "comments/section",
+          commentable: @game_session,
+          comments_path: game_session_comments_path(@game_session) %>
   </div>
 </div>

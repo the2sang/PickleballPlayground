@@ -296,5 +296,8 @@
       </div>
     <% end %>
 
+    <%= render "comments/section",
+          commentable: @flash_meetup,
+          comments_path: flash_meetup_comments_path(@flash_meetup) %>
   </div>
 </div>

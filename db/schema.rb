@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_083511) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_19_054401) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -51,9 +51,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_083511) do
 
   create_table "comments", force: :cascade do |t|
     t.text "body", null: false
+    t.integer "commentable_id"
+    t.string "commentable_type"
     t.datetime "created_at", null: false
+    t.integer "parent_id"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
+    t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 

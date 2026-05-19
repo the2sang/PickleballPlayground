@@ -1,0 +1,85 @@
+<%# locals: (commentable:, comments_path:) %>
+<% root_comments = commentable.comments.includes(:user, replies: :user).roots.oldest %>
+
+<div class="comment-section" style="margin-top:32px;">
+  <h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">
+    댓글 <span style="color:var(--hcp-cool-gray);font-weight:400;"><%= root_comments.sum { |c| 1 + c.replies.size } %></span>
+  </h3>
+
+  <% root_comments.each do |comment| %>
+    <div class="comment-item" style="border-top:1px solid var(--hcp-border,#e5e7eb);padding:14px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div style="flex:1;">
+          <span style="font-size:13px;font-weight:600;"><%= comment.user.display_name %></span>
+          <span style="font-size:12px;color:var(--hcp-cool-gray);margin-left:8px;"><%= comment.created_at.strftime("%m/%d %H:%M") %></span>
+          <p style="margin:6px 0 0;font-size:14px;white-space:pre-wrap;word-break:break-word;"><%= comment.body %></p>
+        </div>
+        <% if authenticated? && Current.user == comment.user %>
+          <%= button_to [commentable, comment], method: :delete,
+                form: { data: { turbo_confirm: "댓글을 삭제하시겠습니까?" } },
+                style: "background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--hcp-cool-gray);font-size:12px;" do %>
+            <iconify-icon icon="lucide:trash-2" width="13"></iconify-icon>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# 답변 목록 %>
+      <% comment.replies.each do |reply| %>
+        <div style="margin-top:10px;margin-left:20px;padding-left:12px;border-left:2px solid var(--hcp-border,#e5e7eb);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div style="flex:1;">
+              <iconify-icon icon="lucide:corner-down-right" width="12" style="color:var(--hcp-cool-gray);margin-right:4px;"></iconify-icon>
+              <span style="font-size:13px;font-weight:600;"><%= reply.user.display_name %></span>
+              <span style="font-size:12px;color:var(--hcp-cool-gray);margin-left:8px;"><%= reply.created_at.strftime("%m/%d %H:%M") %></span>
+              <p style="margin:6px 0 0;font-size:14px;white-space:pre-wrap;word-break:break-word;"><%= reply.body %></p>
+            </div>
+            <% if authenticated? && Current.user == reply.user %>
+              <%= button_to [commentable, reply], method: :delete,
+                    form: { data: { turbo_confirm: "답변을 삭제하시겠습니까?" } },
+                    style: "background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--hcp-cool-gray);font-size:12px;" do %>
+                <iconify-icon icon="lucide:trash-2" width="13"></iconify-icon>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <%# 답변 폼 (로그인 시) %>
+      <% if authenticated? %>
+        <div data-controller="toggle" style="margin-top:8px;margin-left:20px;">
+          <button data-action="click->toggle#toggle" data-toggle-target="trigger"
+                  style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--hcp-cool-gray);padding:0;">
+            <iconify-icon icon="lucide:message-square" width="12" style="margin-right:3px;"></iconify-icon>답변
+          </button>
+          <div data-toggle-target="content" hidden style="margin-top:8px;">
+            <%= form_with url: comments_path, method: :post do |f| %>
+              <%= f.hidden_field :parent_id, value: comment.id %>
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <%= f.text_area :body, rows: 2, placeholder: "답변을 입력하세요...",
+                      style: "flex:1;padding:8px 10px;border:1px solid var(--hcp-border,#e5e7eb);border-radius:8px;font-size:13px;resize:vertical;" %>
+                <%= f.submit "등록", style: "padding:8px 14px;background:var(--hcp-black,#111);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if root_comments.empty? %>
+    <p style="color:var(--hcp-cool-gray);font-size:14px;padding:16px 0;">첫 번째 댓글을 남겨보세요.</p>
+  <% end %>
+
+  <%# 댓글 작성 폼 (로그인 시) %>
+  <% if authenticated? %>
+    <div style="margin-top:20px;border-top:1px solid var(--hcp-border,#e5e7eb);padding-top:16px;">
+      <%= form_with url: comments_path, method: :post do |f| %>
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <%= f.text_area :body, rows: 3, placeholder: "댓글을 입력하세요...",
+                style: "flex:1;padding:10px 12px;border:1px solid var(--hcp-border,#e5e7eb);border-radius:8px;font-size:14px;resize:vertical;" %>
+          <%= f.submit "등록", style: "padding:10px 16px;background:var(--hcp-black,#111);color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;white-space:nowrap;" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
