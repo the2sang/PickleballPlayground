@@ -1,10 +1,6 @@
-const CACHE_NAME = "mytechinfo-v1";
-const PRECACHE_URLS = ["/", "/session/new"];
+const CACHE_NAME = "pb-app-v1";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
-  );
   self.skipWaiting();
 });
 

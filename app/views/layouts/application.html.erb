@@ -36,7 +36,7 @@
     <%= javascript_include_tag "faw_toast.min", "data-turbo-track": "reload" %>
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+        navigator.serviceWorker.register("/service-worker", { scope: "/" });
       }
       document.addEventListener("turbo:before-visit", function() {
         if (typeof Turbo !== "undefined") { Turbo.cache.clear(); }
