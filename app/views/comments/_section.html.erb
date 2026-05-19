@@ -52,7 +52,7 @@
             <iconify-icon icon="lucide:message-square" width="12" style="margin-right:3px;"></iconify-icon>답변
           </button>
           <div data-toggle-target="content" hidden style="margin-top:8px;">
-            <%= form_with url: comments_path, method: :post do |f| %>
+            <%= form_with url: comments_path, method: :post, scope: :comment do |f| %>
               <%= f.hidden_field :parent_id, value: comment.id %>
               <div style="display:flex;gap:8px;align-items:flex-start;">
                 <%= f.text_area :body, rows: 2, placeholder: "답변을 입력하세요...",
@@ -73,7 +73,7 @@
   <%# 댓글 작성 폼 (로그인 시) %>
   <% if authenticated? %>
     <div style="margin-top:20px;border-top:1px solid var(--hcp-border,#e5e7eb);padding-top:16px;">
-      <%= form_with url: comments_path, method: :post do |f| %>
+      <%= form_with url: comments_path, method: :post, scope: :comment do |f| %>
         <div style="display:flex;gap:8px;align-items:flex-start;">
           <%= f.text_area :body, rows: 3, placeholder: "댓글을 입력하세요...",
                 style: "flex:1;padding:10px 12px;border:1px solid var(--hcp-border,#e5e7eb);border-radius:8px;font-size:14px;resize:vertical;" %>
