@@ -6,16 +6,39 @@
       <p class="cl-hero__eyebrow">Sessions</p>
       <h1 class="cl-hero__title">클럽 운동 세션</h1>
       <p class="cl-hero__subtitle">참가 가능한 모든 운동 세션을 확인하세요.</p>
+
+      <%= form_with url: game_sessions_path, method: :get, class: "cl-search-bar" do |f| %>
+        <div class="cl-search-bar__inner">
+          <iconify-icon icon="lucide:search" class="cl-search-bar__icon"></iconify-icon>
+          <%= f.text_field :q,
+                value: @query,
+                class: "cl-search-bar__input",
+                placeholder: "클럽 이름으로 검색",
+                autocomplete: "off",
+                autofocus: @query.present? %>
+          <% if @query.present? %>
+            <%= link_to game_sessions_path, class: "cl-search-bar__clear", aria: { label: "검색 초기화" } do %>
+              <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 
   <div class="cl-content">
+    <% if @query.present? %>
+      <p class="cl-search-result-info">
+        <strong>"<%= @query %>"</strong> 검색 결과 <%= @game_sessions.size %>건
+      </p>
+    <% end %>
+
     <% if @game_sessions.empty? %>
       <div class="cl-empty">
         <div class="cl-empty__icon">
           <iconify-icon icon="lucide:calendar" width="20"></iconify-icon>
         </div>
-        <p class="cl-empty__text">등록된 운동 세션이 없습니다.</p>
+        <p class="cl-empty__text"><%= @query.present? ? "\"#{@query}\" 검색 결과가 없습니다." : "등록된 운동 세션이 없습니다." %></p>
       </div>
     <% else %>
       <div class="cl-list">
