@@ -7,11 +7,20 @@ class PasswordsController < ApplicationController
   end
 
   def create
-    if user = User.find_by(email_address: params[:email_address])
-      PasswordsMailer.reset(user).deliver_now
+    user = User.find_by(email_address: params[:email_address])
+
+    if user.nil?
+      redirect_to new_password_path(email_address: params[:email_address]),
+                  alert: "가입되지 않은 이메일 주소입니다. 다시 확인해 주세요."
+      return
     end
 
-    redirect_to new_session_path, notice: "입력하신 이메일 주소로 비밀번호 재설정 안내 메일을 발송했습니다."
+    PasswordsMailer.reset(user).deliver_now
+    redirect_to new_session_path,
+                notice: "#{user.email_address} 주소로 비밀번호 재설정 메일을 발송했습니다. 이메일을 확인해 주세요."
+  rescue => e
+    redirect_to new_password_path(email_address: params[:email_address]),
+                alert: "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
   end
 
   def edit
