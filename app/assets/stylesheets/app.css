@@ -5056,11 +5056,11 @@ lexxy-editor.lexxy-editor-field {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 52px;
-  min-height: 52px;
+  min-width: 26px;
+  min-height: 26px;
   background-color: #f97316;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   border-radius: 50%;
   line-height: 1.3;
