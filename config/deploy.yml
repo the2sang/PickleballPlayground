@@ -20,6 +20,9 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    - SMTP_USER
+    - SMTP_PASS
+    - EMAIL_FROM
   clear:
     SOLID_QUEUE_IN_PUMA: true
     RAILS_LOG_TO_STDOUT: true
