@@ -25,6 +25,6 @@ class ClubFavoriteTest < ActiveSupport::TestCase
     ClubFavorite.create!(user: @user, club: @club)
     dup = ClubFavorite.new(user: @user, club: @club)
     assert_not dup.valid?
-    assert_includes dup.errors[:user_id], "이미 즐겨찾기한 동호회입니다."
+    assert_includes dup.errors[:user_id], "이미 즐겨찾기한 클럽입니다."
   end
 end

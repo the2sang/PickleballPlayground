@@ -6,7 +6,7 @@ module WorkPlans
   class HwpxGeneratorService
     TEMPLATE_PATH = Rails.root.join("doc", "작업계획서_양식.hwpx")
     SCRIPT_PATH   = Rails.root.join("lib", "hwpx_fill.py")
-    PYTHON_CMD    = %w[python3.11 python3.12 python3.14 python3].find { |cmd| system("which #{cmd} > /dev/null 2>&1") }
+    PYTHON_CMD    = %w[python3.11 python3.12 python3.14 python3].find { |cmd| system("which", cmd, out: File::NULL, err: File::NULL) }
 
     def self.call(work_plan)
       new(work_plan).call

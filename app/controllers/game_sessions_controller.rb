@@ -5,7 +5,13 @@ class GameSessionsController < ApplicationController
   before_action :set_game_session, only: %i[show edit update destroy]
 
   def index
-    @game_sessions = policy_scope(GameSession).where("scheduled_date >= ?", Date.today).order(scheduled_date: :asc)
+    @query = params[:q].presence
+    sessions = policy_scope(GameSession)
+      .joins(:club)
+      .includes(:club)
+      .order(scheduled_date: :asc)
+    sessions = sessions.where("clubs.name LIKE ?", "%#{@query}%") if @query
+    @game_sessions = sessions
   end
 
   def show

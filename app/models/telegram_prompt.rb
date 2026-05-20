@@ -16,6 +16,8 @@ class TelegramPrompt < ApplicationRecord
   scope :pending, -> { where(status: PENDING) }
   scope :recent, -> { order(created_at: :desc) }
 
+  def pending? = status == PENDING
+
   def mark_processing!
     update!(status: PROCESSING)
   end

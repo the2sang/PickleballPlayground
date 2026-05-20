@@ -3,7 +3,7 @@
   <head>
     <%= toast_css_variables %>
 
-    <title><%= [content_for(:title), "Pickleball Playground"].compact_blank.join(" — ") %></title>
+    <title>피클볼</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="format-detection" content="telephone=no,email=no,address=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,8 +21,11 @@
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js" defer></script>
 
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
     <link rel="shortcut icon" href="/icon.svg">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="manifest" href="/manifest">
+    <meta name="theme-color" content="#7b42bc">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="피클볼">
 
@@ -33,7 +36,7 @@
     <%= javascript_include_tag "faw_toast.min", "data-turbo-track": "reload" %>
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+        navigator.serviceWorker.register("/service-worker", { scope: "/" });
       }
       document.addEventListener("turbo:before-visit", function() {
         if (typeof Turbo !== "undefined") { Turbo.cache.clear(); }
@@ -251,7 +254,7 @@
 
     <footer class="footer">
       <div class="footer__inner">
-        <span class="footer__copy">&copy; <%= Time.current.year %> Pickleball Playground</span>
+        <span class="footer__copy">&copy; <%= Time.current.year %> 피클볼 클럽</span>
         <button class="footer__install-btn"
                 data-pwa-install-target="footerBtn"
                 data-action="click->pwa-install#install"

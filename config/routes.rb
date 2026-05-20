@@ -7,7 +7,9 @@ Rails.application.routes.draw do
   get "/auth/failure",                to: "omniauth_callbacks#failure"
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :registration, only: %i[ new create ]
-  resource :profile, only: %i[ edit update ]
+  resource :profile, only: %i[ edit update ] do
+    collection { get :dupr_lookup }
+  end
   resource :account, only: %i[ edit update ]
 
   resource :focus, only: %i[show] do
@@ -21,16 +23,7 @@ Rails.application.routes.draw do
   resources :manpower_records, only: %i[index create update destroy]
   resources :memos
   resources :posts
-  resources :life_infos
   resources :stock_infos, only: %i[index show destroy]
-  resources :tech_infos do
-    resources :comments, only: %i[ create destroy ]
-    resource :reaction, only: %i[ create destroy ], controller: "tech_info_reactions"
-    collection do
-      get  :export
-      post :import
-    end
-  end
 
   resources :clubs do
     resource :favorite, only: %i[create destroy], controller: "club_favorites"
@@ -40,9 +33,11 @@ Rails.application.routes.draw do
   end
   resources :game_sessions, only: %i[index show new create edit update destroy] do
     resources :participations, only: %i[new create destroy], shallow: false
+    resources :comments, only: %i[create destroy], shallow: false
   end
   resources :flash_meetups, only: %i[index show new create edit update destroy] do
     resources :flash_meetup_participations, only: %i[create destroy], shallow: false
+    resources :comments, only: %i[create destroy], shallow: false
   end
   namespace :my do
     resources :participations, only: %i[index destroy]

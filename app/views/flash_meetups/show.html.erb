@@ -181,9 +181,11 @@
           <span class="cl-info-row__icon"><iconify-icon icon="lucide:message-circle" width="14"></iconify-icon></span>
           <span class="cl-info-row__label">오픈카톡</span>
           <span class="cl-info-row__value">
-            <%= link_to "카카오 오픈채팅 참여", @flash_meetup.kakao_open_chat_url,
+            <% raw_url = @flash_meetup.kakao_open_chat_url.to_s
+               safe_url = (raw_url.start_with?("https://") ? raw_url : nil) %>
+            <%= link_to "카카오 오픈채팅 참여", safe_url,
                   target: "_blank", rel: "noopener noreferrer",
-                  class: "btn btn--secondary btn--sm" %>
+                  class: "btn btn--secondary btn--sm" if safe_url %>
           </span>
         </div>
       <% end %>
@@ -294,5 +296,8 @@
       </div>
     <% end %>
 
+    <%= render "comments/section",
+          commentable: @flash_meetup,
+          comments_path: flash_meetup_comments_path(@flash_meetup) %>
   </div>
 </div>

@@ -17,10 +17,10 @@ class FocusControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "unauthenticated user is redirected" do
+  test "unauthenticated user can still view focus page" do
     delete session_url
     get focus_url
-    assert_redirected_to new_session_url
+    assert_response :success
   end
 end
 
@@ -50,9 +50,9 @@ class Focus::SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "unauthenticated user is redirected" do
+  test "unauthenticated user can view settings page" do
     delete session_url
     get focus_settings_url
-    assert_redirected_to new_session_url
+    assert_response :success
   end
 end

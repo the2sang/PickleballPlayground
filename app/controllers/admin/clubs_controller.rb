@@ -2,6 +2,7 @@ module Admin
   class ClubsController < ApplicationController
     def index
       authorize [ :admin, Club.new ]
+      @pending_clubs   = Club.pending.includes(:owner).order(:created_at)
       @approved_clubs  = Club.approved.includes(:owner).order(:name)
       @suspended_clubs = Club.suspended.includes(:owner).order(:name)
     end

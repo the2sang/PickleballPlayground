@@ -18,9 +18,12 @@ class ClubsController < ApplicationController
                                          .pluck(:club_id).to_set
       @favorited_club_ids = fav_ids.to_set
       ordered = if fav_ids.any?
-        clubs.order(
-          Arel.sql("CASE WHEN id IN (#{fav_ids.join(',')}) THEN 0 ELSE 1 END, name ASC")
-        )
+        int_ids = fav_ids.map(&:to_i)
+        fav_case = Arel::Nodes::Case.new
+                     .when(Club.arel_table[:id].in(int_ids))
+                     .then(Arel::Nodes::SqlLiteral.new("0"))
+                     .else(Arel::Nodes::SqlLiteral.new("1"))
+        clubs.order(fav_case, :name)
       else
         clubs.order(:name)
       end

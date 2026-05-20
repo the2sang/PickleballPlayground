@@ -18,6 +18,6 @@ class AdminHeaderIconTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:admin))
     get root_path
     assert_response :success
-    assert_select "a.nav__icon-btn--admin[href=?]", admin_root_path
+    assert_select "a.nav__dropdown-item[href=?]", admin_root_path
   end
 end

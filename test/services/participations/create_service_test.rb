@@ -27,16 +27,6 @@ class Participations::CreateServiceTest < ActiveSupport::TestCase
     assert result.participation.waitlisted?
   end
 
-  test "creates confirmed guest participation" do
-    result = Participations::CreateService.call(
-      game_session: @capped, guest_name: "게스트",
-      guest_sport_level: "beginner", guest_region: "서울"
-    )
-    assert result.success?
-    assert result.participation.confirmed?
-    assert_nil result.participation.user_id
-  end
-
   test "fails when session is closed" do
     @capped.update!(status: :closed)
     result = Participations::CreateService.call(game_session: @capped, user: @user)

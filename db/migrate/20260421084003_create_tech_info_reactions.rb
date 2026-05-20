@@ -8,6 +8,6 @@ class CreateTechInfoReactions < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :tech_info_reactions, [:user_id, :tech_info_id], unique: true
+    add_index :tech_info_reactions, [ :user_id, :tech_info_id ], unique: true
   end
 end

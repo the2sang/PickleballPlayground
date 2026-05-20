@@ -18,7 +18,19 @@
     %>
     <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        <% if my_participation %>
+        <% if @game_session.session_ended? %>
+          <% if my_participation %>
+            <span class="btn btn--secondary btn--sm" style="opacity:0.5;cursor:not-allowed;">
+              <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+              참가 완료
+            </span>
+          <% else %>
+            <span class="btn btn--primary btn--sm" style="opacity:0.4;cursor:not-allowed;">
+              <iconify-icon icon="lucide:clock" width="13"></iconify-icon>
+              세션 종료
+            </span>
+          <% end %>
+        <% elsif my_participation %>
           <% if policy(my_participation).destroy? %>
             <%= button_to game_session_participation_path(@game_session, my_participation),
                   method: :delete,
@@ -41,7 +53,7 @@
           <% end %>
         <% end %>
       </div>
-      <% if @game_session.open? && !my_participation %>
+      <% if !@game_session.session_ended? && @game_session.open? && !my_participation %>
         <%= link_to new_club_guest_application_path(@game_session.club, game_session_id: @game_session.id), class: "btn btn--secondary btn--sm" do %>
           <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
           게스트 참가
@@ -308,5 +320,8 @@
       </div>
     <% end %>
 
+    <%= render "comments/section",
+          commentable: @game_session,
+          comments_path: game_session_comments_path(@game_session) %>
   </div>
 </div>

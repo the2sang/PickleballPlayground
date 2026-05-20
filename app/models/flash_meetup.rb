@@ -1,6 +1,7 @@
 class FlashMeetup < ApplicationRecord
   belongs_to :user
   has_many :flash_meetup_participations, dependent: :destroy
+  has_many :comments, as: :commentable, dependent: :destroy
   has_many :participants, through: :flash_meetup_participations, source: :user
 
   enum :gender_filter, { all_genders: 0, male_only: 1, female_only: 2 }, prefix: :gender
