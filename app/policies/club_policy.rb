@@ -15,7 +15,7 @@ class ClubPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      user&.admin? ? scope.all : scope.approved
+      scope.approved
     end
   end
 end
