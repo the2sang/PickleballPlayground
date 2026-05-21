@@ -17,9 +17,35 @@
   <div class="cl-content">
     <% if authenticated? %>
       <div style="text-align:right;margin-bottom:16px;">
-        <%= link_to new_flash_meetup_path, class: "btn btn--primary btn--sm" do %>
-          <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
-          운동모임 개설
+        <% if Current.user.profile_complete? %>
+          <%= link_to new_flash_meetup_path, class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+            운동모임 개설
+          <% end %>
+        <% else %>
+          <div data-controller="modal">
+            <button class="btn btn--primary btn--sm" data-action="click->modal#open">
+              <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+              운동모임 개설
+            </button>
+
+            <dialog class="profile-required-dialog" data-modal-target="dialog" data-action="click->modal#backdropClose">
+              <div class="profile-required-dialog__box">
+                <button class="profile-required-dialog__close" data-action="click->modal#close" aria-label="닫기">&times;</button>
+                <div class="profile-required-dialog__icon">
+                  <iconify-icon icon="lucide:user-circle" width="40" style="color:#f97316;"></iconify-icon>
+                </div>
+                <h2 class="profile-required-dialog__title">기본 정보 등록이 필요합니다</h2>
+                <p class="profile-required-dialog__desc">
+                  운동모임 개설을 위해 먼저 기본 정보를 등록해 주세요.<br>
+                  닉네임, 성별, 연령대, 운동 수준 등의 정보가 필요합니다.
+                </p>
+                <%= link_to edit_profile_path, class: "btn btn--primary", style: "width:100%;justify-content:center;" do %>
+                  기본 정보 등록하기
+                <% end %>
+              </div>
+            </dialog>
+          </div>
         <% end %>
       </div>
     <% end %>

@@ -5487,3 +5487,45 @@ lexxy-editor.lexxy-editor-field {
   from { transform: translateX(0);    opacity: 1; }
   to   { transform: translateX(110%); opacity: 0; }
 }
+
+/* ── Profile Required Dialog ─────────────────────────────── */
+.profile-required-dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.profile-required-dialog::backdrop {
+  background: rgba(0,0,0,0.45);
+}
+.profile-required-dialog__box {
+  padding: 32px 28px 28px;
+  text-align: center;
+  position: relative;
+}
+.profile-required-dialog__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+}
+.profile-required-dialog__icon { margin-bottom: 16px; }
+.profile-required-dialog__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 12px;
+}
+.profile-required-dialog__desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
