@@ -9,9 +9,11 @@ class GameSessionsController < ApplicationController
     sessions = policy_scope(GameSession)
       .joins(:club)
       .includes(:club)
-      .order(scheduled_date: :asc)
+      .order("clubs.name ASC, scheduled_date ASC, start_time ASC")
     sessions = sessions.where("clubs.name LIKE ?", "%#{@query}%") if @query
-    @game_sessions = sessions
+
+    favorited_ids = Current.user ? Current.user.club_favorites.pluck(:club_id).to_set : Set.new
+    @game_sessions_by_club = sessions.group_by(&:club).sort_by { |club, _| favorited_ids.include?(club.id) ? 0 : 1 }.to_h
   end
 
   def show

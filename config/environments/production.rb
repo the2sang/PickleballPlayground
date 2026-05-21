@@ -60,18 +60,9 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "codedash.co.kr" }
 
-  # Gmail SMTP for password reset emails
+  # Resend (HTTP API) - Railway blocks raw SMTP
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    domain: "gmail.com",
-    user_name: ENV["SMTP_USER"],
-    password: ENV["SMTP_PASS"],
-    authentication: :plain,
-    enable_starttls_auto: true
-  }
+  config.action_mailer.delivery_method = :resend
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

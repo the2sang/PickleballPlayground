@@ -1,0 +1,10 @@
+<% content_for :title, "종목 수정" %>
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow"><%= link_to @event.tournament.name, tournament_path(@event.tournament) %> / 종목 수정</p>
+    <h1 class="cl-hero__title">종목 수정</h1>
+  </div></div>
+  <div class="cl-content" style="max-width:600px;">
+    <%= render "form" %>
+  </div>
+</div>
