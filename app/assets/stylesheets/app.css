@@ -5075,6 +5075,25 @@ lexxy-editor.lexxy-editor-field {
   text-align: center;
 }
 
+.cl-session-group__header {
+  margin-bottom: 8px;
+}
+
+.cl-session-group__club-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hcp-charcoal);
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.cl-session-group__club-link:hover {
+  color: var(--color-primary);
+}
+
 /* ── Info Card (session detail) ─────────────────────────────── */
 .cl-info-card {
   background: #ffffff;

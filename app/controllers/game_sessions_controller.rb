@@ -9,9 +9,9 @@ class GameSessionsController < ApplicationController
     sessions = policy_scope(GameSession)
       .joins(:club)
       .includes(:club)
-      .order(scheduled_date: :asc)
+      .order("clubs.name ASC, scheduled_date ASC, start_time ASC")
     sessions = sessions.where("clubs.name LIKE ?", "%#{@query}%") if @query
-    @game_sessions = sessions
+    @game_sessions_by_club = sessions.group_by(&:club)
   end
 
   def show
