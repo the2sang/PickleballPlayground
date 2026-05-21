@@ -7,8 +7,10 @@
       <p class="cl-hero__subtitle">운동 세션 참가 신청에 필요한 기본 정보를 입력해 주세요.</p>
     </div>
 
+    <%= turbo_frame_tag "profile_modal_form" do %>
     <div class="cl-form-card">
-      <%= form_with model: @user, url: profile_path, method: :patch, class: "cl-form" do |f| %>
+      <%= form_with model: @user, url: profile_path, method: :patch, class: "cl-form", data: { turbo_frame: "_top" } do |f| %>
+        <%= hidden_field_tag :redirect_after, params[:redirect_after] %>
         <% if @user.errors.any? %>
           <div class="cl-form__error">
             <% @user.errors.full_messages.each do |msg| %>
@@ -92,5 +94,6 @@
         </div>
       <% end %>
     </div>
+    <% end %>
   </div>
 </div>
