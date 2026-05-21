@@ -1,0 +1,39 @@
+<%
+  url = @event.persisted? ? tournament_event_path(@event) : tournament_tournament_events_path(@tournament)
+  method = @event.persisted? ? :patch : :post
+%>
+<%= form_with model: @event, url: url, method: method, class: "cl-form" do |f| %>
+  <% if @event.errors.any? %>
+    <div class="cl-form__error">
+      <% @event.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+    </div>
+  <% end %>
+
+  <div class="cl-form__field">
+    <%= f.label :discipline, "종목", class: "cl-form__label" %>
+    <%= f.select :discipline,
+          [["남자 단식", "mens_singles"], ["남자 복식", "mens_doubles"],
+           ["여자 단식", "womens_singles"], ["여자 복식", "womens_doubles"], ["혼합 복식", "mixed_doubles"]],
+          {}, class: "cl-form__select" %>
+  </div>
+
+  <div class="cl-form__grid">
+    <div class="cl-form__field">
+      <%= f.label :scoring_format, "스코어링", class: "cl-form__label" %>
+      <%= f.select :scoring_format,
+            [["단판 (1게임)", "single_game"], ["3판 2선승", "best_of_3"]],
+            {}, class: "cl-form__select" %>
+    </div>
+    <div class="cl-form__field">
+      <%= f.label :points_to_win, "승리 점수", class: "cl-form__label" %>
+      <%= f.number_field :points_to_win, min: 1, class: "cl-form__input", placeholder: "11" %>
+    </div>
+  </div>
+
+  <div class="cl-form__field">
+    <%= f.label :advances_per_group, "조별 진출 팀 수", class: "cl-form__label" %>
+    <%= f.number_field :advances_per_group, min: 1, class: "cl-form__input", placeholder: "2" %>
+  </div>
+
+  <%= f.submit @event.persisted? ? "수정" : "추가", class: "cl-form__submit" %>
+<% end %>

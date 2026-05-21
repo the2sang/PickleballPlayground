@@ -1,0 +1,86 @@
+<%
+  age_group_options = [
+    ["20대", "twenties"], ["30대", "thirties"], ["40대", "forties"],
+    ["50대", "fifties"], ["60대 이상", "sixties_plus"]
+  ]
+%>
+
+<%= form_with model: flash_meetup, class: "cl-form" do |f| %>
+  <% if flash_meetup.errors.any? %>
+    <div class="cl-form__error">
+      <% flash_meetup.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+    </div>
+  <% end %>
+
+  <div class="cl-form__grid">
+    <div class="cl-form__field">
+      <%= f.label :venue_name, "장소명", class: "cl-form__label" %>
+      <%= f.text_field :venue_name, class: "cl-form__input", placeholder: "예: 용인 실내 코트" %>
+    </div>
+    <div class="cl-form__field">
+      <%= f.label :address, "주소 (선택)", class: "cl-form__label" %>
+      <%= f.text_field :address, class: "cl-form__input", placeholder: "경기도 용인시 수지구..." %>
+    </div>
+  </div>
+
+  <div class="cl-form__grid">
+    <div class="cl-form__field">
+      <%= f.label :scheduled_at, "시작 시간", class: "cl-form__label" %>
+      <%= f.datetime_local_field :scheduled_at, class: "cl-form__input" %>
+    </div>
+    <div class="cl-form__field">
+      <%= f.label :ends_at, "종료 시간", class: "cl-form__label" %>
+      <%= f.datetime_local_field :ends_at, class: "cl-form__input" %>
+    </div>
+  </div>
+
+  <div class="cl-form__field">
+    <%= f.label :max_participants, "정원 (선택)", class: "cl-form__label" %>
+    <%= f.number_field :max_participants, min: 1, placeholder: "무제한", class: "cl-form__input" %>
+  </div>
+
+  <div class="cl-form__section">
+    <div class="cl-form__section-header">
+      <iconify-icon icon="lucide:filter"></iconify-icon>
+      <span>참가 자격 필터</span>
+    </div>
+
+    <div class="cl-form__grid">
+      <div class="cl-form__field">
+        <%= f.label :gender_filter, "성별", class: "cl-form__label" %>
+        <%= f.select :gender_filter,
+            [["성별 무관", "all_genders"], ["남성만", "male_only"], ["여성만", "female_only"]],
+            {}, class: "cl-form__select" %>
+      </div>
+      <div class="cl-form__field">
+        <%= f.label :level_filter, "실력", class: "cl-form__label" %>
+        <%= f.select :level_filter,
+            [["실력 무관", "all_levels"], ["중급 이상", "intermediate_plus"], ["상급만", "advanced_only"]],
+            {}, class: "cl-form__select" %>
+      </div>
+    </div>
+
+    <div class="cl-form__field">
+      <span class="cl-form__label">연령대 (미선택 시 제한 없음)</span>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+        <% age_group_options.each do |label, value| %>
+          <label class="repeat-day-btn" style="min-width:60px;text-align:center;">
+            <input type="checkbox"
+                   name="flash_meetup[allowed_age_groups][]"
+                   value="<%= value %>"
+                   <%= "checked" if flash_meetup.allowed_age_group_list.include?(value) %>
+                   style="display:none;">
+            <span><%= label %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="cl-form__field">
+    <%= f.label :kakao_open_chat_url, "오픈카톡방 URL (선택)", class: "cl-form__label" %>
+    <%= f.url_field :kakao_open_chat_url, class: "cl-form__input", placeholder: "https://open.kakao.com/..." %>
+  </div>
+
+  <%= f.submit flash_meetup.persisted? ? "수정" : "개설", class: "cl-form__submit" %>
+<% end %>

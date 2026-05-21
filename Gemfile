@@ -47,7 +47,10 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
+
+# Resend email delivery (HTTP API - Railway SMTP 차단 우회)
+gem "resend"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -61,6 +64,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
 end
 
 group :development do
@@ -72,11 +79,14 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "shoulda-matchers"
 end
 
-gem "lexxy", "~> 0.9.9.beta"
+gem "lexxy", "~> 0.9.12.beta"
 gem "rubyzip"
 gem "faw_toast"
+gem "caxlsx"
+gem "roo"
 
 # Authorization (role-based access control)
 gem "pundit"

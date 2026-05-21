@@ -1,52 +1,107 @@
-<% content_for :title, "운동 세션" %>
+<% content_for :title, "클럽 운동 세션" %>
 
 <div class="cl-page">
   <div class="cl-hero">
     <div class="cl-hero__inner">
       <p class="cl-hero__eyebrow">Sessions</p>
-      <h1 class="cl-hero__title">운동 세션</h1>
+      <h1 class="cl-hero__title">클럽 운동 세션</h1>
       <p class="cl-hero__subtitle">참가 가능한 모든 운동 세션을 확인하세요.</p>
+
+      <%= form_with url: game_sessions_path, method: :get, class: "cl-search-bar" do |f| %>
+        <div class="cl-search-bar__inner">
+          <iconify-icon icon="lucide:search" class="cl-search-bar__icon"></iconify-icon>
+          <%= f.text_field :q,
+                value: @query,
+                class: "cl-search-bar__input",
+                placeholder: "클럽 이름으로 검색",
+                autocomplete: "off",
+                autofocus: @query.present? %>
+          <% if @query.present? %>
+            <%= link_to game_sessions_path, class: "cl-search-bar__clear", aria: { label: "검색 초기화" } do %>
+              <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= link_to flash_meetups_path, class: "cl-shortcut-link" do %>
+        <iconify-icon icon="lucide:zap" width="13"></iconify-icon>
+        <span>개인모집 운동세션 바로가기</span>
+        <iconify-icon icon="lucide:arrow-right" width="12"></iconify-icon>
+      <% end %>
     </div>
   </div>
 
   <div class="cl-content">
-    <% if @game_sessions.empty? %>
+    <% if @query.present? %>
+      <p class="cl-search-result-info">
+        <strong>"<%= @query %>"</strong> 검색 결과 <%= @game_sessions_by_club.values.sum(&:size) %>건
+      </p>
+    <% end %>
+
+    <% if @game_sessions_by_club.empty? %>
       <div class="cl-empty">
         <div class="cl-empty__icon">
           <iconify-icon icon="lucide:calendar" width="20"></iconify-icon>
         </div>
-        <p class="cl-empty__text">등록된 운동 세션이 없습니다.</p>
+        <p class="cl-empty__text"><%= @query.present? ? "\"#{@query}\" 검색 결과가 없습니다." : "등록된 운동 세션이 없습니다." %></p>
       </div>
     <% else %>
-      <div class="cl-list">
-        <% @game_sessions.each do |gs| %>
-          <%= link_to game_session_path(gs), class: "cl-list-item" do %>
-            <div class="cl-list-item__left">
-              <div class="cl-list-item__icon">
-                <iconify-icon icon="lucide:dumbbell" width="15"></iconify-icon>
-              </div>
-              <div style="min-width:0;">
-                <p class="cl-list-item__club"><%= gs.club.name %></p>
-                <p class="cl-list-item__title"><%= gs.title %></p>
-                <p class="cl-list-item__meta">
-                  <%= gs.scheduled_date.strftime("%Y.%m.%d") %> &middot;
-                  <%= gs.venue_name %> &middot;
-                  참가 <%= gs.confirmed_count %><% if gs.max_participants %>/<%= gs.max_participants %><% end %>명
-                </p>
-              </div>
-            </div>
-            <div class="cl-list-item__right">
-              <% if gs.full? %>
-                <span class="cl-badge cl-badge--neutral">마감</span>
-              <% elsif gs.fee > 0 %>
-                <span class="cl-badge cl-badge--dark"><%= number_with_delimiter(gs.fee) %>원</span>
-              <% else %>
-                <span class="cl-badge cl-badge--neutral">무료</span>
+      <% @game_sessions_by_club.each do |club, sessions| %>
+        <div class="cl-session-group" style="margin-bottom:28px;">
+          <div class="cl-session-group__header">
+            <%= link_to club_path(club), class: "cl-session-group__club-link" do %>
+              <iconify-icon icon="lucide:users" width="13"></iconify-icon>
+              <%= club.name %>
+              <iconify-icon icon="lucide:chevron-right" width="12" style="opacity:0.5;"></iconify-icon>
+            <% end %>
+          </div>
+          <div class="cl-list">
+            <% sessions.each do |gs| %>
+              <%= link_to game_session_path(gs), class: "cl-list-item" do %>
+                <div class="cl-list-item__left">
+                  <div class="cl-list-item__icon">
+                    <iconify-icon icon="lucide:dumbbell" width="15"></iconify-icon>
+                  </div>
+                  <div style="min-width:0;">
+                    <p class="cl-list-item__club">
+                      <% if gs.session_ended? %>
+                        <span style="display:inline-flex;align-items:center;justify-content:center;background:#e5e7eb;color:#6b7280;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;line-height:1.6;">종료</span>
+                      <% elsif gs.scheduled_date.to_date == Date.today %>
+                        <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;line-height:1.6;">오늘</span>
+                      <% end %>
+                    </p>
+                    <p class="cl-list-item__title"><%= gs.title %></p>
+                    <p class="cl-list-item__meta">
+                      <%= format_session_date(gs.scheduled_date) %> &middot;
+                      <%= gs.venue_name %> &middot;
+                      참가신청자 - <%= gs.confirmed_count %>명
+                    </p>
+                  </div>
+                </div>
+                <div class="cl-list-item__right">
+                  <% if gs.full? %>
+                    <span class="cl-badge cl-badge--neutral">마감</span>
+                  <% else %>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+                      <span style="font-size:10px; color:var(--hcp-cool-gray);">게스트 참가비</span>
+                      <% if gs.fee > 0 %>
+                        <span class="cl-badge cl-badge--dark"><%= number_with_delimiter(gs.fee) %>원</span>
+                      <% else %>
+                        <span class="cl-badge cl-badge--neutral">무료</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
               <% end %>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      <p class="cl-session-hint">
+        <iconify-icon icon="lucide:info" width="13" style="vertical-align:-2px; margin-right:4px;"></iconify-icon>
+        박스 전체를 클릭하면 정회원·준회원 참가신청이 가능하고, 게스트 신청 시 게스트 신청 버튼을 클릭하세요.
+      </p>
     <% end %>
   </div>
 </div>

@@ -12,6 +12,7 @@ ko:
       messages:
         taken: "이미 사용 중입니다"
         blank: "을(를) 입력해 주세요"
+        record_invalid: "유효성 검사에 실패했습니다: %{errors}"
     attributes:
       user:
         display_name: 이름

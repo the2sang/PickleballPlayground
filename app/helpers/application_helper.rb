@@ -50,6 +50,13 @@ module ApplicationHelper
     end
   end
 
+  DAYS_KO = %w[일 월 화 수 목 금 토].freeze
+
+  def format_session_date(date, style: :short)
+    day = DAYS_KO[date.wday]
+    style == :long ? date.strftime("%Y년 %m월 %d일(#{day})") : date.strftime("%Y.%m.%d(#{day})")
+  end
+
   def managed_clubs
     return [] unless current_user
     current_user.club_memberships.approved

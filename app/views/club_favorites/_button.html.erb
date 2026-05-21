@@ -1,0 +1,23 @@
+<% favorited = favorited_club_ids.include?(club.id) %>
+
+<% if authenticated? %>
+  <% if favorited %>
+    <%= button_to club_favorite_path(club),
+          method: :delete,
+          class: "cl-fav-btn cl-fav-btn--active",
+          title: "즐겨찾기 해제",
+          data: { turbo_stream: true } do %>
+      <iconify-icon icon="lucide:star" width="15" style="color:#f59e0b; fill:#f59e0b;"></iconify-icon>
+      <span class="cl-fav-btn__label">(즐겨찾기)</span>
+    <% end %>
+  <% else %>
+    <%= button_to club_favorite_path(club),
+          method: :post,
+          class: "cl-fav-btn",
+          title: "즐겨찾기",
+          data: { turbo_stream: true } do %>
+      <iconify-icon icon="lucide:star" width="15"></iconify-icon>
+      <span class="cl-fav-btn__label">(즐겨찾기)</span>
+    <% end %>
+  <% end %>
+<% end %>

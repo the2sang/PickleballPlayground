@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "club-fav-#{@club.id}" do %>
+  <div id="club-fav-<%= @club.id %>" class="cl-card__fav-inline">
+    <%= render "club_favorites/button",
+          club: @club,
+          favorited_club_ids: @favorited_club_ids,
+          member_club_ids: @member_club_ids %>
+  </div>
+<% end %>
+<%= turbo_stream.append "faw-toast-container" do %>
+  <%= render "faw_toast/toast", type: :success, message: "즐겨찾기가 추가되었습니다." %>
+<% end %>

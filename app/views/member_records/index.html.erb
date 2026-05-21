@@ -1,0 +1,81 @@
+<% content_for :title, "회원명부관리" %>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <div class="cl-hero__row">
+        <div>
+          <p class="cl-hero__eyebrow">Members</p>
+          <h1 class="cl-hero__title">회원명부관리</h1>
+          <p class="cl-hero__subtitle">용인시피클볼협회 회원 정보를 관리합니다.</p>
+        </div>
+        <%= link_to new_member_record_path, class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+          회원 등록
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="cl-content">
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
+      <%= link_to template_member_records_path, class: "btn btn--sm btn--neutral" do %>
+        <iconify-icon icon="lucide:download" width="13"></iconify-icon>
+        양식 다운로드 (CSV)
+      <% end %>
+
+      <%= form_with url: import_member_records_path, method: :post, multipart: true, style: "display:flex; gap:8px; align-items:center;" do |f| %>
+        <%= f.file_field :import_file, accept: ".xlsx", style: "font-size:12px;" %>
+        <%= f.submit "업로드", class: "btn btn--sm btn--primary" %>
+      <% end %>
+    </div>
+
+    <% if @member_records.empty? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon"><iconify-icon icon="lucide:users" width="20"></iconify-icon></div>
+        <p class="cl-empty__text">등록된 회원이 없습니다.</p>
+      </div>
+    <% else %>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:var(--hcp-light-gray); text-align:left;">
+              <th style="padding:8px 12px;">이름</th>
+              <th style="padding:8px 12px;">소속클럽</th>
+              <th style="padding:8px 12px;">성별</th>
+              <th style="padding:8px 12px;">생년월일</th>
+              <th style="padding:8px 12px;">연락처</th>
+              <th style="padding:8px 12px;">피클볼 시작</th>
+              <th style="padding:8px 12px;">클럽 가입</th>
+              <th style="padding:8px 12px; min-width:160px;">주소</th>
+              <th style="padding:8px 12px;">동의</th>
+              <th style="padding:8px 12px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @member_records.each do |mr| %>
+              <tr style="border-bottom:1px solid var(--hcp-border);">
+                <td style="padding:8px 12px;"><%= mr.name %></td>
+                <td style="padding:8px 12px;"><%= mr.club_name %></td>
+                <td style="padding:8px 12px;"><%= mr.gender %></td>
+                <td style="padding:8px 12px;"><%= mr.birth_date&.strftime("%Y-%m-%d") %></td>
+                <td style="padding:8px 12px;"><%= mr.phone %></td>
+                <td style="padding:8px 12px;"><%= mr.pickleball_started_at&.strftime("%Y년 %m월") %></td>
+                <td style="padding:8px 12px;"><%= mr.club_joined_at&.strftime("%Y년 %m월") %></td>
+                <td style="padding:8px 12px;"><%= mr.address %></td>
+                <td style="padding:8px 12px;"><%= mr.privacy_agreed? ? "동의" : "미동의" %></td>
+                <td style="padding:8px 12px; white-space:nowrap;">
+                  <%= link_to "수정", edit_member_record_path(mr), class: "btn btn--xs btn--neutral" %>
+                  <%= button_to "삭제", member_record_path(mr), method: :delete,
+                        class: "btn btn--xs btn--danger",
+                        form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:8px; font-size:12px; color:var(--hcp-cool-gray);">총 <%= @member_records.size %>명</p>
+    <% end %>
+  </div>
+</div>

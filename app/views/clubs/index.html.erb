@@ -1,4 +1,4 @@
-<% content_for :title, "동호회" %>
+<% content_for :title, "피클볼 클럽" %>
 
 <div class="cl-page">
   <div class="cl-hero">
@@ -6,40 +6,108 @@
       <div class="cl-hero__row">
         <div>
           <p class="cl-hero__eyebrow">Club</p>
-          <h1 class="cl-hero__title">동호회 목록</h1>
+          <h1 class="cl-hero__title">피클볼 클럽</h1>
           <p class="cl-hero__subtitle">함께 운동하고 성장하는 커뮤니티를 찾아보세요.</p>
         </div>
         <%= link_to new_club_path, class: "btn btn--primary btn--sm" do %>
           <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
-          동호회 개설 신청
+          클럽 개설 신청
         <% end %>
       </div>
+
+      <%= form_with url: clubs_path, method: :get, class: "cl-search-bar",
+            data: { controller: "live-search", turbo_frame: "clubs_list" } do |f| %>
+        <div class="cl-search-bar__inner">
+          <iconify-icon icon="lucide:search" class="cl-search-bar__icon"></iconify-icon>
+          <%= f.text_field :q,
+                value: @query,
+                class: "cl-search-bar__input",
+                placeholder: "클럽 이름 검색 (초성 가능, 예: ㅅㄱ)",
+                autocomplete: "off",
+                autofocus: @query.present?,
+                data: { action: "input->live-search#search" } %>
+          <% if @query.present? %>
+            <%= link_to clubs_path, class: "cl-search-bar__clear",
+                  aria: { label: "검색 초기화" },
+                  data: { turbo_frame: "clubs_list" } do %>
+              <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= link_to flash_meetups_path, class: "cl-shortcut-link" do %>
+        <iconify-icon icon="lucide:zap" width="13"></iconify-icon>
+        <span>개인모집 운동세션 바로가기</span>
+        <iconify-icon icon="lucide:arrow-right" width="12"></iconify-icon>
+      <% end %>
     </div>
   </div>
 
   <div class="cl-content">
-    <% if @clubs.empty? %>
-      <div class="cl-empty">
-        <div class="cl-empty__icon">
-          <iconify-icon icon="lucide:users" width="20"></iconify-icon>
+    <%= turbo_frame_tag "clubs_list" do %>
+      <% if @query.present? %>
+        <p class="cl-search-result-info">
+          <strong>"<%= @query %>"</strong> 검색 결과 <%= @clubs.size %>건
+        </p>
+      <% end %>
+
+      <% if @clubs.empty? %>
+        <div class="cl-empty">
+          <div class="cl-empty__icon">
+            <iconify-icon icon="lucide:search" width="20"></iconify-icon>
+          </div>
+          <p class="cl-empty__text">
+            <%= @query.present? ? "검색 결과가 없습니다." : "아직 등록된 클럽가 없습니다." %>
+          </p>
         </div>
-        <p class="cl-empty__text">아직 등록된 동호회가 없습니다.</p>
-      </div>
-    <% else %>
-      <div class="cl-grid">
-        <% @clubs.each do |club| %>
-          <%= link_to club_path(club), class: "cl-card" do %>
-            <div class="cl-card__top">
-              <div class="cl-card__icon">
-                <iconify-icon icon="lucide:users" width="16"></iconify-icon>
+      <% else %>
+        <div class="cl-grid">
+          <% @clubs.each do |club| %>
+            <div class="cl-card-wrapper">
+              <div class="cl-card" style="background-image: linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)), url('<%= asset_path('card_first.png') %>');">
+                <%= link_to club_path(club), class: "cl-card__stretched-link", aria: { label: club.name }, data: { turbo_frame: "_top" } do %><% end %>
+                <div class="cl-card__top">
+                  <div class="cl-card__top-left">
+                    <div class="cl-card__icon">
+                      <iconify-icon icon="lucide:users" width="16"></iconify-icon>
+                    </div>
+                    <% days = club.operation_day_indices %>
+                    <% if days.any? %>
+                      <div class="cl-card__days">
+                        <% days.each do |d| %>
+                          <span class="cl-day-badge"><%= GameSession::DAYS_KO[d] %></span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <span class="cl-badge cl-badge--neutral">회원 <%= club.club_memberships.approved.count %>명</span>
+                </div>
+                <div class="cl-card__name-row">
+                  <p class="cl-card__name"><%= club.name %></p>
+                  <div id="club-fav-<%= club.id %>" class="cl-card__fav-inline">
+                    <%= render "club_favorites/button",
+                          club: club,
+                          favorited_club_ids: @favorited_club_ids,
+                          member_club_ids: @member_club_ids %>
+                  </div>
+                </div>
+                <p class="cl-card__desc"><%= club.description.presence || "소개가 없습니다." %></p>
+                <% if club.contact_kakao.present? %>
+                  <div class="cl-card__kakao">
+                    <%= link_to club.contact_kakao, target: "_blank", rel: "noopener noreferrer",
+                          class: "cl-card__kakao-btn",
+                          aria: { label: "#{club.name} 카카오 오픈채팅" } do %>
+                      <iconify-icon icon="simple-icons:kakao" width="14"></iconify-icon>
+                      <span>오픈채팅</span>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
-              <span class="cl-badge cl-badge--neutral">회원 <%= club.club_memberships.approved.count %>명</span>
             </div>
-            <p class="cl-card__name"><%= club.name %></p>
-            <p class="cl-card__desc"><%= club.description.presence || "소개가 없습니다." %></p>
           <% end %>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

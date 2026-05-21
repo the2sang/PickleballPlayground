@@ -1,0 +1,10 @@
+<% content_for :title, "새 대회" %>
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow"><%= link_to @club.name, club_path(@club) %> / 새 대회</p>
+    <h1 class="cl-hero__title">대회 만들기</h1>
+  </div></div>
+  <div class="cl-content" style="max-width:600px;">
+    <%= render "form", tournament: @tournament %>
+  </div>
+</div>

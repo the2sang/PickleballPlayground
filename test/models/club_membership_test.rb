@@ -3,7 +3,7 @@ require "test_helper"
 class ClubMembershipTest < ActiveSupport::TestCase
   def setup
     @club = clubs(:approved_club)
-    @user = users(:one)
+    @user = users(:three)
   end
 
   test "valid with club and user" do
@@ -12,8 +12,9 @@ class ClubMembershipTest < ActiveSupport::TestCase
   end
 
   test "cannot join same club twice" do
-    ClubMembership.create!(club: @club, user: @user)
-    dup = ClubMembership.new(club: @club, user: @user)
+    user = users(:three)
+    ClubMembership.create!(club: @club, user: user)
+    dup = ClubMembership.new(club: @club, user: user)
     assert_not dup.valid?
   end
 

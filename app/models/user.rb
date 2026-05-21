@@ -1,23 +1,28 @@
 class User < ApplicationRecord
   has_secure_password validations: false
+  generates_token_for :password_reset, expires_in: 1.hour do
+    password_salt&.last(10)
+  end
+
   has_many :sessions, dependent: :destroy
   has_many :identities, dependent: :destroy
   has_many :posts, dependent: :destroy
-  has_many :tech_infos, dependent: :destroy
   has_many :comments, dependent: :destroy
-  has_many :tech_info_reactions, dependent: :destroy
   has_many :memos, dependent: :destroy
   has_many :work_plans,       dependent: :destroy
   has_many :work_journals,    dependent: :destroy
   has_many :manpower_records, dependent: :destroy
-  has_many :life_infos,    dependent: :destroy
   has_one  :pomodoro_setting, dependent: :destroy
   has_many :group_memberships, dependent: :destroy
   has_many :groups, through: :group_memberships
   has_many :owned_groups, class_name: "Group", foreign_key: :owner_id, dependent: :nullify, inverse_of: :owner
   has_many :club_memberships, dependent: :destroy
   has_many :clubs_as_member, through: :club_memberships, source: :club
+  has_many :club_favorites, dependent: :destroy
+  has_many :favorited_clubs, through: :club_favorites, source: :club
   has_many :participations, dependent: :destroy
+  has_many :flash_meetups, dependent: :destroy
+  has_many :flash_meetup_participations, dependent: :destroy
 
   def group_member_ids
     group_ids = group_memberships.select(:group_id)

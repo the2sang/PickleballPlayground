@@ -14,11 +14,9 @@ module Participations
       return failure("세션이 마감되었습니다.") unless @game_session.open?
 
       status = @game_session.full? ? :waitlisted : :confirmed
-      participation = @game_session.participations.build(
-        user:               @user,
-        participation_type: @participation_type,
-        status:             status
-      )
+      participation = @game_session.participations.cancelled.find_by(user: @user) ||
+                      @game_session.participations.build(user: @user)
+      participation.assign_attributes(status: status, participation_type: @participation_type)
 
       if participation.save
         Result.new(success?: true, participation: participation, errors: [])

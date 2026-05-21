@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_21_073441) do
+  create_table "club_favorites", force: :cascade do |t|
+    t.integer "club_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["club_id"], name: "index_club_favorites_on_club_id"
+    t.index ["user_id", "club_id"], name: "index_club_favorites_on_user_id_and_club_id", unique: true
+    t.index ["user_id"], name: "index_club_favorites_on_user_id"
+  end
+
   create_table "club_memberships", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -24,7 +34,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
   end
 
   create_table "clubs", force: :cascade do |t|
+    t.string "bank_account"
     t.string "contact_email"
+    t.string "contact_kakao"
     t.string "contact_phone"
     t.datetime "created_at", null: false
     t.text "description"
@@ -39,12 +51,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
 
   create_table "comments", force: :cascade do |t|
     t.text "body", null: false
+    t.integer "commentable_id"
+    t.string "commentable_type"
     t.datetime "created_at", null: false
-    t.integer "tech_info_id", null: false
+    t.integer "parent_id"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index ["tech_info_id"], name: "index_comments_on_tech_info_id"
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
+    t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "flash_meetup_participations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "flash_meetup_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["flash_meetup_id", "user_id"], name: "idx_flash_meetup_participations_unique_active", unique: true, where: "status != 2"
+    t.index ["flash_meetup_id"], name: "index_flash_meetup_participations_on_flash_meetup_id"
+    t.index ["user_id"], name: "index_flash_meetup_participations_on_user_id"
+  end
+
+  create_table "flash_meetups", force: :cascade do |t|
+    t.string "address"
+    t.string "allowed_age_groups", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at"
+    t.integer "gender_filter", default: 0, null: false
+    t.string "kakao_open_chat_url"
+    t.integer "level_filter", default: 0, null: false
+    t.integer "max_participants"
+    t.datetime "scheduled_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.string "venue_name", null: false
+    t.index ["scheduled_at"], name: "index_flash_meetups_on_scheduled_at"
+    t.index ["user_id"], name: "index_flash_meetups_on_user_id"
   end
 
   create_table "game_sessions", force: :cascade do |t|
@@ -98,9 +141,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
     t.string "email"
+    t.string "kakao_id"
     t.text "message"
     t.string "name", null: false
-    t.string "phone", null: false
+    t.string "phone"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["club_id", "status"], name: "index_guest_applications_on_club_id_and_status"
@@ -117,19 +161,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
     t.index ["user_id"], name: "index_identities_on_user_id"
   end
 
-  create_table "life_infos", force: :cascade do |t|
-    t.string "category"
-    t.text "content", null: false
-    t.string "content_format", default: "html", null: false
-    t.datetime "created_at", null: false
-    t.boolean "is_public", default: false, null: false
-    t.string "reference_url"
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["user_id"], name: "index_life_infos_on_user_id"
-  end
-
   create_table "manpower_records", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
@@ -141,6 +172,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
     t.integer "work_minutes", null: false
     t.index ["user_id", "request_date"], name: "index_manpower_records_on_user_id_and_request_date"
     t.index ["user_id"], name: "index_manpower_records_on_user_id"
+  end
+
+  create_table "match_sets", force: :cascade do |t|
+    t.integer "away_score", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "home_score", default: 0, null: false
+    t.integer "match_id", null: false
+    t.integer "set_number", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id", "set_number"], name: "index_match_sets_on_match_id_and_set_number", unique: true
+    t.index ["match_id"], name: "index_match_sets_on_match_id"
+  end
+
+  create_table "matches", force: :cascade do |t|
+    t.integer "away_team_id"
+    t.datetime "created_at", null: false
+    t.integer "home_team_id"
+    t.integer "match_number", null: false
+    t.integer "matchable_id", null: false
+    t.string "matchable_type", null: false
+    t.integer "next_match_id"
+    t.integer "round", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "winner_id"
+    t.index ["away_team_id"], name: "index_matches_on_away_team_id"
+    t.index ["home_team_id"], name: "index_matches_on_home_team_id"
+    t.index ["matchable_type", "matchable_id"], name: "index_matches_on_matchable_type_and_matchable_id"
+    t.index ["next_match_id"], name: "index_matches_on_next_match_id"
+    t.index ["status"], name: "index_matches_on_status"
+  end
+
+  create_table "member_records", force: :cascade do |t|
+    t.string "address"
+    t.date "birth_date"
+    t.date "club_joined_at"
+    t.string "club_name"
+    t.datetime "created_at", null: false
+    t.string "gender"
+    t.string "name", null: false
+    t.string "phone"
+    t.date "pickleball_started_at"
+    t.boolean "privacy_agreed", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_name"], name: "index_member_records_on_club_name"
+    t.index ["name"], name: "index_member_records_on_name"
   end
 
   create_table "memos", force: :cascade do |t|
@@ -203,32 +280,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
     t.index ["user_id"], name: "index_stock_infos_on_user_id"
   end
 
-  create_table "tech_info_reactions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "kind", null: false
-    t.integer "tech_info_id", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["tech_info_id"], name: "index_tech_info_reactions_on_tech_info_id"
-    t.index ["user_id", "tech_info_id"], name: "index_tech_info_reactions_on_user_id_and_tech_info_id", unique: true
-    t.index ["user_id"], name: "index_tech_info_reactions_on_user_id"
-  end
-
-  create_table "tech_infos", force: :cascade do |t|
-    t.text "content", null: false
-    t.string "content_format", default: "markdown", null: false
-    t.datetime "created_at", null: false
-    t.text "extra_info"
-    t.boolean "is_public", default: false, null: false
-    t.string "reference_url"
-    t.string "related_tech"
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.integer "usefulness", null: false
-    t.integer "user_id", null: false
-    t.index ["user_id"], name: "index_tech_infos_on_user_id"
-  end
-
   create_table "telegram_prompts", force: :cascade do |t|
     t.string "chat_id", null: false
     t.string "command"
@@ -243,6 +294,69 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
     t.index ["chat_id", "telegram_message_id"], name: "index_telegram_prompts_on_chat_id_and_telegram_message_id", unique: true
     t.index ["chat_id"], name: "index_telegram_prompts_on_chat_id"
     t.index ["status"], name: "index_telegram_prompts_on_status"
+  end
+
+  create_table "tournament_events", force: :cascade do |t|
+    t.integer "advances_per_group", default: 2, null: false
+    t.datetime "created_at", null: false
+    t.integer "discipline", null: false
+    t.integer "points_to_win", default: 11, null: false
+    t.integer "scoring_format", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.integer "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_tournament_events_on_status"
+    t.index ["tournament_id"], name: "index_tournament_events_on_tournament_id"
+  end
+
+  create_table "tournament_group_teams", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "tournament_group_id", null: false
+    t.integer "tournament_team_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_group_id", "tournament_team_id"], name: "idx_on_tournament_group_id_tournament_team_id_8caa3778ee", unique: true
+    t.index ["tournament_group_id"], name: "index_tournament_group_teams_on_tournament_group_id"
+    t.index ["tournament_team_id"], name: "index_tournament_group_teams_on_tournament_team_id"
+  end
+
+  create_table "tournament_groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "tournament_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_event_id"], name: "index_tournament_groups_on_tournament_event_id"
+  end
+
+  create_table "tournament_team_members", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "tournament_team_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["tournament_team_id", "user_id"], name: "idx_on_tournament_team_id_user_id_13e0b128e9", unique: true
+    t.index ["tournament_team_id"], name: "index_tournament_team_members_on_tournament_team_id"
+    t.index ["user_id"], name: "index_tournament_team_members_on_user_id"
+  end
+
+  create_table "tournament_teams", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "seed"
+    t.integer "tournament_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_event_id"], name: "index_tournament_teams_on_tournament_event_id"
+  end
+
+  create_table "tournaments", force: :cascade do |t|
+    t.integer "club_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.date "ends_on"
+    t.string "name", null: false
+    t.date "starts_on"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_tournaments_on_club_id"
+    t.index ["status"], name: "index_tournaments_on_status"
   end
 
   create_table "users", force: :cascade do |t|
@@ -304,18 +418,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
     t.index ["user_id"], name: "index_work_plans_on_user_id"
   end
 
+  add_foreign_key "club_favorites", "clubs"
+  add_foreign_key "club_favorites", "users"
   add_foreign_key "club_memberships", "clubs"
   add_foreign_key "club_memberships", "users"
   add_foreign_key "clubs", "users", column: "owner_id"
-  add_foreign_key "comments", "tech_infos"
   add_foreign_key "comments", "users"
+  add_foreign_key "flash_meetup_participations", "flash_meetups"
+  add_foreign_key "flash_meetup_participations", "users"
+  add_foreign_key "flash_meetups", "users"
   add_foreign_key "game_sessions", "clubs"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
   add_foreign_key "groups", "users", column: "owner_id"
   add_foreign_key "guest_applications", "clubs"
   add_foreign_key "identities", "users"
-  add_foreign_key "life_infos", "users"
   add_foreign_key "manpower_records", "users"
   add_foreign_key "memos", "users"
   add_foreign_key "participations", "game_sessions"
@@ -324,9 +441,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_113237) do
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "stock_infos", "users"
-  add_foreign_key "tech_info_reactions", "tech_infos"
-  add_foreign_key "tech_info_reactions", "users"
-  add_foreign_key "tech_infos", "users"
   add_foreign_key "work_journals", "users"
   add_foreign_key "work_plans", "users"
 end

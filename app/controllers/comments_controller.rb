@@ -1,34 +1,36 @@
 class CommentsController < ApplicationController
-  before_action :set_tech_info
+  before_action :set_commentable
 
   def create
-    @comment = @tech_info.comments.build(comment_params)
-    @comment.user = Current.session.user
+    @comment = @commentable.comments.build(comment_params)
+    @comment.user = Current.user
     if @comment.save
-      redirect_to @tech_info, notice: "댓글이 등록되었습니다."
+      redirect_to @commentable, notice: "댓글이 등록되었습니다."
     else
-      redirect_to @tech_info, alert: @comment.errors.full_messages.first
+      redirect_to @commentable, alert: @comment.errors.full_messages.first
     end
   end
 
   def destroy
-    @comment = @tech_info.comments.find(params[:id])
-    authorize_comment!
+    @comment = @commentable.comments.find(params[:id])
+    unless @comment.user == Current.user
+      redirect_to @commentable, alert: "권한이 없습니다." and return
+    end
     @comment.destroy
-    redirect_to @tech_info, notice: "댓글이 삭제되었습니다."
+    redirect_to @commentable
   end
 
   private
 
-  def set_tech_info
-    @tech_info = TechInfo.find(params[:tech_info_id])
-  end
-
-  def authorize_comment!
-    redirect_to @tech_info, alert: "권한이 없습니다." unless @comment.user == Current.session.user
+  def set_commentable
+    if params[:game_session_id]
+      @commentable = GameSession.find(params[:game_session_id])
+    elsif params[:flash_meetup_id]
+      @commentable = FlashMeetup.find(params[:flash_meetup_id])
+    end
   end
 
   def comment_params
-    params.expect(comment: [ :body ])
+    params.require(:comment).permit(:body, :parent_id)
   end
 end

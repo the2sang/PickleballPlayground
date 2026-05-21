@@ -21,11 +21,11 @@
   <%# ── 기본 정보 요약 ───────────────────────────────── %>
   <section class="admin-panel" style="margin-bottom:16px;">
     <div class="admin-panel__header">
-      <h2 class="admin-panel__title"><iconify-icon icon="lucide:info" style="vertical-align:-2px;"></iconify-icon> 동호회 기본정보</h2>
+      <h2 class="admin-panel__title"><iconify-icon icon="lucide:info" style="vertical-align:-2px;"></iconify-icon> 클럽 기본정보</h2>
       <%= link_to edit_club_path(@club), class: "admin-panel__link" do %>수정<% end %>
     </div>
     <dl class="admin-dl">
-      <dt>동호회명</dt><dd><%= @club.name %></dd>
+      <dt>클럽명</dt><dd><%= @club.name %></dd>
       <% if @club.description.present? %>
         <dt>소개</dt><dd><%= @club.description %></dd>
       <% end %>
@@ -49,13 +49,13 @@
       </div>
       <table class="admin-table">
         <thead>
-          <tr><th>이름</th><th>연락처</th><th>이메일</th><th>메시지</th><th>신청일</th><th>상태</th></tr>
+          <tr><th>이름</th><th>카톡 아이디</th><th>이메일</th><th>메시지</th><th>신청일</th><th>상태</th></tr>
         </thead>
         <tbody>
           <% @guest_applications.each do |ga| %>
             <tr>
               <td style="font-weight:600;"><%= ga.name %></td>
-              <td class="admin-table__mono"><%= ga.phone %></td>
+              <td class="admin-table__mono"><%= ga.kakao_id.presence || "-" %></td>
               <td class="admin-table__mono"><%= ga.email.presence || "-" %></td>
               <td style="max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><%= ga.message.presence || "-" %></td>
               <td class="admin-table__mono"><%= ga.created_at.strftime("%m/%d") %></td>

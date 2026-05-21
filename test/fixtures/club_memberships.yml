@@ -3,3 +3,9 @@ manager_membership:
   user: two
   role: 1
   status: 1
+
+pending_membership:
+  club: approved_club
+  user: one
+  role: 0
+  status: 0

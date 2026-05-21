@@ -1,6 +1,10 @@
 class WorkJournalsController < ApplicationController
   before_action :set_work_journal, only: %i[show edit update destroy]
 
+  rescue_from Pundit::NotAuthorizedError do
+    redirect_to work_journals_path, alert: "권한이 없습니다."
+  end
+
   def index
     authorize WorkJournal
     year  = params[:year]&.to_i  || Date.today.year

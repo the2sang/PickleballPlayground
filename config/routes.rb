@@ -7,7 +7,10 @@ Rails.application.routes.draw do
   get "/auth/failure",                to: "omniauth_callbacks#failure"
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :registration, only: %i[ new create ]
-  resource :profile, only: %i[ edit update ]
+  resource :profile, only: %i[ edit update ] do
+    collection { get :dupr_lookup }
+  end
+  resource :account, only: %i[ edit update ]
 
   resource :focus, only: %i[show] do
     resource :settings, controller: "focus/settings", only: %i[show update]
@@ -20,24 +23,49 @@ Rails.application.routes.draw do
   resources :manpower_records, only: %i[index create update destroy]
   resources :memos
   resources :posts
-  resources :life_infos
   resources :stock_infos, only: %i[index show destroy]
-  resources :tech_infos do
-    resources :comments, only: %i[ create destroy ]
-    resource :reaction, only: %i[ create destroy ], controller: "tech_info_reactions"
-    collection do
-      get  :export
-      post :import
-    end
-  end
 
   resources :clubs do
+    resource :favorite, only: %i[create destroy], controller: "club_favorites"
     member { get :manage }
     resources :club_memberships, only: %i[index create update destroy], shallow: false
     resources :guest_applications, only: %i[new create], path: "guest"
+    resources :tournaments, only: %i[index new create]
+  end
+
+  resources :tournaments, only: %i[show edit update destroy] do
+    member { patch :advance_status }
+    resources :tournament_events, only: %i[new create]
+  end
+
+  resources :tournament_events, only: %i[show edit update destroy] do
+    member do
+      post :generate_groups
+      post :generate_bracket
+    end
+    resources :tournament_teams,  only: %i[index new create]
+    resources :tournament_groups, only: %i[index new create]
+  end
+
+  resources :tournament_teams, only: %i[show edit update destroy] do
+    resources :tournament_team_members, only: %i[create destroy]
+  end
+
+  resources :tournament_groups, only: %i[show edit update destroy] do
+    resources :tournament_group_teams, only: %i[create destroy]
+  end
+
+  resources :matches, only: %i[show edit update] do
+    member { post :advance_winner }
+    resources :match_sets, only: %i[create update destroy]
   end
   resources :game_sessions, only: %i[index show new create edit update destroy] do
     resources :participations, only: %i[new create destroy], shallow: false
+    resources :comments, only: %i[create destroy], shallow: false
+  end
+  resources :flash_meetups, only: %i[index show new create edit update destroy] do
+    resources :flash_meetup_participations, only: %i[create destroy], shallow: false
+    resources :comments, only: %i[create destroy], shallow: false
   end
   namespace :my do
     resources :participations, only: %i[index destroy]
@@ -55,6 +83,13 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  resources :member_records, except: %i[show] do
+    collection do
+      get  :template
+      post :import
+    end
+  end
 
   get "puzzle", to: "pages#puzzle"
   root "clubs#index"

@@ -26,3 +26,12 @@ admin:
   sport_level: 0
   age_group: 0
   gender: 0
+
+three:
+  email_address: three@example.com
+  nickname: three_user
+  password_digest: <%= password_digest %>
+  role: 0
+  sport_level: 0
+  age_group: 0
+  gender: 0

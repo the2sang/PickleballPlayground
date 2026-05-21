@@ -1,0 +1,14 @@
+안녕하세요,
+
+이 메일은 PickleballPlayground의 SMTP 설정이 올바르게 작동하는지 확인하기 위한 테스트 메일입니다.
+
+아래 설정이 정상적으로 구성되어 있습니다:
+- SMTP 서버: smtp.gmail.com:587
+- 발신자: <%= ENV.fetch("EMAIL_FROM", "no-reply@gmail.com") %>
+- 수신자: <%= message.to.first %>
+- 발송 시각: <%= Time.current.strftime("%Y-%m-%d %H:%M:%S %Z") %>
+
+이 메일을 수신하셨다면 Gmail SMTP 설정이 정상적으로 작동하고 있는 것입니다.
+
+---
+© 2025 PickleballPlayground

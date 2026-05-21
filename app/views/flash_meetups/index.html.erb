@@ -1,0 +1,107 @@
+<% content_for :title, "운동모임" %>
+
+<%
+  gender_labels    = { "all_genders" => nil, "male_only" => "남성만", "female_only" => "여성만" }
+  level_labels     = { "all_levels" => nil, "intermediate_plus" => "중급↑", "advanced_only" => "상급" }
+%>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow">Flash Meetup</p>
+      <h1 class="cl-hero__title">운동모임</h1>
+      <p class="cl-hero__subtitle">누구나 모임을 개설하고 함께 운동해요.</p>
+    </div>
+  </div>
+
+  <div class="cl-content">
+    <% if authenticated? %>
+      <div style="text-align:right;margin-bottom:16px;">
+        <% if Current.user.profile_complete? %>
+          <%= link_to new_flash_meetup_path, class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+            운동모임 개설
+          <% end %>
+        <% else %>
+          <div data-controller="modal">
+            <button class="btn btn--primary btn--sm" data-action="click->modal#open">
+              <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+              운동모임 개설
+            </button>
+
+            <dialog class="profile-required-dialog" data-modal-target="dialog" data-action="click->modal#backdropClose">
+              <div class="profile-required-dialog__box">
+                <button class="profile-required-dialog__close" data-action="click->modal#close" aria-label="닫기">&times;</button>
+                <div class="profile-required-dialog__icon">
+                  <iconify-icon icon="lucide:user-circle" width="40" style="color:#f97316;"></iconify-icon>
+                </div>
+                <h2 class="profile-required-dialog__title">기본 정보 등록</h2>
+                <p class="profile-required-dialog__desc">운동모임 개설을 위해 기본 정보를 먼저 등록해 주세요.</p>
+                <%= turbo_frame_tag "profile_modal_form",
+                      src: edit_profile_path(redirect_after: new_flash_meetup_path),
+                      loading: :lazy do %>
+                  <p style="text-align:center;color:#999;padding:20px;">로딩 중...</p>
+                <% end %>
+              </div>
+            </dialog>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @flash_meetups.empty? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:zap" width="20"></iconify-icon>
+        </div>
+        <p class="cl-empty__text">예정된 운동모임이 없습니다.</p>
+        <% if authenticated? %>
+          <%= link_to "첫 운동모임 개설하기", new_flash_meetup_path, class: "btn btn--primary btn--sm", style: "margin-top:12px;" %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="cl-list">
+        <% @flash_meetups.each do |fm| %>
+          <%= link_to flash_meetup_path(fm), class: "cl-list-item" do %>
+            <div class="cl-list-item__left">
+              <div class="cl-list-item__icon">
+                <iconify-icon icon="lucide:zap" width="15"></iconify-icon>
+              </div>
+              <div style="min-width:0;">
+                <p class="cl-list-item__club">
+                  <%= fm.user.display_name %> 개설
+                  <% if fm.scheduled_at.to_date == Date.today %>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
+                  <% end %>
+                </p>
+                <p class="cl-list-item__title"><%= fm.venue_name %></p>
+                <p class="cl-list-item__meta">
+                  <%= "#{format_session_date(fm.scheduled_at)} #{fm.scheduled_at.strftime('%H:%M')}" %> &middot;
+                  참가 <%= fm.confirmed_count %>명
+                  <% if fm.max_participants.present? %>
+                    / <%= fm.max_participants %>명
+                  <% end %>
+                </p>
+              </div>
+            </div>
+            <div class="cl-list-item__right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <% if fm.full? %>
+                <span class="cl-badge cl-badge--neutral">마감</span>
+              <% else %>
+                <span class="cl-badge cl-badge--green">모집 중</span>
+              <% end %>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+                <% if (label = gender_labels[fm.gender_filter]) %>
+                  <span class="cl-badge cl-badge--neutral" style="font-size:11px;"><%= label %></span>
+                <% end %>
+                <% if (label = level_labels[fm.level_filter]) %>
+                  <span class="cl-badge cl-badge--neutral" style="font-size:11px;"><%= label %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

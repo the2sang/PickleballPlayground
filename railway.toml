@@ -1,0 +1,10 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "/bin/sh -c 'bin/rails db:prepare && bin/rails db:seed && HTTP_PORT=$PORT exec ./bin/thrust ./bin/rails server'"
+healthcheckPath = "/up"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10

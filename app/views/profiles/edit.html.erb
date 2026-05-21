@@ -7,8 +7,10 @@
       <p class="cl-hero__subtitle">운동 세션 참가 신청에 필요한 기본 정보를 입력해 주세요.</p>
     </div>
 
+    <%= turbo_frame_tag "profile_modal_form" do %>
     <div class="cl-form-card">
-      <%= form_with model: @user, url: profile_path, method: :patch, class: "cl-form" do |f| %>
+      <%= form_with model: @user, url: profile_path, method: :patch, class: "cl-form", data: { turbo_frame: "_top" } do |f| %>
+        <%= hidden_field_tag :redirect_after, params[:redirect_after] %>
         <% if @user.errors.any? %>
           <div class="cl-form__error">
             <% @user.errors.full_messages.each do |msg| %>
@@ -61,23 +63,30 @@
           <%= f.text_field :region, class: "cl-form__input", placeholder: "예) 용인시 기흥구" %>
         </div>
 
-        <div class="cl-form__field">
-          <label class="cl-form__label">DUPR ID</label>
-          <%= f.text_field :dupr_id, class: "cl-form__input", placeholder: "예) 1234567" %>
-          <% if @user.dupr_rating.present? %>
-            <p style="margin-top:6px;font-size:13px;color:var(--hcp-cool-gray);">
-              현재 DUPR 레이팅:
-              <strong style="color:var(--color-text)"><%= @user.dupr_rating %></strong>
-              <span style="font-size:11px;">(마지막 동기화: <%= @user.dupr_last_synced_at.strftime("%Y-%m-%d %H:%M") %>)</span>
-            </p>
-          <% elsif @user.dupr_id.present? %>
-            <p style="margin-top:6px;font-size:12px;color:var(--hcp-cool-gray);">레이팅 동기화 중...</p>
-          <% else %>
-            <p style="margin-top:4px;font-size:11px;color:var(--hcp-cool-gray);">
-              DUPR ID 입력 후 저장하면 레이팅이 자동으로 가져와집니다.
-              <a href="https://mydupr.com" target="_blank" style="color:var(--color-primary);">mydupr.com</a>에서 확인하세요.
-            </p>
-          <% end %>
+        <div class="cl-form__field" style="margin-top:8px;">
+          <p style="font-size:12px;font-weight:600;color:var(--hcp-mid-gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">약관 동의 (필수)</p>
+
+          <label style="display:flex;align-items:flex-start;gap:10px;padding:14px;border:1px solid var(--hcp-border-light);border-radius:8px;cursor:pointer;margin-bottom:8px;">
+            <input type="checkbox" name="terms_agreed" value="1" required
+                   style="margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--color-primary);">
+            <span style="font-size:13px;line-height:1.5;color:var(--hcp-charcoal);">
+              <strong>[필수]</strong> 이용약관에 동의합니다.
+              <span style="display:block;margin-top:4px;font-size:11px;color:var(--hcp-cool-gray);">
+                서비스 이용 시 회원 간 매너 있는 소통, 운동 세션 참가 규칙 준수 등 기본 이용 규칙에 동의합니다.
+              </span>
+            </span>
+          </label>
+
+          <label style="display:flex;align-items:flex-start;gap:10px;padding:14px;border:1px solid var(--hcp-border-light);border-radius:8px;cursor:pointer;">
+            <input type="checkbox" name="privacy_agreed" value="1" required
+                   style="margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--color-primary);">
+            <span style="font-size:13px;line-height:1.5;color:var(--hcp-charcoal);">
+              <strong>[필수]</strong> 개인정보 수집 및 이용에 동의합니다.
+              <span style="display:block;margin-top:4px;font-size:11px;color:var(--hcp-cool-gray);">
+                수집 항목: 이름, 성별, 연령대, 운동 레벨, 거주지역 / 목적: 운동 세션 참가 자격 확인 및 매칭 / 보유 기간: 회원 탈퇴 시까지
+              </span>
+            </span>
+          </label>
         </div>
 
         <div class="cl-form__actions">
@@ -85,5 +94,6 @@
         </div>
       <% end %>
     </div>
+    <% end %>
   </div>
 </div>

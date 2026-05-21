@@ -5,7 +5,15 @@ class GameSessionsController < ApplicationController
   before_action :set_game_session, only: %i[show edit update destroy]
 
   def index
-    @game_sessions = policy_scope(GameSession).order(scheduled_date: :desc)
+    @query = params[:q].presence
+    sessions = policy_scope(GameSession)
+      .joins(:club)
+      .includes(:club)
+      .order("clubs.name ASC, scheduled_date ASC, start_time ASC")
+    sessions = sessions.where("clubs.name LIKE ?", "%#{@query}%") if @query
+
+    favorited_ids = Current.user ? Current.user.club_favorites.pluck(:club_id).to_set : Set.new
+    @game_sessions_by_club = sessions.group_by(&:club).sort_by { |club, _| favorited_ids.include?(club.id) ? 0 : 1 }.to_h
   end
 
   def show
