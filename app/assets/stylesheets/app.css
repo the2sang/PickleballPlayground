@@ -855,7 +855,7 @@ a:hover {
 /* ── Footer ────────────────────────────────────────────── */
 .footer {
   background-color: #ffffff;
-  border-top: 1px solid var(--nav-border);
+  border-top: 1px solid var(--hcp-border-light);
   padding: 24px 24px;
   overflow: hidden;
   max-height: 200px;
@@ -4685,7 +4685,7 @@ lexxy-editor.lexxy-editor-field {
 .cl-hero__inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 56px 24px;
+  padding: 42px 24px;
 }
 .cl-hero__row {
   display: flex;
@@ -4771,6 +4771,19 @@ lexxy-editor.lexxy-editor-field {
   text-decoration: none;
 }
 .cl-search-bar__clear:hover { color: var(--hcp-charcoal); }
+.cl-shortcut-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--hcp-mid-gray);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.cl-shortcut-link:hover {
+  color: var(--hcp-black);
+}
 .cl-search-result-info {
   font-size: 13px;
   color: var(--hcp-cool-gray);
