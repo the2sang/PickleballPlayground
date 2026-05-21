@@ -4,6 +4,7 @@ FactoryBot.define do
     venue_name { "용인 실내 코트" }
     address    { "경기도 용인시" }
     scheduled_at { 2.days.from_now }
+    ends_at      { 2.days.from_now + 2.hours }
     max_participants { nil }
     gender_filter { :all_genders }
     level_filter  { :all_levels }

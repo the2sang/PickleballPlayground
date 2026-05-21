@@ -30,6 +30,34 @@ Rails.application.routes.draw do
     member { get :manage }
     resources :club_memberships, only: %i[index create update destroy], shallow: false
     resources :guest_applications, only: %i[new create], path: "guest"
+    resources :tournaments, only: %i[index new create]
+  end
+
+  resources :tournaments, only: %i[show edit update destroy] do
+    member { patch :advance_status }
+    resources :tournament_events, only: %i[new create]
+  end
+
+  resources :tournament_events, only: %i[show edit update destroy] do
+    member do
+      post :generate_groups
+      post :generate_bracket
+    end
+    resources :tournament_teams,  only: %i[index new create]
+    resources :tournament_groups, only: %i[index new create]
+  end
+
+  resources :tournament_teams, only: %i[show edit update destroy] do
+    resources :tournament_team_members, only: %i[create destroy]
+  end
+
+  resources :tournament_groups, only: %i[show edit update destroy] do
+    resources :tournament_group_teams, only: %i[create destroy]
+  end
+
+  resources :matches, only: %i[show edit update] do
+    member { post :advance_winner }
+    resources :match_sets, only: %i[create update destroy]
   end
   resources :game_sessions, only: %i[index show new create edit update destroy] do
     resources :participations, only: %i[new create destroy], shallow: false

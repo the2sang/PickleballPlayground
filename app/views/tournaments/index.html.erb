@@ -1,0 +1,47 @@
+<% content_for :title, "#{@club.name} 대회" %>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow"><%= link_to @club.name, club_path(@club) %> <span class="sep">/</span> 대회</p>
+      <h1 class="cl-hero__title">대회 목록</h1>
+    </div>
+  </div>
+
+  <div class="cl-content" style="max-width:800px;">
+    <% if policy(Tournament.new(club: @club)).create? %>
+      <div style="text-align:right;margin-bottom:16px;">
+        <%= link_to new_club_tournament_path(@club), class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 새 대회
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @tournaments.empty? %>
+      <div class="cl-info-card" style="text-align:center;padding:40px 20px;">
+        <p style="color:var(--hcp-cool-gray);font-size:14px;">등록된 대회가 없습니다.</p>
+      </div>
+    <% else %>
+      <% status_labels = { "draft" => "준비중", "in_progress" => "진행중", "completed" => "완료" } %>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <% @tournaments.each do |t| %>
+          <%= link_to tournament_path(t), class: "cl-info-card", style: "display:block;text-decoration:none;" do %>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:16px;">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <span style="font-size:15px;font-weight:600;"><%= t.name %></span>
+                  <span class="cl-badge cl-badge--neutral"><%= status_labels[t.status] %></span>
+                </div>
+                <p style="font-size:13px;color:var(--hcp-cool-gray);">
+                  <%= t.starts_on&.strftime("%Y.%m.%d") %> ~ <%= t.ends_on&.strftime("%Y.%m.%d") %>
+                  &nbsp;·&nbsp; 종목 <%= t.tournament_events.size %>개
+                </p>
+              </div>
+              <iconify-icon icon="lucide:chevron-right" width="16" style="color:var(--hcp-cool-gray);"></iconify-icon>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
