@@ -85,4 +85,48 @@
       </div>
     <% end %>
   </div>
+
+  <div class="cl-content" style="margin-top:24px;">
+    <div class="cl-section-header">
+      <p class="cl-section-label">대회</p>
+      <% if policy(Tournament.new(club: @club)).create? %>
+        <%= link_to new_club_tournament_path(@club), class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 새 대회
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @tournaments.empty? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:trophy" width="18"></iconify-icon>
+        </div>
+        <p class="cl-empty__text">등록된 대회가 없습니다.</p>
+      </div>
+    <% else %>
+      <% status_labels = { "draft" => "준비중", "in_progress" => "진행중", "completed" => "완료" } %>
+      <div class="cl-list">
+        <% @tournaments.each do |t| %>
+          <%= link_to tournament_path(t), class: "cl-list-item", style: "display:flex; align-items:center; justify-content:space-between; text-decoration:none; color:inherit;" do %>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+              <div class="cl-list-item__icon">
+                <iconify-icon icon="lucide:trophy" width="14"></iconify-icon>
+              </div>
+              <div style="min-width:0;">
+                <p class="cl-list-item__title"><%= t.name %></p>
+                <p class="cl-list-item__meta">
+                  <%= t.starts_on&.strftime("%Y.%m.%d") %> ~ <%= t.ends_on&.strftime("%Y.%m.%d") %>
+                  &middot; 종목 <%= t.tournament_events.size %>개
+                </p>
+              </div>
+            </div>
+            <div style="flex-shrink:0; display:flex; align-items:center; gap:8px;">
+              <span class="cl-badge cl-badge--neutral"><%= status_labels[t.status] %></span>
+              <iconify-icon icon="lucide:chevron-right" width="16" style="color:var(--hcp-cool-gray);"></iconify-icon>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>
