@@ -493,6 +493,22 @@ body {
   font-size: 12px;
 }
 
+/* ── Btn KakaoTalk ─────────────────────────────────────── */
+.btn--kakao {
+  background: #FEE500;
+  color: #3C1E1E;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.btn--kakao:hover {
+  background: #e6ce00;
+  color: #3C1E1E;
+}
+
 /* ── Btn Extra Small ───────────────────────────────────── */
 .btn--xs {
   padding: 2px 8px;
