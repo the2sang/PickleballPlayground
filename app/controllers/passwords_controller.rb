@@ -15,7 +15,7 @@ class PasswordsController < ApplicationController
       return
     end
 
-    PasswordsMailer.reset(user).deliver_now
+    PasswordsMailer.reset(user).deliver_later
     redirect_to new_session_path,
                 notice: "#{user.email_address} 주소로 비밀번호 재설정 메일을 발송했습니다. 이메일을 확인해 주세요."
   rescue => e
