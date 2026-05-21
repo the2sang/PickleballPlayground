@@ -60,7 +60,7 @@
           <% @clubs.each do |club| %>
             <div class="cl-card-wrapper">
               <div class="cl-card" style="background-image: linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)), url('<%= asset_path('card_first.png') %>');">
-                <%= link_to club_path(club), class: "cl-card__stretched-link", aria: { label: club.name } do %><% end %>
+                <%= link_to club_path(club), class: "cl-card__stretched-link", aria: { label: club.name }, data: { turbo_frame: "_top" } do %><% end %>
                 <div class="cl-card__top">
                   <div class="cl-card__top-left">
                     <div class="cl-card__icon">
