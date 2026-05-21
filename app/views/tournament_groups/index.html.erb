@@ -1,1 +1,49 @@
-<p>tournament_groups#index</p>
+<% content_for :title, "조 편성" %>
+<% is_manager = policy(TournamentGroup).create? %>
+
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow">
+      <%= link_to @event.tournament.name, tournament_path(@event.tournament) %> /
+      <%= link_to @event.discipline.humanize, tournament_event_path(@event) %>
+    </p>
+    <h1 class="cl-hero__title">조 편성</h1>
+  </div></div>
+
+  <div class="cl-content" style="max-width:900px;">
+    <% if is_manager %>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+        <%= link_to new_tournament_event_tournament_group_path(@event), class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 조 추가
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @groups.empty? %>
+      <div class="cl-info-card">
+        <p style="padding:24px;text-align:center;font-size:14px;color:var(--hcp-cool-gray);">편성된 조가 없습니다.</p>
+      </div>
+    <% else %>
+      <% @groups.each do |group| %>
+        <div class="cl-info-card" style="margin-bottom:16px;">
+          <div class="cl-info-card__header" style="display:flex;justify-content:space-between;align-items:center;">
+            <p class="cl-info-card__header-label"><%= group.name %></p>
+            <%= link_to tournament_group_path(group), class: "btn btn--secondary btn--sm" do %>
+              <iconify-icon icon="lucide:list" width="13"></iconify-icon> 순위/경기
+            <% end %>
+          </div>
+          <% group.tournament_group_teams.each do |ggt| %>
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);font-size:14px;">
+              <span style="font-weight:500;"><%= ggt.tournament_team.name %></span>
+              <% if ggt.tournament_team.users.any? %>
+                <span style="font-size:12px;color:var(--hcp-cool-gray);">
+                  <%= ggt.tournament_team.users.map(&:display_name).join(", ") %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

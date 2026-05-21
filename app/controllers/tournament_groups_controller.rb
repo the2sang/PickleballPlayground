@@ -17,6 +17,8 @@ class TournamentGroupsController < ApplicationController
     @matches     = @group.matches
                          .includes(:home_team, :away_team, :winner, :match_sets)
                          .order(:match_number)
+    result       = TournamentGroups::StandingsService.call(tournament_group: @group)
+    @standings   = result.data
   end
 
   def new

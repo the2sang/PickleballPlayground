@@ -44,6 +44,8 @@ class MatchesController < ApplicationController
   def extract_sets(params)
     raw = params.permit(sets: %i[home_score away_score])[:sets]
     return [] if raw.blank?
-    raw.values.map { |s| { home_score: s[:home_score].to_i, away_score: s[:away_score].to_i } }
+    raw.values
+       .reject { |s| s[:home_score].blank? && s[:away_score].blank? }
+       .map { |s| { home_score: s[:home_score].to_i, away_score: s[:away_score].to_i } }
   end
 end

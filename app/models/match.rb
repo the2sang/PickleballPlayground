@@ -15,4 +15,8 @@ class Match < ApplicationRecord
   def next_round_started?
     next_match.present? && next_match.status.in?(%w[in_progress completed locked])
   end
+
+  def tournament_event
+    matchable.is_a?(TournamentEvent) ? matchable : matchable.tournament_event
+  end
 end

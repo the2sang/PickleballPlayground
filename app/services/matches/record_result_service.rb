@@ -40,7 +40,7 @@ module Matches
     private
 
     def validate_scores
-      points_to_win = @match.matchable.tournament_event.points_to_win
+      points_to_win = @match.tournament_event.points_to_win
 
       @sets.each do |set|
         h = set[:home_score].to_i

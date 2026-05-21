@@ -1,1 +1,119 @@
-<p>tournament_groups#show</p>
+<%
+  event    = @group.tournament_event
+  is_manager = policy(@group).update?
+%>
+<% content_for :title, @group.name %>
+
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow">
+      <%= link_to event.tournament.name, tournament_path(event.tournament) %> /
+      <%= link_to event.discipline.humanize, tournament_event_path(event) %> /
+      조
+    </p>
+    <h1 class="cl-hero__title"><%= @group.name %></h1>
+    <p class="cl-hero__subtitle"><%= @group_teams.size %>팀 참가</p>
+  </div></div>
+
+  <div class="cl-content" style="max-width:900px;">
+
+    <%# 순위표 %>
+    <div class="cl-info-card" style="margin-bottom:20px;">
+      <div class="cl-info-card__header">
+        <p class="cl-info-card__header-label">조 순위</p>
+      </div>
+      <% if @standings.blank? || @standings.all? { |r| r[:wins] == 0 && r[:losses] == 0 } %>
+        <p style="padding:16px;font-size:13px;color:var(--hcp-cool-gray);">아직 완료된 경기가 없습니다.</p>
+      <% end %>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:var(--hcp-bg-subtle,#f9fafb);border-bottom:2px solid var(--hcp-border,#e5e7eb);">
+              <th style="padding:8px 16px;text-align:center;width:40px;">순위</th>
+              <th style="padding:8px 16px;text-align:left;">팀</th>
+              <th style="padding:8px 16px;text-align:center;">승</th>
+              <th style="padding:8px 16px;text-align:center;">패</th>
+              <th style="padding:8px 16px;text-align:center;">승률</th>
+              <th style="padding:8px 16px;text-align:center;">점수 합계</th>
+              <th style="padding:8px 16px;text-align:center;">득실차</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @standings.each do |row| %>
+              <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+                <td style="padding:10px 16px;text-align:center;font-weight:600;"><%= row[:rank] %></td>
+                <td style="padding:10px 16px;font-weight:500;"><%= row[:team].name %></td>
+                <td style="padding:10px 16px;text-align:center;color:#16a34a;font-weight:600;"><%= row[:wins] %></td>
+                <td style="padding:10px 16px;text-align:center;color:#dc2626;"><%= row[:losses] %></td>
+                <td style="padding:10px 16px;text-align:center;"><%= "%.0f%%" % (row[:win_pct] * 100) %></td>
+                <td style="padding:10px 16px;text-align:center;"><%= row[:total_points] %></td>
+                <td style="padding:10px 16px;text-align:center;">
+                  <span style="color:<%= row[:point_diff] >= 0 ? '#16a34a' : '#dc2626' %>;">
+                    <%= row[:point_diff] >= 0 ? "+#{row[:point_diff]}" : row[:point_diff] %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <%# 경기 목록 %>
+    <div class="cl-info-card">
+      <div class="cl-info-card__header">
+        <p class="cl-info-card__header-label">경기 (<%= @matches.size %>)</p>
+      </div>
+
+      <% if @matches.empty? %>
+        <p style="padding:16px;font-size:13px;color:var(--hcp-cool-gray);">등록된 경기가 없습니다.</p>
+      <% else %>
+        <% @matches.each do |match| %>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+                <span style="font-weight:<%= match.winner_id == match.home_team_id ? '700' : '400' %>;">
+                  <%= match.home_team&.name || "BYE" %>
+                </span>
+                <span style="color:var(--hcp-cool-gray);font-size:12px;">vs</span>
+                <span style="font-weight:<%= match.winner_id == match.away_team_id ? '700' : '400' %>;">
+                  <%= match.away_team&.name || "BYE" %>
+                </span>
+              </div>
+              <% if match.completed? && match.match_sets.any? %>
+                <div style="font-size:12px;color:var(--hcp-cool-gray);margin-top:3px;">
+                  세트 결과:
+                  <% match.match_sets.each do |s| %>
+                    <%= s.home_score %>–<%= s.away_score %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;">
+              <% case match.status
+                 when "completed" %>
+                <span class="cl-badge cl-badge--success">완료</span>
+              <% when "in_progress" %>
+                <span class="cl-badge cl-badge--warning">진행중</span>
+              <% else %>
+                <span class="cl-badge cl-badge--muted">대기</span>
+              <% end %>
+
+              <%= link_to match_path(match), class: "btn btn--secondary btn--sm" do %>
+                <iconify-icon icon="lucide:eye" width="13"></iconify-icon> 보기
+              <% end %>
+
+              <% if is_manager && !match.completed? %>
+                <%= link_to edit_match_path(match), class: "btn btn--primary btn--sm" do %>
+                  <iconify-icon icon="lucide:pencil" width="13"></iconify-icon> 결과 입력
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+  </div>
+</div>
