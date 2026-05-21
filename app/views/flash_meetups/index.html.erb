@@ -76,7 +76,7 @@
                 </p>
                 <p class="cl-list-item__title"><%= fm.venue_name %></p>
                 <p class="cl-list-item__meta">
-                  <%= fm.scheduled_at.strftime("%Y.%m.%d(%a) %H:%M") %> &middot;
+                  <%= fm.scheduled_at.strftime("%Y.%m.%d(#{DAYS_KO[fm.scheduled_at.wday]}) %H:%M") %> &middot;
                   참가 <%= fm.confirmed_count %>명
                   <% if fm.max_participants.present? %>
                     / <%= fm.max_participants %>명
