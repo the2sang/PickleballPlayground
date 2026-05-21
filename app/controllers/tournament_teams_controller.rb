@@ -3,6 +3,7 @@ class TournamentTeamsController < ApplicationController
   before_action :resume_session, only: %i[index show]
   before_action :set_event,      only: %i[index new create]
   before_action :set_team,       only: %i[show edit update destroy]
+  before_action :set_event_from_team, only: %i[edit update]
 
   def index
     authorize TournamentTeam
@@ -54,8 +55,9 @@ class TournamentTeamsController < ApplicationController
 
   private
 
-  def set_event = @event = TournamentEvent.find(params[:tournament_event_id])
-  def set_team  = @team  = TournamentTeam.find(params[:id])
+  def set_event           = @event = TournamentEvent.find(params[:tournament_event_id])
+  def set_team            = @team  = TournamentTeam.find(params[:id])
+  def set_event_from_team = @event = @team.tournament_event
 
   def team_params
     params.require(:tournament_team).permit(:name, :seed)

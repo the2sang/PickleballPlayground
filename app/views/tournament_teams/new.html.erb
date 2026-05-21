@@ -1,1 +1,10 @@
-<p>tournament_teams#new</p>
+<% content_for :title, "팀 추가" %>
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow"><%= link_to @event.tournament.name, tournament_path(@event.tournament) %> / 팀 추가</p>
+    <h1 class="cl-hero__title">팀 추가</h1>
+  </div></div>
+  <div class="cl-content" style="max-width:600px;">
+    <%= render "form" %>
+  </div>
+</div>

@@ -1,1 +1,46 @@
-<p>tournament_teams#index</p>
+<% content_for :title, "참가팀" %>
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow"><%= link_to @event.tournament.name, tournament_path(@event.tournament) %> / 참가팀</p>
+    <h1 class="cl-hero__title">참가팀 목록</h1>
+  </div></div>
+  <div class="cl-content" style="max-width:700px;">
+    <% if policy(TournamentTeam.new(tournament_event: @event)).create? %>
+      <div style="text-align:right;margin-bottom:16px;">
+        <%= link_to new_tournament_event_tournament_team_path(@event), class: "btn btn--primary btn--sm" do %>
+          <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 팀 추가
+        <% end %>
+      </div>
+    <% end %>
+    <% if @teams.empty? %>
+      <div class="cl-info-card" style="text-align:center;padding:32px;">
+        <p style="color:var(--hcp-cool-gray);font-size:14px;">등록된 팀이 없습니다.</p>
+      </div>
+    <% else %>
+      <div class="cl-info-card">
+        <% @teams.each do |team| %>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+            <div>
+              <span style="font-weight:500;"><%= team.name %></span>
+              <% if team.seed.present? %>
+                <span class="cl-badge cl-badge--neutral" style="margin-left:6px;font-size:11px;">시드 <%= team.seed %></span>
+              <% end %>
+              <% if team.users.any? %>
+                <p style="font-size:12px;color:var(--hcp-cool-gray);margin-top:2px;"><%= team.users.map(&:display_name).join(", ") %></p>
+              <% end %>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <%= link_to tournament_team_path(team), class: "btn btn--secondary btn--sm" do %>멤버<% end %>
+              <% if policy(team).update? %>
+                <%= link_to edit_tournament_team_path(team), class: "btn btn--secondary btn--sm" do %>수정<% end %>
+                <%= button_to tournament_team_path(team), method: :delete,
+                      class: "btn btn--secondary btn--sm",
+                      form: { data: { turbo_confirm: "팀을 삭제하시겠습니까?" } } do %>삭제<% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

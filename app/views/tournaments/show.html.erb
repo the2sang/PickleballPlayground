@@ -1,1 +1,82 @@
-<p>tournaments#show</p>
+<% content_for :title, @tournament.name %>
+<%
+  status_labels = { "draft" => "준비중", "in_progress" => "진행중", "completed" => "완료" }
+  discipline_labels = {
+    "mens_singles" => "남자 단식", "mens_doubles" => "남자 복식",
+    "womens_singles" => "여자 단식", "womens_doubles" => "여자 복식", "mixed_doubles" => "혼합 복식"
+  }
+  event_status_labels = { "setup" => "설정", "qualifying" => "예선", "bracket" => "본선", "completed" => "완료" }
+  is_manager = policy(@tournament).update?
+%>
+
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow"><%= link_to @tournament.club.name, club_path(@tournament.club) %> / 대회</p>
+    <h1 class="cl-hero__title"><%= @tournament.name %></h1>
+    <p class="cl-hero__subtitle">
+      <%= @tournament.starts_on&.strftime("%Y.%m.%d") %> ~ <%= @tournament.ends_on&.strftime("%Y.%m.%d") %>
+    </p>
+  </div></div>
+
+  <div class="cl-content" style="max-width:800px;">
+    <%# 상태 + 관리 버튼 %>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:8px;">
+      <span class="cl-badge cl-badge--neutral" style="font-size:13px;"><%= status_labels[@tournament.status] %></span>
+      <% if is_manager %>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <% unless @tournament.completed? %>
+            <%= button_to advance_status_tournament_path(@tournament), method: :patch,
+                  class: "btn btn--primary btn--sm",
+                  data: { turbo_confirm: "대회 상태를 변경하시겠습니까?" } do %>
+              <iconify-icon icon="lucide:arrow-right-circle" width="13"></iconify-icon>
+              <%= @tournament.draft? ? "대회 시작" : "대회 완료" %>
+            <% end %>
+          <% end %>
+          <%= link_to edit_tournament_path(@tournament), class: "btn btn--secondary btn--sm" do %>
+            <iconify-icon icon="lucide:pencil" width="13"></iconify-icon> 수정
+          <% end %>
+          <% if @tournament.draft? %>
+            <%= button_to tournament_path(@tournament), method: :delete,
+                  class: "btn btn--secondary btn--sm",
+                  form: { data: { turbo_confirm: "대회를 삭제하시겠습니까?" } } do %>
+              <iconify-icon icon="lucide:trash-2" width="13"></iconify-icon> 삭제
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# 종목 목록 %>
+    <div class="cl-info-card">
+      <div class="cl-info-card__header" style="display:flex;justify-content:space-between;align-items:center;">
+        <p class="cl-info-card__header-label">종목</p>
+        <% if is_manager %>
+          <%= link_to new_tournament_tournament_event_path(@tournament), class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 종목 추가
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if @events.empty? %>
+        <p style="padding:16px;color:var(--hcp-cool-gray);font-size:13px;">등록된 종목이 없습니다.</p>
+      <% else %>
+        <% @events.each do |ev| %>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-weight:500;font-size:14px;"><%= discipline_labels[ev.discipline] %></span>
+                <span class="cl-badge cl-badge--neutral" style="font-size:11px;"><%= event_status_labels[ev.status] %></span>
+              </div>
+              <p style="font-size:12px;color:var(--hcp-cool-gray);margin-top:2px;">
+                <%= ev.singles? ? "단식" : "복식" %> · <%= ev.points_to_win %>점 · 조별 <%= ev.advances_per_group %>위 진출
+              </p>
+            </div>
+            <%= link_to tournament_event_path(ev), class: "btn btn--secondary btn--sm" do %>
+              <iconify-icon icon="lucide:arrow-right" width="13"></iconify-icon> 보기
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
