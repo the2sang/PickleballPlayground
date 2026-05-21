@@ -47,7 +47,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
 
 # Resend email delivery (HTTP API - Railway SMTP 차단 우회)
 gem "resend"
@@ -82,7 +82,7 @@ group :test do
   gem "shoulda-matchers"
 end
 
-gem "lexxy", "~> 0.9.11.beta"
+gem "lexxy", "~> 0.9.12.beta"
 gem "rubyzip"
 gem "faw_toast"
 gem "caxlsx"
