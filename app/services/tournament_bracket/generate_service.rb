@@ -53,40 +53,47 @@ module TournamentBracket
     end
 
     def build_bracket(seeded)
-      round       = 1
-      match_num   = 1
-      pairs       = seeded.each_slice(2).to_a
-      next_slots  = []
+      round     = 1
+      match_num = 1
 
-      while pairs.size > 1
-        current_round_matches = pairs.map do |home_team, away_team|
-          Match.create!(
-            matchable:    @event,
-            home_team:    home_team,
-            away_team:    away_team,
-            round:        round,
-            match_number: match_num,
-            status:       home_team.nil? || away_team.nil? ? :completed : :pending,
-            winner:       home_team.nil? ? away_team : (away_team.nil? ? home_team : nil)
-          ).tap { match_num += 1 }
-        end
-        next_slots << current_round_matches
-        pairs = current_round_matches.each_slice(2).map { |a, b| [ a, b ] }
-        round += 1
+      current_round = seeded.each_slice(2).map do |home_team, away_team|
+        is_bye = home_team.nil? || away_team.nil?
+        m = Match.create!(
+          matchable:    @event,
+          home_team:    home_team,
+          away_team:    away_team,
+          round:        round,
+          match_number: match_num,
+          status:       is_bye ? :completed : :pending,
+          winner:       home_team.nil? ? away_team : (away_team.nil? ? home_team : nil)
+        )
+        match_num += 1
+        m
       end
 
-      # 결승
-      semi_pairs = next_slots.last
-      final = Match.create!(
-        matchable:    @event,
-        home_team:    nil,
-        away_team:    nil,
-        round:        round,
-        match_number: match_num,
-        status:       :pending
-      )
+      while current_round.size > 1
+        round += 1
+        next_round = current_round.each_slice(2).map do |m1, m2|
+          parent = Match.create!(
+            matchable:    @event,
+            home_team:    nil,
+            away_team:    nil,
+            round:        round,
+            match_number: match_num,
+            status:       :pending
+          )
+          match_num += 1
 
-      semi_pairs.each { |m| m.update!(next_match: final) }
+          m1.update!(next_match: parent)
+          m2&.update!(next_match: parent)
+
+          parent.update!(home_team: m1.winner) if m1.winner.present?
+          parent.update!(away_team: m2.winner) if m2&.winner.present?
+
+          parent
+        end
+        current_round = next_round
+      end
     end
 
     def next_power_of_two(n)

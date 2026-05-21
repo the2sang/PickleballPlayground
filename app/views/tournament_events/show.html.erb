@@ -77,7 +77,7 @@
 
     <%# 조 편성 섹션 (예선 이상) %>
     <% if @event.qualifying? || @event.bracket? || @event.completed? %>
-      <div class="cl-info-card">
+      <div class="cl-info-card" style="margin-bottom:16px;">
         <div class="cl-info-card__header" style="display:flex;justify-content:space-between;align-items:center;">
           <p class="cl-info-card__header-label">조 편성 (<%= @groups.size %>조)</p>
         </div>
@@ -87,6 +87,76 @@
             <span style="font-size:12px;color:var(--hcp-cool-gray);margin-left:8px;">
               <%= group.teams.map(&:name).join(", ") %>
             </span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# 본선 브라켓 (bracket / completed) %>
+    <% if @event.bracket? || @event.completed? %>
+      <%
+        bracket_matches = @event.matches
+                                .includes(:home_team, :away_team, :winner)
+                                .order(:round, :match_number)
+        rounds = bracket_matches.group_by(&:round)
+        max_round = rounds.keys.max || 0
+        round_labels = {}
+        rounds.each_key do |r|
+          round_labels[r] = if r == max_round
+                              "결승"
+                            elsif r == max_round - 1
+                              "준결승"
+                            else
+                              "#{r}라운드"
+                            end
+        end
+      %>
+      <div class="cl-info-card">
+        <div class="cl-info-card__header">
+          <p class="cl-info-card__header-label">본선 대진표</p>
+        </div>
+
+        <% rounds.sort.each do |round_num, matches| %>
+          <div style="padding:12px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+            <p style="font-size:12px;font-weight:600;color:var(--hcp-cool-gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">
+              <%= round_labels[round_num] %>
+            </p>
+            <% matches.each do |m| %>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed var(--hcp-border,#e5e7eb);font-size:14px;">
+                <div style="flex:1;">
+                  <span style="font-weight:<%= m.winner_id == m.home_team_id && m.winner_id ? '700' : '400' %>;">
+                    <%= m.home_team&.name || (m.status == "pending" ? "TBD" : "BYE") %>
+                  </span>
+                  <span style="color:var(--hcp-cool-gray);margin:0 8px;font-size:12px;">vs</span>
+                  <span style="font-weight:<%= m.winner_id == m.away_team_id && m.winner_id ? '700' : '400' %>;">
+                    <%= m.away_team&.name || (m.status == "pending" ? "TBD" : "BYE") %>
+                  </span>
+                  <% if m.winner %>
+                    <span class="cl-badge cl-badge--success" style="margin-left:8px;font-size:11px;">
+                      <%= m.winner.name %> 승
+                    </span>
+                  <% end %>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <% case m.status
+                     when "completed", "locked" %>
+                    <span class="cl-badge cl-badge--muted">완료</span>
+                  <% when "in_progress" %>
+                    <span class="cl-badge cl-badge--warning">진행중</span>
+                  <% else %>
+                    <span class="cl-badge cl-badge--muted">대기</span>
+                  <% end %>
+                  <%= link_to match_path(m), class: "btn btn--secondary btn--sm" do %>
+                    <iconify-icon icon="lucide:eye" width="12"></iconify-icon>
+                  <% end %>
+                  <% if is_manager && m.pending? && m.home_team && m.away_team %>
+                    <%= link_to edit_match_path(m), class: "btn btn--primary btn--sm" do %>
+                      <iconify-icon icon="lucide:pencil" width="12"></iconify-icon>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           </div>
         <% end %>
       </div>
