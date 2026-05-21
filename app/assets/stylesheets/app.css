@@ -4899,7 +4899,7 @@ lexxy-editor.lexxy-editor-field {
   cursor: pointer;
   padding: 0;
   color: #d1d5db;
-  line-height: 0;
+  line-height: 1;
   display: block;
 }
 
@@ -4911,7 +4911,14 @@ lexxy-editor.lexxy-editor-field {
   color: #f59e0b;
   background: #fef3c7;
   border-radius: 6px;
-  padding: 3px;
+  padding: 3px 6px;
+}
+
+.cl-fav-btn__label {
+  font-size: 11px;
+  font-weight: 500;
+  vertical-align: middle;
+  margin-left: 2px;
 }
 
 /* button_to generates a <form> — reset its styles */
@@ -4925,8 +4932,10 @@ lexxy-editor.lexxy-editor-field {
   padding: 0;
   cursor: pointer;
   color: inherit;
-  line-height: 0;
-  display: block;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .cl-card__kakao {
