@@ -1,7 +1,6 @@
 <% favorited = favorited_club_ids.include?(club.id) %>
-<% can_fav   = member_club_ids.include?(club.id) %>
 
-<% if can_fav %>
+<% if authenticated? %>
   <% if favorited %>
     <%= button_to club_favorite_path(club),
           method: :delete,
