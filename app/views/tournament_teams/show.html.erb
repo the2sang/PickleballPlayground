@@ -1,0 +1,70 @@
+<% content_for :title, @team.name %>
+<%
+  event = @team.tournament_event
+  club  = event.tournament.club
+  is_manager = policy(@team).update?
+  club_members = club.club_memberships.approved.includes(:user).map(&:user)
+  already_member_ids = @members.map(&:user_id).to_set
+%>
+
+<div class="cl-page">
+  <div class="cl-hero"><div class="cl-hero__inner">
+    <p class="cl-hero__eyebrow"><%= link_to event.tournament.name, tournament_path(event.tournament) %> / 팀</p>
+    <h1 class="cl-hero__title"><%= @team.name %></h1>
+    <% if @team.seed.present? %>
+      <p class="cl-hero__subtitle">시드 <%= @team.seed %></p>
+    <% end %>
+  </div></div>
+
+  <div class="cl-content" style="max-width:600px;">
+    <%# 팀원 목록 %>
+    <div class="cl-info-card" style="margin-bottom:16px;">
+      <div class="cl-info-card__header">
+        <p class="cl-info-card__header-label">팀원 (<%= @members.size %>명)</p>
+      </div>
+      <% if @members.empty? %>
+        <p style="padding:16px;color:var(--hcp-cool-gray);font-size:13px;">등록된 팀원이 없습니다.</p>
+      <% else %>
+        <% @members.each do |m| %>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
+            <span style="font-size:14px;font-weight:500;"><%= m.user.display_name %></span>
+            <% if is_manager && policy(m).destroy? %>
+              <%= button_to tournament_team_tournament_team_member_path(@team, m), method: :delete,
+                    class: "btn btn--secondary btn--sm",
+                    form: { data: { turbo_confirm: "팀원을 제거하시겠습니까?" } } do %>
+                <iconify-icon icon="lucide:x" width="11"></iconify-icon>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# 팀원 추가 (매니저, 최대 팀 사이즈 미만) %>
+    <% if is_manager && @members.size < event.max_team_size %>
+      <div class="cl-info-card">
+        <div class="cl-info-card__header"><p class="cl-info-card__header-label">팀원 추가</p></div>
+        <div style="padding:12px 16px;">
+          <%= form_with url: tournament_team_tournament_team_members_path(@team), method: :post do |f| %>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <%= f.select :tournament_team_member_user_id,
+                    club_members.reject { |u| already_member_ids.include?(u.id) }
+                                .map { |u| [u.display_name, u.id] },
+                    { prompt: "클럽 멤버 선택" }, class: "cl-form__select", name: "tournament_team_member[user_id]" %>
+              <%= f.submit "추가", class: "btn btn--primary btn--sm" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <%= link_to tournament_event_tournament_teams_path(event), class: "btn btn--secondary btn--sm" do %>
+        <iconify-icon icon="lucide:arrow-left" width="13"></iconify-icon> 팀 목록
+      <% end %>
+      <% if is_manager %>
+        <%= link_to edit_tournament_team_path(@team), class: "btn btn--secondary btn--sm" do %>수정<% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

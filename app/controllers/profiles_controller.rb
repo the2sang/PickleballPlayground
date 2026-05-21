@@ -15,7 +15,9 @@ class ProfilesController < ApplicationController
 
     if @user.update(profile_params.merge(profile_completed_at: Time.current))
       Users::SyncDuprRatingJob.perform_later(@user.id) if dupr_id_changed && @user.dupr_id.present?
-      redirect_to(session.delete(:return_to) || root_path, notice: "프로필이 저장되었습니다.")
+      after = params[:redirect_after].presence
+      after = nil unless after&.start_with?("/")
+      redirect_to(after || session.delete(:return_to) || root_path, notice: "기본 정보가 저장되었습니다.")
     else
       render :edit, status: :unprocessable_entity
     end

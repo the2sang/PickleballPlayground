@@ -6,6 +6,7 @@ RSpec.describe "FlashMeetups", type: :request do
   let(:meetup)   { create(:flash_meetup, user: user) }
   let(:valid_params) do
     { flash_meetup: { venue_name: "테스트 코트", scheduled_at: 2.days.from_now,
+                      ends_at: 2.days.from_now + 2.hours,
                       gender_filter: "all_genders", level_filter: "all_levels",
                       allowed_age_groups: [] } }
   end

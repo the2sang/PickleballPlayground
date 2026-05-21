@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_19_054401) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_21_073441) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -174,6 +174,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_054401) do
     t.index ["user_id"], name: "index_manpower_records_on_user_id"
   end
 
+  create_table "match_sets", force: :cascade do |t|
+    t.integer "away_score", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "home_score", default: 0, null: false
+    t.integer "match_id", null: false
+    t.integer "set_number", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id", "set_number"], name: "index_match_sets_on_match_id_and_set_number", unique: true
+    t.index ["match_id"], name: "index_match_sets_on_match_id"
+  end
+
+  create_table "matches", force: :cascade do |t|
+    t.integer "away_team_id"
+    t.datetime "created_at", null: false
+    t.integer "home_team_id"
+    t.integer "match_number", null: false
+    t.integer "matchable_id", null: false
+    t.string "matchable_type", null: false
+    t.integer "next_match_id"
+    t.integer "round", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "winner_id"
+    t.index ["away_team_id"], name: "index_matches_on_away_team_id"
+    t.index ["home_team_id"], name: "index_matches_on_home_team_id"
+    t.index ["matchable_type", "matchable_id"], name: "index_matches_on_matchable_type_and_matchable_id"
+    t.index ["next_match_id"], name: "index_matches_on_next_match_id"
+    t.index ["status"], name: "index_matches_on_status"
+  end
+
   create_table "member_records", force: :cascade do |t|
     t.string "address"
     t.date "birth_date"
@@ -264,6 +294,69 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_054401) do
     t.index ["chat_id", "telegram_message_id"], name: "index_telegram_prompts_on_chat_id_and_telegram_message_id", unique: true
     t.index ["chat_id"], name: "index_telegram_prompts_on_chat_id"
     t.index ["status"], name: "index_telegram_prompts_on_status"
+  end
+
+  create_table "tournament_events", force: :cascade do |t|
+    t.integer "advances_per_group", default: 2, null: false
+    t.datetime "created_at", null: false
+    t.integer "discipline", null: false
+    t.integer "points_to_win", default: 11, null: false
+    t.integer "scoring_format", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.integer "tournament_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_tournament_events_on_status"
+    t.index ["tournament_id"], name: "index_tournament_events_on_tournament_id"
+  end
+
+  create_table "tournament_group_teams", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "tournament_group_id", null: false
+    t.integer "tournament_team_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_group_id", "tournament_team_id"], name: "idx_on_tournament_group_id_tournament_team_id_8caa3778ee", unique: true
+    t.index ["tournament_group_id"], name: "index_tournament_group_teams_on_tournament_group_id"
+    t.index ["tournament_team_id"], name: "index_tournament_group_teams_on_tournament_team_id"
+  end
+
+  create_table "tournament_groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "tournament_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_event_id"], name: "index_tournament_groups_on_tournament_event_id"
+  end
+
+  create_table "tournament_team_members", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "tournament_team_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["tournament_team_id", "user_id"], name: "idx_on_tournament_team_id_user_id_13e0b128e9", unique: true
+    t.index ["tournament_team_id"], name: "index_tournament_team_members_on_tournament_team_id"
+    t.index ["user_id"], name: "index_tournament_team_members_on_user_id"
+  end
+
+  create_table "tournament_teams", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "seed"
+    t.integer "tournament_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_event_id"], name: "index_tournament_teams_on_tournament_event_id"
+  end
+
+  create_table "tournaments", force: :cascade do |t|
+    t.integer "club_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.date "ends_on"
+    t.string "name", null: false
+    t.date "starts_on"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_tournaments_on_club_id"
+    t.index ["status"], name: "index_tournaments_on_status"
   end
 
   create_table "users", force: :cascade do |t|

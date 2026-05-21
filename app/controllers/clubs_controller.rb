@@ -38,7 +38,7 @@ class ClubsController < ApplicationController
 
   def show
     authorize @club
-    @game_sessions = policy_scope(GameSession).where(club: @club).order(scheduled_date: :desc)
+    @game_sessions = policy_scope(GameSession).where(club: @club).order(scheduled_date: :asc)
   end
 
   def new

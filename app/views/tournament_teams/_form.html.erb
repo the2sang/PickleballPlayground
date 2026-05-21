@@ -1,0 +1,22 @@
+<%
+  url = @team.persisted? ? tournament_team_path(@team) : tournament_event_tournament_teams_path(@event)
+  method = @team.persisted? ? :patch : :post
+%>
+<%= form_with model: @team, url: url, method: method, class: "cl-form" do |f| %>
+  <% if @team.errors.any? %>
+    <div class="cl-form__error">
+      <% @team.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+    </div>
+  <% end %>
+  <div class="cl-form__grid">
+    <div class="cl-form__field">
+      <%= f.label :name, "팀명", class: "cl-form__label" %>
+      <%= f.text_field :name, class: "cl-form__input", placeholder: "예: 김철수 / 이영희" %>
+    </div>
+    <div class="cl-form__field">
+      <%= f.label :seed, "시드 (선택)", class: "cl-form__label" %>
+      <%= f.number_field :seed, min: 1, class: "cl-form__input", placeholder: "미설정" %>
+    </div>
+  </div>
+  <%= f.submit @team.persisted? ? "수정" : "등록", class: "cl-form__submit" %>
+<% end %>

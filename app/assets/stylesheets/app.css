@@ -493,6 +493,22 @@ body {
   font-size: 12px;
 }
 
+/* ── Btn KakaoTalk ─────────────────────────────────────── */
+.btn--kakao {
+  background: #FEE500;
+  color: #3C1E1E;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.btn--kakao:hover {
+  background: #e6ce00;
+  color: #3C1E1E;
+}
+
 /* ── Btn Extra Small ───────────────────────────────────── */
 .btn--xs {
   padding: 2px 8px;
@@ -839,7 +855,7 @@ a:hover {
 /* ── Footer ────────────────────────────────────────────── */
 .footer {
   background-color: #ffffff;
-  border-top: 1px solid var(--nav-border);
+  border-top: 1px solid var(--hcp-border-light);
   padding: 24px 24px;
   overflow: hidden;
   max-height: 200px;
@@ -1023,10 +1039,10 @@ body.auth-body {
 }
 
 .auth-logo__img {
-  height: 48px;
+  height: 72px;
   width: auto;
   padding: 8px 16px;
-  background: #84cc16;
+  background: #f4f5f5;
   border-radius: 12px;
 }
 
@@ -4669,7 +4685,7 @@ lexxy-editor.lexxy-editor-field {
 .cl-hero__inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 56px 24px;
+  padding: 42px 24px;
 }
 .cl-hero__row {
   display: flex;
@@ -4755,6 +4771,19 @@ lexxy-editor.lexxy-editor-field {
   text-decoration: none;
 }
 .cl-search-bar__clear:hover { color: var(--hcp-charcoal); }
+.cl-shortcut-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--hcp-mid-gray);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.cl-shortcut-link:hover {
+  color: var(--hcp-black);
+}
 .cl-search-result-info {
   font-size: 13px;
   color: var(--hcp-cool-gray);
@@ -4899,7 +4928,7 @@ lexxy-editor.lexxy-editor-field {
   cursor: pointer;
   padding: 0;
   color: #d1d5db;
-  line-height: 0;
+  line-height: 1;
   display: block;
 }
 
@@ -4911,7 +4940,14 @@ lexxy-editor.lexxy-editor-field {
   color: #f59e0b;
   background: #fef3c7;
   border-radius: 6px;
-  padding: 3px;
+  padding: 3px 6px;
+}
+
+.cl-fav-btn__label {
+  font-size: 11px;
+  font-weight: 500;
+  vertical-align: middle;
+  margin-left: 2px;
 }
 
 /* button_to generates a <form> — reset its styles */
@@ -4925,8 +4961,10 @@ lexxy-editor.lexxy-editor-field {
   padding: 0;
   cursor: pointer;
   color: inherit;
-  line-height: 0;
-  display: block;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .cl-card__kakao {
@@ -5052,8 +5090,20 @@ lexxy-editor.lexxy-editor-field {
   flex-shrink: 0;
 }
 .cl-list-item__count {
-  font-size: 11px;
-  color: var(--hcp-cool-gray);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  min-height: 26px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 50%;
+  line-height: 1.3;
+  text-align: center;
+  padding: 4px;
 }
 
 .cl-session-hint {
@@ -5061,6 +5111,25 @@ lexxy-editor.lexxy-editor-field {
   font-size: 12px;
   color: var(--hcp-cool-gray);
   text-align: center;
+}
+
+.cl-session-group__header {
+  margin-bottom: 8px;
+}
+
+.cl-session-group__club-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hcp-charcoal);
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.cl-session-group__club-link:hover {
+  color: var(--color-primary);
 }
 
 /* ── Info Card (session detail) ─────────────────────────────── */
@@ -5474,4 +5543,46 @@ lexxy-editor.lexxy-editor-field {
 @keyframes faw-toast-slideOutRight {
   from { transform: translateX(0);    opacity: 1; }
   to   { transform: translateX(110%); opacity: 0; }
+}
+
+/* ── Profile Required Dialog ─────────────────────────────── */
+.profile-required-dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.profile-required-dialog::backdrop {
+  background: rgba(0,0,0,0.45);
+}
+.profile-required-dialog__box {
+  padding: 32px 28px 28px;
+  text-align: center;
+  position: relative;
+}
+.profile-required-dialog__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+}
+.profile-required-dialog__icon { margin-bottom: 16px; }
+.profile-required-dialog__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 12px;
+}
+.profile-required-dialog__desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+  margin: 0 0 24px;
 }

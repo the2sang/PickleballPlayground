@@ -17,9 +17,34 @@
   <div class="cl-content">
     <% if authenticated? %>
       <div style="text-align:right;margin-bottom:16px;">
-        <%= link_to new_flash_meetup_path, class: "btn btn--primary btn--sm" do %>
-          <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
-          운동모임 개설
+        <% if Current.user.profile_complete? %>
+          <%= link_to new_flash_meetup_path, class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+            운동모임 개설
+          <% end %>
+        <% else %>
+          <div data-controller="modal">
+            <button class="btn btn--primary btn--sm" data-action="click->modal#open">
+              <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+              운동모임 개설
+            </button>
+
+            <dialog class="profile-required-dialog" data-modal-target="dialog" data-action="click->modal#backdropClose">
+              <div class="profile-required-dialog__box">
+                <button class="profile-required-dialog__close" data-action="click->modal#close" aria-label="닫기">&times;</button>
+                <div class="profile-required-dialog__icon">
+                  <iconify-icon icon="lucide:user-circle" width="40" style="color:#f97316;"></iconify-icon>
+                </div>
+                <h2 class="profile-required-dialog__title">기본 정보 등록</h2>
+                <p class="profile-required-dialog__desc">운동모임 개설을 위해 기본 정보를 먼저 등록해 주세요.</p>
+                <%= turbo_frame_tag "profile_modal_form",
+                      src: edit_profile_path(redirect_after: new_flash_meetup_path),
+                      loading: :lazy do %>
+                  <p style="text-align:center;color:#999;padding:20px;">로딩 중...</p>
+                <% end %>
+              </div>
+            </dialog>
+          </div>
         <% end %>
       </div>
     <% end %>
@@ -51,7 +76,7 @@
                 </p>
                 <p class="cl-list-item__title"><%= fm.venue_name %></p>
                 <p class="cl-list-item__meta">
-                  <%= fm.scheduled_at.strftime("%Y.%m.%d(%a) %H:%M") %> &middot;
+                  <%= "#{format_session_date(fm.scheduled_at)} #{fm.scheduled_at.strftime('%H:%M')}" %> &middot;
                   참가 <%= fm.confirmed_count %>명
                   <% if fm.max_participants.present? %>
                     / <%= fm.max_participants %>명
