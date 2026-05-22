@@ -23,8 +23,7 @@ class ApplicationPolicy
   def club_manager?(club)
     return false unless user.present?
     return true if user.role_admin?
-    return false unless user.role_club?
-    return true if club.owner_id == user.id
+    return true if club&.owner_id == user.id
     membership = user.club_memberships.find_by(club: club)
     membership.present? && membership.manager? && membership.approved?
   end

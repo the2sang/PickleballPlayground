@@ -7,7 +7,7 @@ FactoryBot.define do
     sport_level { :beginner }
     age_group { :twenties }
     gender { :unspecified }
-    role { :user }
+    role { :role_user }
     profile_completed_at { nil }
 
     trait :profile_complete do
@@ -15,7 +15,7 @@ FactoryBot.define do
     end
 
     trait :admin do
-      role { :admin }
+      role { :role_admin }
       profile_completed_at { Time.current }
     end
 
