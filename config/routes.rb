@@ -77,6 +77,8 @@ Rails.application.routes.draw do
     resources :sessions, only: %i[index]
     resources :groups
     resources :clubs, only: %i[index show update]
+    get  "data_management",         to: "data_management#show",    as: :data_management
+    post "data_management/execute", to: "data_management#execute", as: :data_management_execute
   end
 
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

@@ -1,0 +1,104 @@
+<% content_for :title, "데이터 관리" %>
+
+<div class="page"
+     data-controller="sql-console"
+     data-sql-console-execute-url-value="<%= admin_data_management_execute_path %>"
+     data-sql-console-csrf-token-value="<%= form_authenticity_token %>">
+
+  <div class="page__header">
+    <h1 class="page__title" style="display:flex;align-items:center;gap:8px;">
+      <iconify-icon icon="lucide:database" style="color:var(--hcp-purple);"></iconify-icon>
+      데이터 관리
+    </h1>
+    <div class="page__header-actions">
+      <%= link_to admin_root_path, class: "btn btn--ghost btn--sm" do %>
+        <iconify-icon icon="lucide:arrow-left"></iconify-icon> 대시보드
+      <% end %>
+    </div>
+  </div>
+
+  <%# 경고 배너 %>
+  <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;
+              background:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin-bottom:24px;">
+    <iconify-icon icon="lucide:triangle-alert" style="font-size:16px;color:#dc2626;flex-shrink:0;margin-top:1px;"></iconify-icon>
+    <p style="font-size:13px;color:#991b1b;line-height:1.5;margin:0;">
+      <strong>주의:</strong> 운영 DB에 직접 실행됩니다. DML(INSERT·UPDATE·DELETE) 실행 전 반드시 SELECT로 대상 데이터를 확인하세요.
+      모든 실행 내역은 서버 로그에 기록됩니다.
+    </p>
+  </div>
+
+  <%# SQL 입력 영역 %>
+  <div class="admin-table" style="margin-bottom:0;border-radius:10px 10px 0 0;overflow:hidden;">
+    <div style="padding:14px 16px;background:var(--hcp-surface,#f5f5f7);border-bottom:1px solid var(--hcp-border-light);
+                display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:12px;font-weight:600;color:var(--hcp-mid-gray);text-transform:uppercase;letter-spacing:0.06em;">
+        SQL 편집기
+      </span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:11px;color:var(--hcp-cool-gray);">Ctrl+Enter로 실행</span>
+        <button class="btn btn--ghost btn--sm"
+                data-action="click->sql-console#clear"
+                type="button">
+          <iconify-icon icon="lucide:rotate-ccw" style="font-size:13px;"></iconify-icon>
+          초기화
+        </button>
+      </div>
+    </div>
+    <textarea
+      data-sql-console-target="input"
+      data-action="keydown->sql-console#keydown"
+      placeholder="SELECT * FROM users LIMIT 10;"
+      spellcheck="false"
+      style="width:100%;min-height:160px;padding:16px;font-family:'Courier New',Courier,monospace;
+             font-size:13px;line-height:1.6;border:none;resize:vertical;outline:none;
+             background:#1e1e2e;color:#cdd6f4;tab-size:2;"></textarea>
+    <div style="padding:12px 16px;background:var(--hcp-surface,#f5f5f7);border-top:1px solid var(--hcp-border-light);
+                display:flex;align-items:center;gap:12px;">
+      <button class="btn btn--primary btn--sm"
+              data-action="click->sql-console#execute"
+              data-sql-console-target="runBtn"
+              type="button">
+        <iconify-icon icon="lucide:play" style="font-size:13px;"></iconify-icon>
+        실행
+      </button>
+
+      <%# 빠른 쿼리 버튼 %>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <% [
+          ["users", "SELECT id, email_address, nickname, role, created_at FROM users ORDER BY created_at DESC LIMIT 20;"],
+          ["clubs", "SELECT id, name, status, owner_id, created_at FROM clubs ORDER BY created_at DESC LIMIT 20;"],
+          ["club_memberships", "SELECT cm.id, u.email_address, c.name AS club_name, cm.role, cm.status FROM club_memberships cm JOIN users u ON u.id=cm.user_id JOIN clubs c ON c.id=cm.club_id ORDER BY cm.created_at DESC LIMIT 20;"],
+        ].each do |label, query| %>
+          <button class="btn btn--ghost btn--sm"
+                  style="font-size:11px;"
+                  data-action="click->sql-console#preset"
+                  data-sql-console-query-param="<%= query %>"
+                  type="button">
+            <%= label %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# 결과 영역 %>
+  <div data-sql-console-target="result"
+       style="border:1px solid var(--hcp-border-light);border-top:none;
+              border-radius:0 0 10px 10px;min-height:80px;overflow:auto;">
+    <div style="padding:20px;text-align:center;color:var(--hcp-cool-gray);font-size:13px;">
+      SQL을 입력하고 실행 버튼을 누르세요.
+    </div>
+  </div>
+
+  <%# 실행 이력 %>
+  <div style="margin-top:32px;">
+    <p style="font-size:12px;font-weight:600;color:var(--hcp-mid-gray);text-transform:uppercase;
+              letter-spacing:0.06em;margin-bottom:12px;">실행 이력 (세션 내)</p>
+    <div data-sql-console-target="history"
+         style="font-size:12px;font-family:'Courier New',Courier,monospace;
+                background:#1e1e2e;color:#a6e3a1;border-radius:8px;padding:16px;
+                max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;">
+      <span style="color:#585b70;">-- 실행 이력이 여기에 표시됩니다 --</span>
+    </div>
+  </div>
+</div>
