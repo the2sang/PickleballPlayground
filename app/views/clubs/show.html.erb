@@ -15,26 +15,71 @@
             <iconify-icon icon="lucide:users" width="13" style="color:var(--hcp-cool-gray)"></iconify-icon>
             <span style="font-size:12px; color:var(--hcp-mid-gray);">회원 <%= @club.club_memberships.approved.count %>명</span>
           </div>
-          <% unless Current.user&.club_memberships&.exists?(club: @club) %>
-            <div style="margin-top:12px;">
-              <% if Current.user %>
-                <%= button_to club_club_memberships_path(@club), method: :post, class: "btn btn--primary btn--sm" do %>
-                  <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
-                  회원가입
+          <turbo-frame id="club-join-<%= @club.id %>">
+            <% unless Current.user&.club_memberships&.exists?(club: @club) %>
+              <div style="margin-top:12px;">
+                <% if Current.user %>
+                  <%# 로그인 상태: 가이드라인 모달 트리거 %>
+                  <div data-controller="modal">
+                    <button type="button"
+                            class="btn btn--primary btn--sm"
+                            data-action="click->modal#open">
+                      <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
+                      회원가입
+                    </button>
+
+                    <dialog class="club-join-dialog"
+                            data-modal-target="dialog"
+                            data-action="click->modal#backdropClose">
+                      <div class="club-join-dialog__inner">
+                        <div class="club-join-dialog__header">
+                          <iconify-icon icon="lucide:shield-check" width="24" class="club-join-dialog__icon"></iconify-icon>
+                          <h2 class="club-join-dialog__title">동호회 가입 안내</h2>
+                        </div>
+                        <div class="club-join-dialog__body">
+                          <p class="club-join-dialog__lead">
+                            <strong><%= @club.name %></strong>에 가입하기 전 아래 가이드를 확인해 주세요.
+                          </p>
+                          <ol class="club-join-dialog__guidelines">
+                            <li>회원은 상호 존중과 배려의 자세로 활동합니다.</li>
+                            <li>경기 중 공정한 플레이와 스포츠맨십을 지킵니다.</li>
+                            <li>클럽 시설 및 장비를 소중히 사용하고 원상 복구합니다.</li>
+                            <li>활동 일정 참석이 어려울 경우 사전에 알립니다.</li>
+                            <li>클럽 내 개인 정보는 활동 목적 외에 사용하지 않습니다.</li>
+                            <li>가입 후 관리자 승인이 완료되어야 활동이 가능합니다.</li>
+                          </ol>
+                        </div>
+                        <div class="club-join-dialog__footer">
+                          <button type="button"
+                                  class="btn btn--ghost btn--sm"
+                                  data-action="click->modal#close">
+                            취소
+                          </button>
+                          <%= button_to club_club_memberships_path(@club),
+                                method: :post,
+                                class: "btn btn--primary btn--sm" do %>
+                            <iconify-icon icon="lucide:check" width="13"></iconify-icon>
+                            동의하고 가입하기
+                          <% end %>
+                        </div>
+                      </div>
+                    </dialog>
+                  </div>
+                <% else %>
+                  <%# 비로그인: 회원가입 유도 %>
+                  <%= link_to new_registration_path(return_to: club_path(@club)), class: "btn btn--primary btn--sm" do %>
+                    <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
+                    회원가입
+                  <% end %>
+                  <span style="font-size:11px; color:var(--hcp-cool-gray); margin-left:8px;">
+                    이미 계정이 있으신가요?
+                    <%= link_to "로그인", new_session_path(return_to: club_path(@club)),
+                          style: "color:var(--hcp-purple); text-decoration:underline;" %>
+                  </span>
                 <% end %>
-              <% else %>
-                <%= link_to new_registration_path(return_to: club_path(@club)), class: "btn btn--primary btn--sm" do %>
-                  <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
-                  회원가입
-                <% end %>
-                <span style="font-size:11px; color:var(--hcp-cool-gray); margin-left:8px;">
-                  이미 계정이 있으신가요?
-                  <%= link_to "로그인", new_session_path(return_to: club_path(@club)),
-                        style: "color:var(--hcp-purple); text-decoration:underline;" %>
-                </span>
-              <% end %>
-            </div>
-          <% end %>
+              </div>
+            <% end %>
+          </turbo-frame>
         </div>
       </div>
     </div>

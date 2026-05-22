@@ -12,9 +12,15 @@ class ClubMembershipsController < ApplicationController
     @membership = @club.club_memberships.build(user: Current.user)
     authorize @membership
     if @membership.save
-      redirect_to @club, notice: "가입 신청이 완료되었습니다."
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to @club, notice: "가입 신청이 완료되었습니다." }
+      end
     else
-      redirect_to @club, alert: @membership.errors.full_messages.join(", ")
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("club-join-#{@club.id}", partial: "club_memberships/join_error", locals: { club: @club, errors: @membership.errors.full_messages }) }
+        format.html { redirect_to @club, alert: @membership.errors.full_messages.join(", ") }
+      end
     end
   end
 

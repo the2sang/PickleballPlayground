@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "club-join-#{@club.id}" do %>
+  <div data-controller="club-join" class="club-join-welcome">
+    <div class="club-join-welcome__icon">
+      <iconify-icon icon="lucide:party-popper" width="32"></iconify-icon>
+    </div>
+    <p class="club-join-welcome__title"><%= @club.name %>에 오신 것을 환영합니다!</p>
+    <p class="club-join-welcome__sub">가입 신청이 완료되었습니다. 관리자 승인 후 활동하실 수 있습니다.</p>
+  </div>
+<% end %>
