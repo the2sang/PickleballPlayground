@@ -19,6 +19,6 @@ class FlashMeetupPolicy < ApplicationPolicy
   private
 
   def organizer_or_admin?
-    user.present? && (record.user == user || user.admin?)
+    user.present? && (record.user == user || site_admin?)
   end
 end

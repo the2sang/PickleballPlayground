@@ -8,12 +8,12 @@ class FlashMeetupParticipationPolicy < ApplicationPolicy
     return false unless user.present?
     return false if record.cancelled?
 
-    user.admin? || record.user == user
+    site_admin? || record.user == user
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      user&.admin? ? scope.all : scope.where(user: user)
+      user&.role_admin? ? scope.all : scope.where(user: user)
     end
   end
 end

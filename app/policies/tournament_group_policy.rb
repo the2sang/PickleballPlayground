@@ -17,11 +17,5 @@ class TournamentGroupPolicy < ApplicationPolicy
 
   private
 
-  def tournament_manager?
-    club = record.tournament_event.tournament.club
-    return true if user.admin?
-    return true if club.owner_id == user.id
-    membership = user.club_memberships.find_by(club: club)
-    membership.present? && membership.manager? && membership.approved?
-  end
+  def tournament_manager? = club_manager?(record.tournament_event.tournament.club)
 end

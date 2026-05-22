@@ -3,8 +3,7 @@ class ClubMembershipPolicy < ApplicationPolicy
 
   def update?
     return false unless user.present?
-    my_membership = user.club_memberships.find_by(club: record.club)
-    (my_membership&.manager? && my_membership&.approved?) || user.admin?
+    club_manager?(record.club)
   end
 
   def destroy?
