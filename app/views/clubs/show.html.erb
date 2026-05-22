@@ -23,10 +23,15 @@
                   회원가입
                 <% end %>
               <% else %>
-                <%= link_to new_session_path(return_to: club_path(@club)), class: "btn btn--primary btn--sm" do %>
+                <%= link_to new_registration_path(return_to: club_path(@club)), class: "btn btn--primary btn--sm" do %>
                   <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
                   회원가입
                 <% end %>
+                <span style="font-size:11px; color:var(--hcp-cool-gray); margin-left:8px;">
+                  이미 계정이 있으신가요?
+                  <%= link_to "로그인", new_session_path(return_to: club_path(@club)),
+                        style: "color:var(--hcp-purple); text-decoration:underline;" %>
+                </span>
               <% end %>
             </div>
           <% end %>

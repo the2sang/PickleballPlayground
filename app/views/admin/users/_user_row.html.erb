@@ -3,20 +3,44 @@
   <td class="admin-table__mono"><%= user.email_address %></td>
   <td>
     <div class="admin-role-cell">
-      <% if user.admin? %>
-        <span class="admin-badge admin-badge--admin">ADMIN</span>
-      <% else %>
-        <span class="admin-badge">USER</span>
-      <% end %>
-      <%= form_with url: admin_user_path(user), scope: :user, method: :patch do |f| %>
-        <%= f.hidden_field :role, value: user.admin? ? "user" : "admin" %>
-        <%= f.button type: :submit,
-              class: "btn btn--xs #{user.admin? ? 'btn--danger' : 'btn--primary'}",
-              data: { confirm: user.admin? ? "#{user.nickname}의 관리자 권한을 해제합니까?" : "#{user.nickname}에게 관리자 권한을 부여합니까?" } do %>
-          <%= user.admin? ? "권한 해제" : "관리자 부여" %>
+      <% badge_class = user.role_admin? ? "admin-badge--admin" : (user.role_club? ? "admin-badge--club" : "") %>
+      <% badge_label = user.role_admin? ? "시스템관리자" : (user.role_club? ? "클럽관리자" : "회원") %>
+      <span class="admin-badge <%= badge_class %>"><%= badge_label %></span>
+
+      <div data-controller="role-select"
+           data-role-select-nickname="<%= user.nickname %>">
+        <%= form_with url: admin_user_path(user), scope: :user, method: :patch,
+                      data: { role_select_target: "form" } do |f| %>
+          <%= f.select :role,
+                [["회원", "role_user"], ["클럽관리자", "role_club"], ["시스템관리자", "role_admin"]],
+                { selected: user.role },
+                { class: "sr-only", data: { role_select_target: "select" } } %>
         <% end %>
-      <% end %>
+      </div>
     </div>
+  </td>
+  <td>
+    <% memberships = user.club_memberships.select { |m| m.approved? || m.pending? } %>
+    <% if memberships.any? %>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">
+        <% memberships.each do |m| %>
+          <span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:500;
+                       background:<%= m.approved? ? 'var(--hcp-purple-tint,#f3eeff)' : '#fef9c3' %>;
+                       color:<%= m.approved? ? 'var(--hcp-purple)' : '#92400e' %>;">
+            <% if m.manager? %>
+              <iconify-icon icon="lucide:shield" style="font-size:10px;"></iconify-icon>
+            <% end %>
+            <%= link_to m.club.name, admin_club_path(m.club),
+                  style: "color:inherit;text-decoration:none;" %>
+            <% unless m.approved? %>
+              <span style="font-size:10px;opacity:0.7;">(대기)</span>
+            <% end %>
+          </span>
+        <% end %>
+      </div>
+    <% else %>
+      <span style="font-size:12px;color:var(--hcp-cool-gray);">-</span>
+    <% end %>
   </td>
   <td><%= user.sessions.count %></td>
   <td><%= user.created_at.strftime("%Y-%m-%d") %></td>

@@ -523,6 +523,113 @@ body {
   gap: 8px;
 }
 
+/* ── Role Select (shadcn/ui Select style) ──────────────── */
+.rs-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.rs-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 120px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--hcp-border-light);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--hcp-charcoal);
+  font-size: 13px;
+  font-family: var(--font-brand);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
+}
+
+.rs-trigger:hover {
+  background: var(--hcp-light-bg);
+  border-color: var(--hcp-border-mid);
+}
+
+.rs-trigger:focus-visible {
+  outline: none;
+  border-color: var(--hcp-black);
+  box-shadow: 0 0 0 3px rgba(9,9,11,0.12);
+}
+
+.rs-trigger[aria-expanded="true"] {
+  border-color: var(--hcp-black);
+  box-shadow: 0 0 0 3px rgba(9,9,11,0.12);
+}
+
+.rs-chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--hcp-cool-gray);
+  flex-shrink: 0;
+}
+
+.rs-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid var(--hcp-border-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  padding: 4px;
+  animation: rs-fade-in 0.1s ease;
+}
+
+@keyframes rs-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rs-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--hcp-charcoal);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.08s;
+}
+
+.rs-item:hover {
+  background: var(--hcp-light-bg);
+}
+
+.rs-item[aria-selected="true"] {
+  color: var(--hcp-black);
+  font-weight: 500;
+}
+
+.rs-check {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--hcp-black);
+}
+
+.rs-check--hidden {
+  visibility: hidden;
+}
+
+/* ROLE_CLUB badge */
+.admin-badge--club {
+  background: #2563eb;
+  color: #fff;
+}
+
 .nav__actions {
   display: flex;
   align-items: center;

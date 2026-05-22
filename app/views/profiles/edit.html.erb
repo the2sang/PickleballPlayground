@@ -7,6 +7,19 @@
       <p class="cl-hero__subtitle">운동 세션 참가 신청에 필요한 기본 정보를 입력해 주세요.</p>
     </div>
 
+    <% if params[:redirect_after]&.start_with?("/clubs/") %>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;margin-bottom:24px;">
+        <iconify-icon icon="lucide:circle-check" style="font-size:18px;color:#16a34a;flex-shrink:0;margin-top:1px;"></iconify-icon>
+        <div>
+          <p style="font-size:14px;font-weight:600;color:#15803d;margin-bottom:2px;">사이트 회원가입이 완료되었습니다!</p>
+          <p style="font-size:13px;color:#166534;line-height:1.5;">
+            클럽 회원가입을 신청하려면 아래 기본 정보를 먼저 입력해 주세요.<br>
+            입력 완료 후 해당 클럽 페이지로 자동으로 이동합니다.
+          </p>
+        </div>
+      </div>
+    <% end %>
+
     <%= turbo_frame_tag "profile_modal_form" do %>
     <div class="cl-form-card">
       <%= form_with model: @user, url: profile_path, method: :patch, class: "cl-form", data: { turbo_frame: "_top" } do |f| %>

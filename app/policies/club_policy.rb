@@ -5,13 +5,12 @@ class ClubPolicy < ApplicationPolicy
   def create? = true
   def manage?
     return false unless user.present?
-    membership = user.club_memberships.find_by(club: record)
-    (membership&.manager? && membership&.approved?) || user.admin?
+    club_manager?(record)
   end
 
-  def update? = user.present? && (user == record.owner || user.admin?)
+  def update? = user.present? && (user == record.owner || site_admin?)
   def edit?   = update?
-  def destroy? = user.admin?
+  def destroy? = site_admin?
 
   class Scope < ApplicationPolicy::Scope
     def resolve

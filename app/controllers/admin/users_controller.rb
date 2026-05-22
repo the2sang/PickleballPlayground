@@ -2,7 +2,7 @@ module Admin
   class UsersController < BaseController
     def index
       authorize User, policy_class: Admin::UserPolicy
-      @users = User.order(created_at: :desc).limit(100)
+      @users = User.includes(club_memberships: :club).order(created_at: :desc).limit(100)
     end
 
     def show

@@ -1,0 +1,50 @@
+<% content_for :title, "클럽 개설 신청" %>
+
+<div class="cl-page">
+  <div class="cl-content cl-content--form">
+    <div style="margin-bottom:32px;">
+      <p class="cl-hero__eyebrow">
+        <%= link_to "클럽", clubs_path %>
+        <span class="sep">/</span> 개설 신청
+      </p>
+      <h1 class="cl-hero__title">클럽 개설 신청</h1>
+    </div>
+
+    <div class="cl-form-card" style="text-align:center; padding:48px 32px;">
+      <div style="margin-bottom:24px;">
+        <iconify-icon icon="lucide:user-plus" style="font-size:48px; color:var(--hcp-purple);"></iconify-icon>
+      </div>
+      <h2 style="font-size:20px; font-weight:600; margin-bottom:12px; color:var(--hcp-ink);">
+        회원가입이 필요합니다
+      </h2>
+      <p style="font-size:14px; color:var(--hcp-cool-gray); margin-bottom:8px; line-height:1.6;">
+        클럽 개설 신청을 위해서는 회원가입이 필요합니다.
+      </p>
+      <p style="font-size:13px; color:var(--hcp-cool-gray); margin-bottom:32px; line-height:1.6;">
+        가입 후 이메일이 자동으로 관리자 이메일로 설정되며,<br>
+        클럽 저장 시 클럽 관리자 권한이 자동으로 부여됩니다.
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:12px; max-width:280px; margin:0 auto;">
+        <%= link_to new_registration_path(return_to: "new_club"),
+              class: "btn btn--primary",
+              style: "justify-content:center;" do %>
+          <iconify-icon icon="lucide:user-plus"></iconify-icon>
+          회원가입 하기
+        <% end %>
+
+        <%= link_to clubs_path,
+              class: "btn btn--secondary",
+              style: "justify-content:center;" do %>
+          취소
+        <% end %>
+      </div>
+
+      <p style="margin-top:24px; font-size:12px; color:var(--hcp-cool-gray);">
+        이미 계정이 있으신가요?
+        <%= link_to "로그인", new_session_path(return_to: new_club_path),
+              style: "color:var(--hcp-purple); text-decoration:underline;" %>
+      </p>
+    </div>
+  </div>
+</div>

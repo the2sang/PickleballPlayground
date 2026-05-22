@@ -10,7 +10,15 @@
       <p style="font-size:13px;color:var(--color-text-muted);margin-top:6px;">지금 바로 가입하고 시작해보세요.</p>
     </div>
 
+    <% if @return_to == "new_club" %>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--hcp-purple-tint,#f3eeff);border-radius:8px;margin-bottom:16px;font-size:13px;color:var(--hcp-purple);">
+        <iconify-icon icon="lucide:flag" style="flex-shrink:0;"></iconify-icon>
+        <span>가입 완료 후 클럽 개설 신청 페이지로 이동합니다.</span>
+      </div>
+    <% end %>
+
     <%= form_with model: @user, url: registration_path, class: "form" do |form| %>
+      <%= hidden_field_tag :return_to, @return_to if @return_to %>
       <% if @user.errors.any? %>
         <div class="form__errors">
           <div class="form__errors-title">

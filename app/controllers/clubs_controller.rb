@@ -1,6 +1,6 @@
 class ClubsController < ApplicationController
-  allow_unauthenticated_access only: %i[index show]
-  before_action :resume_session,  only: %i[index show]
+  allow_unauthenticated_access only: %i[index show new]
+  before_action :resume_session,  only: %i[index show new]
   before_action :set_club,        only: %i[show edit update destroy manage]
 
   CHOSUNG      = %w[ㄱ ㄲ ㄴ ㄷ ㄸ ㄹ ㅁ ㅂ ㅃ ㅅ ㅆ ㅇ ㅈ ㅉ ㅊ ㅋ ㅌ ㅍ ㅎ].freeze
@@ -43,7 +43,10 @@ class ClubsController < ApplicationController
   end
 
   def new
-    @club = Club.new
+    unless Current.user
+      render :signup_required and return
+    end
+    @club = Club.new(contact_email: Current.user.email_address)
     authorize @club
   end
 
@@ -52,6 +55,7 @@ class ClubsController < ApplicationController
     authorize @club
     if @club.save
       @club.club_memberships.create!(user: Current.user, role: :manager, status: :approved)
+      Current.user.update!(role: :role_club) unless Current.user.role_admin?
       Clubs::AssignManagerByEmailService.call(club: @club)
       redirect_to @club, notice: "클럽가 개설되었습니다."
     else
