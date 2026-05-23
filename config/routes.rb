@@ -57,7 +57,6 @@ Rails.application.routes.draw do
 
   resources :matches, only: %i[show edit update] do
     member { post :advance_winner }
-    resources :match_sets, only: %i[create update destroy]
   end
   resources :game_sessions, only: %i[index show new create edit update destroy] do
     resources :participations, only: %i[new create destroy], shallow: false
