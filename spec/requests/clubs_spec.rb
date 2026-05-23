@@ -13,6 +13,7 @@ RSpec.describe "Clubs", type: :request do
       get club_path(club)
       expect(response.body).to include("codedash")
       expect(response.body).to include(club_code_dash_session_path(club))
+      expect(response.body).to include('data-turbo-frame="_top"')
     end
 
     it "클럽의 대회 목록을 표시한다" do
