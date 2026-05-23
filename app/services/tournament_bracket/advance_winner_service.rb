@@ -32,7 +32,7 @@ module TournamentBracket
     private
 
     def assign_to_next_match
-      next_match = @match.next_match
+      next_match = @match.next_match.lock!
       if next_match.home_team_id.nil?
         next_match.update!(home_team: @match.winner)
       else
