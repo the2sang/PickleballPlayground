@@ -17,6 +17,8 @@ class GameSession < ApplicationRecord
   validates :fee,              numericality: { greater_than_or_equal_to: 0 }
   validates :court_count,      numericality: { greater_than: 0 }, allow_nil: true
   validates :max_participants,  numericality: { greater_than: 0 }, allow_nil: true
+  validate :end_time_after_start_time
+  validate :repeat_ends_on_not_before_scheduled_date
 
   def repeating? = !no_repeat?
 
@@ -32,7 +34,7 @@ class GameSession < ApplicationRecord
     end
   end
 
-  def should_run_today?(date = Date.today)
+  def should_run_today?(date = Date.current)
     return false if repeat_ends_on.present? && date > repeat_ends_on
     case repeat_type
     when "daily"         then true
@@ -52,7 +54,19 @@ class GameSession < ApplicationRecord
   end
 
   def session_ended?
-    scheduled_date < Date.today ||
-      (scheduled_date == Date.today && end_time < Time.current)
+    scheduled_date < Date.current ||
+      (scheduled_date == Date.current && end_time < Time.current)
+  end
+
+  private
+
+  def end_time_after_start_time
+    return unless start_time.present? && end_time.present?
+    errors.add(:end_time, "은 시작 시간 이후여야 합니다.") unless end_time > start_time
+  end
+
+  def repeat_ends_on_not_before_scheduled_date
+    return unless repeat_ends_on.present? && scheduled_date.present?
+    errors.add(:repeat_ends_on, "은 시작일 이후여야 합니다.") if repeat_ends_on < scheduled_date
   end
 end
