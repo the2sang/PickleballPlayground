@@ -57,7 +57,19 @@ RSpec.describe Matches::RecordResultService, type: :service do
     end
   end
 
-  context "Best of 3 경기" do
+  context "단판 형식에서 2세트 제출 시 거부" do
+    let(:sets) { [ { home_score: 11, away_score: 5 }, { home_score: 11, away_score: 7 } ] }
+
+    it "실패를 반환한다" do
+      expect(result.success?).to be false
+    end
+
+    it "세트 수 초과 에러 메시지를 포함한다" do
+      expect(result.error).to include("1세트")
+    end
+  end
+
+  context "Best of 3 경기 — 3세트 풀세트" do
     let(:event) { create(:tournament_event, scoring_format: :best_of_3, points_to_win: 11) }
     let(:sets)  { [ { home_score: 11, away_score: 5 }, { home_score: 8, away_score: 11 }, { home_score: 11, away_score: 9 } ] }
 
@@ -69,6 +81,40 @@ RSpec.describe Matches::RecordResultService, type: :service do
     it "2세트 더 많이 이긴 팀을 승자로 기록한다" do
       result
       expect(match.reload.winner).to eq(home)
+    end
+  end
+
+  context "Best of 3 경기 — 2세트 스윕" do
+    let(:event) { create(:tournament_event, scoring_format: :best_of_3, points_to_win: 11) }
+    let(:sets)  { [ { home_score: 11, away_score: 5 }, { home_score: 11, away_score: 7 } ] }
+
+    it "성공을 반환한다" do
+      expect(result.success?).to be true
+    end
+
+    it "홈팀을 승자로 기록한다" do
+      result
+      expect(match.reload.winner).to eq(home)
+    end
+  end
+
+  context "Best of 3 경기에서 4세트 제출 시 거부" do
+    let(:event) { create(:tournament_event, scoring_format: :best_of_3, points_to_win: 11) }
+    let(:sets) do
+      [
+        { home_score: 11, away_score: 5 },
+        { home_score: 8, away_score: 11 },
+        { home_score: 11, away_score: 9 },
+        { home_score: 11, away_score: 3 }
+      ]
+    end
+
+    it "실패를 반환한다" do
+      expect(result.success?).to be false
+    end
+
+    it "세트 수 초과 에러 메시지를 포함한다" do
+      expect(result.error).to include("3세트")
     end
   end
 

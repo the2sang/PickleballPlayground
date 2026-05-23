@@ -40,16 +40,21 @@ module Matches
     private
 
     def validate_scores
-      points_to_win = @match.tournament_event.points_to_win
+      event         = @match.tournament_event
+      points_to_win = event.points_to_win
+      max_sets      = event.best_of_3? ? 3 : 1
+
+      if @sets.size > max_sets
+        format_label = event.best_of_3? ? "Best of 3" : "단판"
+        return "#{format_label} 형식에서는 최대 #{max_sets}세트까지 입력 가능합니다."
+      end
 
       @sets.each do |set|
-        h = set[:home_score].to_i
-        a = set[:away_score].to_i
-        max = [ h, a ].max
-        min = [ h, a ].min
-        diff = max - min
+        h    = set[:home_score].to_i
+        a    = set[:away_score].to_i
+        max  = [ h, a ].max
+        diff = (h - a).abs
 
-        # 세트 유효 조건: max >= points_to_win AND 2점 차 이상
         unless max >= points_to_win && diff >= 2
           return "#{h}:#{a} — 2점 차이 이상이어야 세트가 종료됩니다 (win-by-2 규칙)."
         end
