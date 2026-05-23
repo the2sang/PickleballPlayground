@@ -22,6 +22,8 @@ RSpec.describe "CodeDashParticipations", type: :request do
 
     expect(response.body).to include("참가 신청하기")
     expect(response.body).to include("Code Dash 접속키")
+    expect(response.body).to include("로그인 인증")
+    expect(response.body).to include(new_session_path(return_to: new_game_session_participation_path(game_session)))
     expect(response.body).to include(game_session_code_dash_participation_path(game_session))
   end
 
