@@ -65,10 +65,11 @@ class ClubsController < ApplicationController
 
   def manage
     authorize @club, :manage?
-    @pending_memberships  = @club.club_memberships.pending.includes(:user)
-    @approved_memberships = @club.club_memberships.approved.includes(:user).order("role DESC")
-    @game_sessions        = @club.game_sessions.order(scheduled_date: :desc).limit(20)
-    @guest_applications   = @club.guest_applications.order(created_at: :desc)
+    @pending_memberships              = @club.club_memberships.pending.includes(:user)
+    @withdrawal_requested_memberships = @club.club_memberships.withdrawal_requested.includes(:user)
+    @approved_memberships             = @club.club_memberships.approved.includes(:user).order("role DESC")
+    @game_sessions                    = @club.game_sessions.order(scheduled_date: :desc).limit(20)
+    @guest_applications               = @club.guest_applications.order(created_at: :desc)
   end
 
   def edit

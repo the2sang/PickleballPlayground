@@ -107,6 +107,52 @@
     </section>
   <% end %>
 
+  <%# ── 탈퇴 신청 ──────────────────────────────────── %>
+  <% if @withdrawal_requested_memberships.any? %>
+    <section class="admin-panel" style="border-color:#fca5a5; margin-bottom:16px;">
+      <div class="admin-panel__header">
+        <h2 class="admin-panel__title">
+          <iconify-icon icon="lucide:log-out" style="color:#dc2626; vertical-align:-2px;"></iconify-icon>
+          탈퇴 신청
+        </h2>
+        <span class="admin-badge" style="background:#fee2e2; color:#b91c1c;"><%= @withdrawal_requested_memberships.count %></span>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr><th>닉네임</th><th>이메일</th><th>탈퇴 사유</th><th>신청일</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% @withdrawal_requested_memberships.each do |m| %>
+            <tr>
+              <td style="font-weight:600;"><%= m.user.nickname %></td>
+              <td class="admin-table__mono"><%= m.user.email_address %></td>
+              <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--hcp-mid-gray);">
+                <%= m.withdrawal_reason.presence || "-" %>
+              </td>
+              <td class="admin-table__mono"><%= m.updated_at.strftime("%Y-%m-%d") %></td>
+              <td style="text-align:right; display:flex; gap:6px; justify-content:flex-end;">
+                <%# 승인: 멤버십 삭제 %>
+                <%= button_to club_club_membership_path(@club, m),
+                    method: :delete,
+                    class: "btn btn--sm",
+                    style: "background:var(--hcp-danger); color:#fff; border:none;",
+                    data: { turbo_confirm: "#{m.user.nickname}님의 탈퇴 신청을 승인하시겠습니까?" } do %>
+                  <iconify-icon icon="lucide:check"></iconify-icon> 승인
+                <% end %>
+                <%# 거절: 상태를 approved로 복구 %>
+                <%= button_to club_club_membership_path(@club, m),
+                    method: :patch, params: { status: "approved" },
+                    class: "btn btn--ghost btn--sm" do %>
+                  <iconify-icon icon="lucide:x"></iconify-icon> 거절
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+
   <%# ── 회원 관리 ─────────────────────────────────── %>
   <section class="admin-panel" style="margin-bottom:16px;">
     <div class="admin-panel__header">
