@@ -16,10 +16,81 @@
             <span style="font-size:12px; color:var(--hcp-mid-gray);">회원 <%= @club.club_memberships.approved.count %>명</span>
           </div>
           <turbo-frame id="club-join-<%= @club.id %>">
-            <% unless Current.user&.club_memberships&.exists?(club: @club) %>
+            <% membership = Current.user&.club_memberships&.find_by(club: @club) %>
+
+            <% if membership&.approved? %>
+              <%# 승인된 회원: 탈퇴 신청 버튼 %>
+              <div style="margin-top:12px;">
+                <div data-controller="modal">
+                  <button type="button"
+                          class="btn btn--ghost btn--sm"
+                          style="color:var(--hcp-danger); border-color:var(--hcp-danger);"
+                          data-action="click->modal#open">
+                    <iconify-icon icon="lucide:log-out" width="13"></iconify-icon>
+                    클럽탈퇴 신청
+                  </button>
+
+                  <dialog class="club-join-dialog"
+                          data-modal-target="dialog"
+                          data-action="click->modal#backdropClose">
+                    <div class="club-join-dialog__inner">
+                      <div class="club-join-dialog__header">
+                        <iconify-icon icon="lucide:log-out" width="24" class="club-join-dialog__icon" style="color:var(--hcp-danger);"></iconify-icon>
+                        <h2 class="club-join-dialog__title">클럽 탈퇴 신청</h2>
+                      </div>
+                      <div class="club-join-dialog__body">
+                        <p class="club-join-dialog__lead">
+                          <strong><%= @club.name %></strong>에서 탈퇴를 신청합니다.<br>
+                          관리자 승인 후 탈퇴가 완료됩니다.
+                        </p>
+                        <%= form_with url: club_club_membership_path(@club, membership),
+                                      method: :patch do |f| %>
+                          <input type="hidden" name="status" value="withdrawal_requested">
+                          <div style="margin-top:12px;">
+                            <%= f.label :withdrawal_reason, "탈퇴 사유 (선택)", style: "display:block; font-size:13px; font-weight:600; margin-bottom:4px;" %>
+                            <%= f.text_area :withdrawal_reason,
+                                name: "withdrawal_reason",
+                                rows: 3,
+                                placeholder: "탈퇴 사유를 입력해 주세요 (선택사항)",
+                                style: "width:100%; border:1px solid var(--hcp-border); border-radius:6px; padding:8px; font-size:13px; resize:none;" %>
+                          </div>
+                          <div class="club-join-dialog__footer">
+                            <button type="button"
+                                    class="btn btn--ghost btn--sm"
+                                    data-action="click->modal#close">
+                              취소
+                            </button>
+                            <%= f.submit "탈퇴 신청",
+                                class: "btn btn--sm",
+                                style: "background:var(--hcp-danger); color:#fff; border:none; cursor:pointer;" %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </dialog>
+                </div>
+              </div>
+
+            <% elsif membership&.withdrawal_requested? %>
+              <%# 탈퇴 신청 중: 뱃지 + 신청 취소 버튼 %>
+              <div style="margin-top:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="admin-badge" style="background:#fee2e2; color:#b91c1c;">
+                  <iconify-icon icon="lucide:clock" width="11" style="vertical-align:-1px;"></iconify-icon>
+                  탈퇴 신청 중
+                </span>
+                <%= button_to club_club_membership_path(@club, membership),
+                    method: :patch,
+                    params: { status: "approved" },
+                    class: "btn btn--ghost btn--sm",
+                    style: "font-size:11px;" do %>
+                  신청 취소
+                <% end %>
+              </div>
+
+            <% elsif membership.nil? %>
+              <%# 비회원: 기존 가입 버튼 %>
               <div style="margin-top:12px;">
                 <% if Current.user %>
-                  <%# 로그인 상태: 가이드라인 모달 트리거 %>
                   <div data-controller="modal">
                     <button type="button"
                             class="btn btn--primary btn--sm"
