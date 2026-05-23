@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_21_073441) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_043114) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -114,6 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_21_073441) do
     t.index ["club_id"], name: "index_game_sessions_on_club_id"
     t.index ["repeat_type"], name: "index_game_sessions_on_repeat_type"
     t.index ["scheduled_date"], name: "index_game_sessions_on_scheduled_date"
+    t.index ["template_id", "scheduled_date"], name: "index_game_sessions_on_template_and_date", unique: true, where: "template_id IS NOT NULL"
     t.index ["template_id"], name: "index_game_sessions_on_template_id"
   end
 
