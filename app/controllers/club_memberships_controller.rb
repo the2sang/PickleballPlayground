@@ -26,11 +26,13 @@ class ClubMembershipsController < ApplicationController
 
   def update
     @membership = ClubMembership.find(params[:id])
-    authorize @membership
     attrs = {}
-    attrs[:status] = params[:status] if params[:status].present?
-    attrs[:role]   = params[:role]   if params[:role].present?
-    @membership.update!(attrs)
+    attrs[:status]            = params[:status]            if params[:status].present?
+    attrs[:role]              = params[:role]              if params[:role].present?
+    attrs[:withdrawal_reason] = params[:withdrawal_reason] if params[:withdrawal_reason].present?
+    @membership.assign_attributes(attrs)
+    authorize @membership
+    @membership.save!
     redirect_back_or_to manage_club_path(@membership.club), notice: "변경되었습니다."
   end
 
