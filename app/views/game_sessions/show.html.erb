@@ -139,13 +139,6 @@
         </span>
       </div>
 
-      <% if @game_session.notes.present? %>
-        <div class="cl-info-row">
-          <span class="cl-info-row__icon"><iconify-icon icon="lucide:file-text" width="14"></iconify-icon></span>
-          <span class="cl-info-row__label">메모</span>
-          <span class="cl-info-row__value"><%= @game_session.notes %></span>
-        </div>
-      <% end %>
     </div>
 
     <%
@@ -196,6 +189,20 @@
         end
       }
     %>
+
+    <% if @game_session.notes.present? %>
+      <div class="cl-info-card" style="margin-top:16px; border-color:#fbbf24;">
+        <div class="cl-info-card__header" style="background:#fffbeb;">
+          <p class="cl-info-card__header-label" style="color:#92400e;">
+            <iconify-icon icon="lucide:megaphone" width="14" style="margin-right:4px; vertical-align:-2px;"></iconify-icon>
+            공지사항
+          </p>
+        </div>
+        <div style="padding:14px 16px; font-size:14px; line-height:1.7; white-space:pre-wrap; color:var(--hcp-black);">
+          <%= @game_session.notes %>
+        </div>
+      </div>
+    <% end %>
 
     <% if confirmed.any? || waitlisted.any? %>
       <div class="cl-info-card" style="margin-top:16px;">
