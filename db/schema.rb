@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_043114) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_054334) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -28,6 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_043114) do
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.string "withdrawal_reason"
     t.index ["club_id", "user_id"], name: "index_club_memberships_on_club_id_and_user_id", unique: true
     t.index ["club_id"], name: "index_club_memberships_on_club_id"
     t.index ["user_id"], name: "index_club_memberships_on_user_id"
