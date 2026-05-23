@@ -39,16 +39,21 @@ module TournamentBracket
       end.flatten
     end
 
-    # Cross-seed: A조1위 vs B조2위, B조1위 vs A조2위 등 같은 조가 1라운드에 안 만나도록
+    # Cross-seed: group teams by rank tier, reversing odd-rank tiers so teams
+    # from the same group never meet in R1 (e.g. 2 groups × 2 advances produces
+    # [A1, B1, B2, A2] → Match 1: A1 vs B1, Match 2: B2 vs A2).
     def seed_teams(teams, bracket_size)
-      seeded = Array.new(bracket_size)          # nil = bye
-      top    = teams.each_slice(2).map(&:first) # 각 조 1위
-      second = teams.each_slice(2).map(&:last)  # 각 조 2위 (없으면 nil)
-      second.compact!
+      advances = @event.advances_per_group
+      groups   = teams.each_slice(advances).to_a
 
-      positions = (0...bracket_size).to_a
-      top.each_with_index    { |t, i| seeded[positions[i * 2]]     = t }
-      second.each_with_index { |t, i| seeded[positions[i * 2 + 1]] = t }
+      # transpose → [[rank1_of_each_group], [rank2_of_each_group], ...]
+      # reversing odd-rank tiers ensures no same-group pairing in R1
+      interleaved = groups.transpose.flat_map.with_index do |rank_teams, i|
+        i.odd? ? rank_teams.reverse : rank_teams
+      end
+
+      seeded = Array.new(bracket_size)
+      interleaved.compact.each_with_index { |t, i| seeded[i] = t }
       seeded
     end
 
