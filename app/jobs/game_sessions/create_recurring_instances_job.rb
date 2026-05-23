@@ -2,10 +2,9 @@ module GameSessions
   class CreateRecurringInstancesJob < ApplicationJob
     queue_as :default
 
-    def perform(date = Date.today)
+    def perform(date = Date.current)
       GameSession.templates.find_each do |template|
         next unless template.should_run_today?(date)
-        next if GameSession.exists?(template_id: template.id, scheduled_date: date)
 
         GameSession.create!(
           club:             template.club,
@@ -23,6 +22,8 @@ module GameSessions
           template_id:      template.id,
           status:           :open
         )
+      rescue ActiveRecord::RecordNotUnique
+        # already created by a concurrent job invocation — safe to skip
       end
     end
   end
