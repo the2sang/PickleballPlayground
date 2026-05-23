@@ -64,4 +64,11 @@ module ApplicationHelper
                 .includes(:club)
                 .map(&:club)
   end
+
+  def joined_clubs
+    return [] unless current_user
+    current_user.club_memberships.approved
+                .includes(:club)
+                .map(&:club)
+  end
 end

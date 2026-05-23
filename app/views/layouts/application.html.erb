@@ -107,6 +107,30 @@
             </div>
           </div>
 
+          <%# 가입클럽 — 로그인 후 승인된 멤버십 클럽이 있을 때만 표시 %>
+          <% if authenticated? && joined_clubs.any? %>
+          <div class="nav__group"
+               data-controller="nav-group"
+               data-action="mouseenter->nav-group#hover mouseleave->nav-group#hoverOut">
+            <button class="nav__group-btn"
+                    data-action="click->nav-group#tap"
+                    data-nav-group-target="trigger"
+                    aria-expanded="false"
+                    aria-haspopup="true">
+              <span class="nav__group-label">가입클럽</span>
+              <iconify-icon icon="lucide:heart-handshake" class="nav__group-icon"></iconify-icon>
+              <iconify-icon icon="lucide:chevron-down" class="nav__group-chevron"></iconify-icon>
+            </button>
+            <div class="nav__dropdown" data-nav-group-target="dropdown">
+              <% joined_clubs.each do |club| %>
+                <%= link_to club_path(club), class: "nav__dropdown-item" do %>
+                  <iconify-icon icon="lucide:flag"></iconify-icon><span><%= club.name %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+          <% end %>
+
           <%# 클럽관리 — 관리 중인 클럽이 있을 때만 표시 %>
           <% if managed_clubs.any? %>
           <div class="nav__group"
