@@ -67,7 +67,7 @@ module ApplicationHelper
 
   def joined_clubs
     return [] unless current_user
-    current_user.club_memberships.approved
+    current_user.club_memberships.where(status: [ :pending, :approved ])
                 .includes(:club)
                 .map(&:club)
   end
