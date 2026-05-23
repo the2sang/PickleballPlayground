@@ -41,8 +41,20 @@ RSpec.describe "CodeDashParticipations", type: :request do
     expect(member.reload.code_dash_key_last_used_at).to be_present
   end
 
-  it "does not create a participation for a user who is not an approved club member" do
+  it "creates a member participation when the access key belongs to a pending club member" do
     create(:club_membership, club: club, user: member, status: :pending)
+
+    expect {
+      post game_session_code_dash_participation_path(game_session), params: { code_dash_key: "QWERTY" }
+    }.to change { game_session.participations.active.count }.by(1)
+
+    participation = game_session.participations.find_by(user: member)
+    expect(participation).to be_as_member
+    expect(response).to redirect_to(game_session_path(game_session))
+  end
+
+  it "does not create a participation for a rejected club member" do
+    create(:club_membership, club: club, user: member, status: :rejected)
 
     expect {
       post game_session_code_dash_participation_path(game_session), params: { code_dash_key: "QWERTY" }

@@ -10,7 +10,7 @@ class CodeDashParticipationsController < ApplicationController
   def create
     user = User.find_by_code_dash_key(params[:code_dash_key])
 
-    if user && approved_member?(user)
+    if user && club_member?(user)
       create_participation_for(user)
     else
       handle_failed_attempt
@@ -23,8 +23,10 @@ class CodeDashParticipationsController < ApplicationController
     @game_session = GameSession.includes(:club).find(params[:game_session_id])
   end
 
-  def approved_member?(user)
-    user.club_memberships.approved.exists?(club: @game_session.club)
+  def club_member?(user)
+    user.club_memberships
+      .where(club: @game_session.club, status: %i[pending approved])
+      .exists?
   end
 
   def create_participation_for(user)
