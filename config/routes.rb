@@ -26,7 +26,6 @@ Rails.application.routes.draw do
   resources :stock_infos, only: %i[index show destroy]
 
   resources :clubs do
-    resource :code_dash_session, only: :create
     resource :favorite, only: %i[create destroy], controller: "club_favorites"
     member { get :manage }
     resources :club_memberships, only: %i[index create update destroy], shallow: false
@@ -60,6 +59,7 @@ Rails.application.routes.draw do
     member { post :advance_winner }
   end
   resources :game_sessions, only: %i[index show new create edit update destroy] do
+    resource :code_dash_participation, only: :create
     resources :participations, only: %i[new create destroy], shallow: false
     resources :comments, only: %i[create destroy], shallow: false
   end

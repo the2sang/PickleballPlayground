@@ -47,10 +47,56 @@
             <span style="font-size:12px;color:var(--hcp-cool-gray);">운동 종료 후 취소 불가</span>
           <% end %>
         <% elsif @game_session.open? %>
-          <%= link_to new_game_session_participation_path(@game_session), class: "btn btn--primary btn--sm" do %>
-            <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
-            참가 신청하기
-          <% end %>
+          <div data-controller="modal"
+               data-modal-auto-open-value="<%= params[:code_dash].present? %>">
+            <button type="button"
+                    class="btn btn--primary btn--sm"
+                    data-action="click->modal#open">
+              <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+              참가 신청하기
+            </button>
+
+            <dialog class="club-join-dialog"
+                    data-modal-target="dialog"
+                    data-action="click->modal#backdropClose">
+              <div class="club-join-dialog__inner">
+                <div class="club-join-dialog__header">
+                  <iconify-icon icon="lucide:key-round" width="24" class="club-join-dialog__icon"></iconify-icon>
+                  <h2 class="club-join-dialog__title">Code Dash 접속키</h2>
+                </div>
+                <div class="club-join-dialog__body">
+                  <p class="club-join-dialog__lead">
+                    <strong><%= @game_session.club.name %></strong> 정회원은 개인 접속키로 참가 신청할 수 있습니다.
+                  </p>
+                  <%= form_with url: game_session_code_dash_participation_path(@game_session),
+                                method: :post,
+                                data: { turbo_frame: "_top" } do |f| %>
+                    <div style="margin-top:12px;">
+                      <%= f.label :code_dash_key, "접속키", style: "display:block; font-size:13px; font-weight:600; margin-bottom:4px;" %>
+                      <%= f.text_field :code_dash_key,
+                          name: "code_dash_key",
+                          maxlength: 6,
+                          pattern: "[A-Za-z]{6}",
+                          autocomplete: "one-time-code",
+                          autocapitalize: "characters",
+                          placeholder: "ABCDEF",
+                          style: "width:100%; border:1px solid var(--hcp-border); border-radius:6px; padding:10px 12px; font-size:18px; font-weight:700; letter-spacing:0; text-transform:uppercase;" %>
+                    </div>
+                    <div class="club-join-dialog__footer">
+                      <button type="button"
+                              class="btn btn--ghost btn--sm"
+                              data-action="click->modal#close">
+                        취소
+                      </button>
+                      <%= f.submit "참가 신청",
+                          class: "btn btn--primary btn--sm",
+                          style: "cursor:pointer;" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </dialog>
+          </div>
         <% end %>
       </div>
       <% if !@game_session.session_ended? && @game_session.open? && !my_participation %>
