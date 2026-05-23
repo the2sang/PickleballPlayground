@@ -10,7 +10,7 @@ class GameSessionsController < ApplicationController
       .joins(:club)
       .includes(:club)
       .order("clubs.name ASC, scheduled_date ASC, start_time ASC")
-    sessions = sessions.where("clubs.name LIKE ?", "%#{@query}%") if @query
+    sessions = sessions.where("clubs.name LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(@query)}%") if @query
 
     favorited_ids = Current.user ? Current.user.club_favorites.pluck(:club_id).to_set : Set.new
     @game_sessions_by_club = sessions.group_by(&:club).sort_by { |club, _| favorited_ids.include?(club.id) ? 0 : 1 }.to_h
@@ -20,12 +20,12 @@ class GameSessionsController < ApplicationController
     authorize @game_session
 
     participant_user_ids = @game_session.participations.map(&:user_id).compact
-    memberships = ClubMembership.where(club: @game_session.club, user_id: participant_user_ids)
+    lookup_user_ids = Current.user ? (participant_user_ids | [ Current.user.id ]) : participant_user_ids
+    memberships = ClubMembership.where(club: @game_session.club, user_id: lookup_user_ids)
     @membership_map = memberships.index_by(&:user_id)
 
     if Current.user
-      my_membership = @membership_map[Current.user.id] ||
-                      Current.user.club_memberships.find_by(club: @game_session.club)
+      my_membership = @membership_map[Current.user.id]
       @is_manager = (my_membership&.manager? && my_membership&.approved?) || Current.user.role_admin?
     end
   end
