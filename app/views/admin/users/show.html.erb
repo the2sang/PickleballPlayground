@@ -31,7 +31,7 @@
       </dd>
       <dt>가입일</dt>      <dd><%= @user.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
       <dt>OAuth 연결</dt>  <dd><%= @user.identities.pluck(:provider).map(&:upcase).join(", ").presence || "—" %></dd>
-      <dt>codedash 고유키</dt>
+      <dt>codedash 접속키</dt>
       <dd>
         <span class="admin-table__mono"><%= @user.code_dash_key %></span>
         <span style="font-size:12px;color:var(--hcp-cool-gray);">

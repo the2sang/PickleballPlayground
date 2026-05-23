@@ -16,7 +16,7 @@ class CodeDashSessionsController < ApplicationController
       user.update!(code_dash_key_last_used_at: Time.current)
       redirect_to club_path(@club), notice: "codedash로 접속했습니다."
     else
-      redirect_to club_path(@club), alert: "고유키를 확인해 주세요."
+      redirect_to club_path(@club), alert: "접속키를 확인해 주세요."
     end
   end
 

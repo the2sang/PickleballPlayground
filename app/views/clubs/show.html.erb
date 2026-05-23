@@ -162,13 +162,13 @@
                           </div>
                           <div class="club-join-dialog__body">
                             <p class="club-join-dialog__lead">
-                              <strong><%= @club.name %></strong> 가입 승인 회원은 발급받은 6자리 고유키로 접속할 수 있습니다.
+                              <strong><%= @club.name %></strong> 가입 승인 회원은 발급받은 6자리 접속키로 접속할 수 있습니다.
                             </p>
                             <%= form_with url: club_code_dash_session_path(@club),
                                           method: :post,
                                           data: { turbo_frame: "_top" } do |f| %>
                               <div style="margin-top:12px;">
-                                <%= f.label :code_dash_key, "고유키", style: "display:block; font-size:13px; font-weight:600; margin-bottom:4px;" %>
+                                <%= f.label :code_dash_key, "접속키", style: "display:block; font-size:13px; font-weight:600; margin-bottom:4px;" %>
                                 <%= f.text_field :code_dash_key,
                                     name: "code_dash_key",
                                     maxlength: 6,

@@ -25,7 +25,7 @@ module Admin
       get admin_user_path(users(:one))
       assert_response :success
       assert_select "dl.admin-dl"
-      assert_select "dt", "codedash 고유키"
+      assert_select "dt", "codedash 접속키"
       assert_select ".admin-table__mono", users(:one).code_dash_key
     end
   end
