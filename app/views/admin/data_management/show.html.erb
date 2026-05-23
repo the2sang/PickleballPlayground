@@ -17,6 +17,23 @@
     </div>
   </div>
 
+  <% if notice.present? || alert.present? %>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <% if notice.present? %>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;font-size:13px;color:#166534;">
+          <iconify-icon icon="lucide:check-circle" style="vertical-align:-2px;margin-right:6px;"></iconify-icon>
+          <%= notice %>
+        </div>
+      <% end %>
+      <% if alert.present? %>
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;font-size:13px;color:#991b1b;">
+          <iconify-icon icon="lucide:triangle-alert" style="vertical-align:-2px;margin-right:6px;"></iconify-icon>
+          <%= alert %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <%# 경고 배너 %>
   <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;
               background:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin-bottom:24px;">
@@ -25,6 +42,84 @@
       <strong>주의:</strong> 운영 DB에 직접 실행됩니다. DML(INSERT·UPDATE·DELETE) 실행 전 반드시 SELECT로 대상 데이터를 확인하세요.
       모든 실행 내역은 서버 로그에 기록됩니다.
     </p>
+  </div>
+
+  <%# DB 백업 영역 %>
+  <div id="db-backups" class="admin-table" style="margin-bottom:24px;border-radius:10px;overflow:hidden;">
+    <div style="padding:14px 16px;background:var(--hcp-surface,#f5f5f7);border-bottom:1px solid var(--hcp-border-light);
+                display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--hcp-mid-gray);text-transform:uppercase;letter-spacing:0.06em;">
+          <iconify-icon icon="lucide:archive" style="font-size:14px;color:#2563eb;"></iconify-icon>
+          DB 백업
+        </span>
+        <p style="font-size:12px;color:var(--hcp-cool-gray);line-height:1.5;margin:6px 0 0;">
+          기본 백업은 SQLite 파일로 생성합니다. SQL dump는 사람이 확인하거나 부분 복구할 때 사용할 수 있는 고급 옵션입니다.
+        </p>
+      </div>
+
+      <%= form_with url: admin_data_management_backups_path, method: :post, local: true,
+                    style: "display:flex;align-items:center;gap:12px;flex-wrap:wrap;" do %>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--hcp-mid-gray);">
+          <%= check_box_tag :include_sql_dump, "1", false %>
+          SQL dump 포함
+        </label>
+        <button class="btn btn--primary btn--sm" type="submit">
+          <iconify-icon icon="lucide:database-backup" style="font-size:13px;"></iconify-icon>
+          백업 생성
+        </button>
+      <% end %>
+    </div>
+
+    <div style="padding:14px 16px;border-bottom:1px solid var(--hcp-border-light);background:#f8fafc;">
+      <p style="font-size:12px;color:#475569;line-height:1.55;margin:0;">
+        운영 Railway 환경의 재해복구는 Railway 서비스 Backups 탭의 Volume 백업/복구를 1차 수단으로 사용하세요.
+        이 페이지의 백업 파일은 관리자 다운로드 및 별도 보관용입니다.
+      </p>
+    </div>
+
+    <% if @database_backups.any? %>
+      <div style="overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:#fff;">
+              <th style="text-align:left;padding:12px 16px;border-bottom:1px solid var(--hcp-border-light);font-weight:600;color:var(--hcp-mid-gray);">생성 시각</th>
+              <th style="text-align:left;padding:12px 16px;border-bottom:1px solid var(--hcp-border-light);font-weight:600;color:var(--hcp-mid-gray);">파일</th>
+              <th style="text-align:left;padding:12px 16px;border-bottom:1px solid var(--hcp-border-light);font-weight:600;color:var(--hcp-mid-gray);">생성자</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @database_backups.each do |backup| %>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid var(--hcp-border-light);white-space:nowrap;color:var(--hcp-charcoal);">
+                  <%= backup["created_at"].strftime("%Y-%m-%d %H:%M") %>
+                </td>
+                <td style="padding:12px 16px;border-bottom:1px solid var(--hcp-border-light);">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <% backup["files"].each do |file| %>
+                      <%= link_to admin_data_management_backup_path(id: backup["id"], file: file["name"]),
+                                  class: "btn btn--ghost btn--sm",
+                                  style: "font-size:11px;" do %>
+                        <iconify-icon icon="lucide:download" style="font-size:12px;"></iconify-icon>
+                        <%= file["type"] %>
+                        <span style="color:var(--hcp-cool-gray);">(<%= number_to_human_size(file["size_bytes"]) %>)</span>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+                <td style="padding:12px 16px;border-bottom:1px solid var(--hcp-border-light);color:var(--hcp-cool-gray);">
+                  <%= backup.dig("created_by", "email_address") || "-" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div style="padding:20px;text-align:center;color:var(--hcp-cool-gray);font-size:13px;">
+        아직 생성된 DB 백업이 없습니다.
+      </div>
+    <% end %>
   </div>
 
   <%# SQL 입력 영역 %>

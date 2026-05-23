@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  CODE_DASH_KEY_LENGTH = 6
+  CODE_DASH_ALPHABET = ("A".."Z").to_a.freeze
+
   has_secure_password validations: false
   generates_token_for :password_reset, expires_in: 1.hour do
     password_salt&.last(10)
@@ -40,6 +43,9 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :nickname, with: ->(n) { n.strip }
+  normalizes :code_dash_key, with: ->(key) { normalize_code_dash_key(key) }
+
+  before_validation :ensure_code_dash_key, on: :create
 
   validates :email_address, presence: true,
                             uniqueness: { case_sensitive: false },
@@ -49,9 +55,41 @@ class User < ApplicationRecord
                        length: { minimum: 2, maximum: 30 }
   validates :password, length: { minimum: 8 }, allow_nil: true
   validates :display_name, length: { maximum: 30 }, allow_blank: true
+  validates :code_dash_key,
+            presence: true,
+            uniqueness: { case_sensitive: false },
+            length: { is: CODE_DASH_KEY_LENGTH },
+            format: { with: /\A[A-Z]{6}\z/ }
 
   def profile_complete?
     profile_completed_at.present?
+  end
+
+  def regenerate_code_dash_key!
+    update!(
+      code_dash_key: self.class.generate_unique_code_dash_key,
+      code_dash_key_issued_at: Time.current,
+      code_dash_key_last_used_at: nil
+    )
+    code_dash_key
+  end
+
+  def self.find_by_code_dash_key(key)
+    normalized_key = normalize_code_dash_key(key)
+    return if normalized_key.length != CODE_DASH_KEY_LENGTH
+
+    find_by(code_dash_key: normalized_key)
+  end
+
+  def self.generate_unique_code_dash_key
+    loop do
+      key = Array.new(CODE_DASH_KEY_LENGTH) { CODE_DASH_ALPHABET[SecureRandom.random_number(CODE_DASH_ALPHABET.length)] }.join
+      return key unless exists?(code_dash_key: key)
+    end
+  end
+
+  def self.normalize_code_dash_key(key)
+    key.to_s.upcase.gsub(/[^A-Z]/, "")
   end
 
   def self.find_or_create_by_oauth(auth)
@@ -76,5 +114,12 @@ class User < ApplicationRecord
     return base unless exists?(nickname: base)
     (2..99).each { |n| return "#{base}#{n}" unless exists?(nickname: "#{base}#{n}") }
     "#{base}#{SecureRandom.hex(3)}"
+  end
+
+  private
+
+  def ensure_code_dash_key
+    self.code_dash_key = self.class.generate_unique_code_dash_key if code_dash_key.blank?
+    self.code_dash_key_issued_at ||= Time.current
   end
 end

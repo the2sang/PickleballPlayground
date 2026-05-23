@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   resources :stock_infos, only: %i[index show destroy]
 
   resources :clubs do
+    resource :code_dash_session, only: :create
     resource :favorite, only: %i[create destroy], controller: "club_favorites"
     member { get :manage }
     resources :club_memberships, only: %i[index create update destroy], shallow: false
@@ -76,8 +77,10 @@ Rails.application.routes.draw do
     resources :sessions, only: %i[index]
     resources :groups
     resources :clubs, only: %i[index show update]
-    get  "data_management",         to: "data_management#show",    as: :data_management
-    post "data_management/execute", to: "data_management#execute", as: :data_management_execute
+    get  "data_management",                         to: "data_management#show",            as: :data_management
+    post "data_management/execute",                 to: "data_management#execute",         as: :data_management_execute
+    post "data_management/backups",                 to: "data_management#create_backup",   as: :data_management_backups
+    get  "data_management/backups/:id/*file",       to: "data_management#download_backup", as: :data_management_backup, format: false
   end
 
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

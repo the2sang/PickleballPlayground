@@ -31,6 +31,16 @@
       </dd>
       <dt>가입일</dt>      <dd><%= @user.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
       <dt>OAuth 연결</dt>  <dd><%= @user.identities.pluck(:provider).map(&:upcase).join(", ").presence || "—" %></dd>
+      <dt>codedash 고유키</dt>
+      <dd>
+        <span class="admin-table__mono"><%= @user.code_dash_key %></span>
+        <span style="font-size:12px;color:var(--hcp-cool-gray);">
+          발급 <%= @user.code_dash_key_issued_at&.strftime("%Y-%m-%d %H:%M") || "-" %>
+          <% if @user.code_dash_key_last_used_at.present? %>
+            · 최근 사용 <%= @user.code_dash_key_last_used_at.strftime("%Y-%m-%d %H:%M") %>
+          <% end %>
+        </span>
+      </dd>
       <dt>총 세션</dt>     <dd><%= @user.sessions.count %></dd>
     </dl>
   </section>

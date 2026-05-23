@@ -9,6 +9,12 @@ RSpec.describe "Clubs", type: :request do
       expect(response.body).to include("대회")
     end
 
+    it "비로그인 사용자에게 codedash 접속 버튼을 표시한다" do
+      get club_path(club)
+      expect(response.body).to include("codedash")
+      expect(response.body).to include(club_code_dash_session_path(club))
+    end
+
     it "클럽의 대회 목록을 표시한다" do
       tournament = create(:tournament, club: club, name: "봄 대회")
       get club_path(club)

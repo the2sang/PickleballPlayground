@@ -26,6 +26,17 @@
 
         <h2 style="font-size:13px; font-weight:600; color:var(--hcp-mid-gray); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">기본 정보</h2>
 
+        <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:16px; margin-bottom:20px; text-align:center;">
+          <div style="width:126px; min-height:63px; border-radius:14px; background:#f97316; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:0 0 auto; box-shadow:0 8px 18px rgba(249,115,22,0.24);">
+            <span style="font-size:10px; font-weight:700; line-height:1; margin-bottom:8px;">Code Dash Key</span>
+            <strong style="font-size:22px; line-height:1; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;"><%= @user.code_dash_key %></strong>
+          </div>
+          <div style="min-width:0; flex:1 1 220px;">
+            <p style="font-size:14px; font-weight:700; color:#9a3412; margin:0 0 6px;">퀵접속 코드(Code Dash Key)</p>
+            <p style="font-size:13px; line-height:1.55; color:#7c2d12; margin:0;">이 코드로 자신이 가입한 클럽에 신속하게 접속 가능합니다.</p>
+          </div>
+        </div>
+
         <div class="cl-form__field">
           <%= f.label :email_address, "이메일", class: "cl-form__label" %>
           <%= f.email_field :email_address, class: "cl-form__input", autocomplete: "email" %>

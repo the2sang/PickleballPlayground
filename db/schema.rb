@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_054334) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_190637) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -363,6 +363,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_054334) do
 
   create_table "users", force: :cascade do |t|
     t.integer "age_group", default: 0, null: false
+    t.string "code_dash_key", null: false
+    t.datetime "code_dash_key_issued_at"
+    t.datetime "code_dash_key_last_used_at"
     t.datetime "created_at", null: false
     t.string "display_name"
     t.string "dupr_id"
@@ -377,6 +380,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_054334) do
     t.integer "role", default: 0, null: false
     t.integer "sport_level", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["code_dash_key"], name: "index_users_on_code_dash_key", unique: true
     t.index ["dupr_id"], name: "index_users_on_dupr_id"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["nickname"], name: "index_users_on_nickname", unique: true

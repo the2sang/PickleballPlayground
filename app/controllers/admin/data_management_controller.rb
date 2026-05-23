@@ -2,6 +2,7 @@ module Admin
   class DataManagementController < BaseController
     def show
       authorize :data_management, policy_class: Admin::DataManagementPolicy
+      @database_backups = Admin::DatabaseBackups::ListService.call
     end
 
     def execute
@@ -16,6 +17,38 @@ module Admin
       Rails.logger.info "[DataManagement] User #{current_user.id} (#{current_user.email_address}) executed: #{sql}"
 
       render json: run_sql(sql)
+    end
+
+    def create_backup
+      authorize :data_management, policy_class: Admin::DataManagementPolicy
+
+      result = Admin::DatabaseBackups::CreateService.call(
+        user: current_user,
+        include_sql_dump: params[:include_sql_dump] == "1"
+      )
+
+      if result.success?
+        redirect_to admin_data_management_path(anchor: "db-backups"),
+                    notice: "DB 백업을 생성했습니다."
+      else
+        redirect_to admin_data_management_path(anchor: "db-backups"),
+                    alert: "DB 백업 생성에 실패했습니다: #{result.error}"
+      end
+    end
+
+    def download_backup
+      authorize :data_management, policy_class: Admin::DataManagementPolicy
+
+      result = Admin::DatabaseBackups::DownloadPathService.call(
+        backup_id: params[:id],
+        filename: params[:file]
+      )
+
+      if result.success?
+        send_file result.path, filename: result.filename, type: result.content_type, disposition: "attachment"
+      else
+        redirect_to admin_data_management_path(anchor: "db-backups"), alert: result.error
+      end
     end
 
     private

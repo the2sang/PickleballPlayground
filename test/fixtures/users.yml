@@ -4,6 +4,8 @@ one:
   email_address: one@example.com
   nickname: one_user
   password_digest: <%= password_digest %>
+  code_dash_key: ABCDEF
+  code_dash_key_issued_at: <%= Time.current %>
   role: 0
   sport_level: 0
   age_group: 0
@@ -13,6 +15,8 @@ two:
   email_address: two@example.com
   nickname: two_user
   password_digest: <%= password_digest %>
+  code_dash_key: BCDEFG
+  code_dash_key_issued_at: <%= Time.current %>
   role: 0
   sport_level: 0
   age_group: 0
@@ -22,6 +26,8 @@ admin:
   email_address: admin@example.com
   nickname: admin_user
   password_digest: <%= password_digest %>
+  code_dash_key: CDEFGH
+  code_dash_key_issued_at: <%= Time.current %>
   role: 1
   sport_level: 0
   age_group: 0
@@ -31,6 +37,8 @@ three:
   email_address: three@example.com
   nickname: three_user
   password_digest: <%= password_digest %>
+  code_dash_key: DEFGHI
+  code_dash_key_issued_at: <%= Time.current %>
   role: 0
   sport_level: 0
   age_group: 0
