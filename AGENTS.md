@@ -1,5 +1,5 @@
 # MyTechInfo Project
-# Codex Project Guide: Rails 8 (Solid Stack)
+# Claude Code Project Guide: Rails 8 (Solid Stack)
 
 ## Project Context
 This is a modern Ruby on Rails 8 application. It follows the "One Person Framework" philosophy, prioritizing simplicity, minimal infrastructure, and server-side rendering.
@@ -55,12 +55,12 @@ This project uses [gstack](https://github.com/garrytan/gstack) for AI-assisted w
 Install it for the best experience:
 
 ```bash
-git clone --depth 1 https://github.com/garrytan/gstack.git ~/.Codex/skills/gstack
-cd ~/.Codex/skills/gstack && ./setup --team
+git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+cd ~/.claude/skills/gstack && ./setup --team
 ```
 
 Skills like /qa, /ship, /review, /investigate, and /browse become available after install.
-Use /browse for all web browsing. Use ~/.Codex/skills/gstack/... for gstack file paths.
+Use /browse for all web browsing. Use ~/.claude/skills/gstack/... for gstack file paths.
 
 ### gstack Commands
 
@@ -82,7 +82,7 @@ Use /browse for all web browsing. Use ~/.Codex/skills/gstack/... for gstack file
 
 ## Superpowers (using-superpowers)
 
-This project uses the [superpowers skill system](https://github.com/superpowers-ai/Codex-superpowers).
+This project uses the [superpowers skill system](https://github.com/superpowers-ai/claude-superpowers).
 Always invoke relevant skills **before** any response or action.
 
 ### Key Workflow Skills
@@ -96,3 +96,17 @@ Always invoke relevant skills **before** any response or action.
 | `rails-architecture` | When deciding code organization |
 | `security-audit` | Before committing security-sensitive code |
 | `code-review` | After implementation for quality check |
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical label vocabulary (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root (not yet created). See `docs/agents/domain.md`.

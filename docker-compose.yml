@@ -6,8 +6,9 @@ services:
     image: mytechinfo:local
     ports:
       - "3000:80"
+    env_file:
+      - .env
     environment:
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
       SOLID_QUEUE_IN_PUMA: "true"
       RAILS_LOG_TO_STDOUT: "true"
     volumes:
