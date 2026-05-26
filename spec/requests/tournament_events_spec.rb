@@ -32,6 +32,13 @@ RSpec.describe "TournamentEvents", type: :request do
       }.to change(TournamentEvent, :count).by(1)
     end
 
+    it "세부 종목(sub_category) 포함 생성" do
+      sign_in(owner)
+      post tournament_tournament_events_path(tournament),
+           params: valid_params.deep_merge(tournament_event: { sub_category: "40+" })
+      expect(TournamentEvent.last.sub_category).to eq("40+")
+    end
+
     it "타인은 403" do
       sign_in(other)
       post tournament_tournament_events_path(tournament), params: valid_params

@@ -1,10 +1,235 @@
 <% content_for :title, "팀 추가" %>
+<% club_members_json = @club_members.to_json %>
 <div class="cl-page">
   <div class="cl-hero"><div class="cl-hero__inner">
     <p class="cl-hero__eyebrow"><%= link_to @event.tournament.name, tournament_path(@event.tournament) %> / 팀 추가</p>
-    <h1 class="cl-hero__title">팀 추가</h1>
+    <h1 class="cl-hero__title">팀 일괄 추가</h1>
   </div></div>
-  <div class="cl-content" style="max-width:600px;">
-    <%= render "form" %>
+  <div class="cl-content" style="max-width:640px;">
+    <% if flash[:alert] %>
+      <div class="cl-form__error"><p><%= flash[:alert] %></p></div>
+    <% end %>
+
+    <%= form_with url: tournament_event_tournament_teams_path(@event), method: :post,
+                  class: "cl-form",
+                  data: { controller: "team-rows", club_members: club_members_json } do %>
+
+      <template data-team-rows-target="template">
+        <div class="team-row" data-team-row>
+          <div class="team-row__main">
+            <input type="text"
+                   data-name-template="teams[__IDX__][name]"
+                   class="cl-form__input team-row__name" placeholder="팀명">
+            <input type="number" min="1"
+                   data-name-template="teams[__IDX__][seed]"
+                   class="cl-form__input team-row__seed" placeholder="시드">
+            <button type="button" data-action="click->team-rows#remove" class="team-row__remove">
+              <i class="fa-solid fa-minus"></i> 삭제
+            </button>
+          </div>
+          <div class="team-row__players"
+               data-controller="member-picker"
+               data-member-picker-name-prefix-value="teams[__IDX__]">
+            <div class="player-chips" data-member-picker-target="chips"></div>
+            <div class="player-input-row">
+              <input type="text"
+                     data-name-template="teams[__IDX__][player_names]"
+                     data-member-picker-target="textInput"
+                     class="cl-form__input player-name-input" placeholder="선수 이름 직접 입력">
+              <button type="button" data-action="click->member-picker#open" class="load-btn">
+                불러오기
+              </button>
+            </div>
+            <div data-member-picker-target="hiddenFields"></div>
+            <div class="member-dropdown hidden" data-member-picker-target="dropdown">
+              <input type="text" data-member-picker-target="searchInput"
+                     data-action="input->member-picker#search"
+                     class="cl-form__input member-search" placeholder="이름 검색...">
+              <ul class="member-list" data-member-picker-target="list"></ul>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div class="cl-form__field">
+        <label class="cl-form__label">팀 목록</label>
+        <div data-team-rows-target="rows">
+          <% 4.times do |i| %>
+            <div class="team-row" data-team-row>
+              <div class="team-row__main">
+                <input type="text" name="teams[<%= i %>][name]"
+                       class="cl-form__input team-row__name" placeholder="팀명">
+                <input type="number" min="1" name="teams[<%= i %>][seed]"
+                       class="cl-form__input team-row__seed" placeholder="시드">
+                <button type="button" data-action="click->team-rows#remove" class="team-row__remove">
+                  <i class="fa-solid fa-minus"></i> 삭제
+                </button>
+              </div>
+              <div class="team-row__players"
+                   data-controller="member-picker"
+                   data-member-picker-name-prefix-value="teams[<%= i %>]">
+                <div class="player-chips" data-member-picker-target="chips"></div>
+                <div class="player-input-row">
+                  <input type="text" name="teams[<%= i %>][player_names]"
+                         data-member-picker-target="textInput"
+                         class="cl-form__input player-name-input" placeholder="선수 이름 직접 입력">
+                  <button type="button" data-action="click->member-picker#open" class="load-btn">
+                    불러오기
+                  </button>
+                </div>
+                <div data-member-picker-target="hiddenFields"></div>
+                <div class="member-dropdown hidden" data-member-picker-target="dropdown">
+                  <input type="text" data-member-picker-target="searchInput"
+                         data-action="input->member-picker#search"
+                         class="cl-form__input member-search" placeholder="이름 검색...">
+                  <ul class="member-list" data-member-picker-target="list"></ul>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <button type="button" data-action="click->team-rows#add" class="add-row-btn">
+          <i class="fa-solid fa-plus"></i> 팀 추가
+        </button>
+      </div>
+
+      <button type="submit" class="cl-form__submit">등록</button>
+    <% end %>
   </div>
 </div>
+
+<style>
+  .team-row { margin-bottom: 12px; }
+
+  .team-row__main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .team-row__name  { width: 210px; flex-shrink: 0; }
+  .team-row__seed  { width: 110px; flex-shrink: 0; }
+  .team-row__remove {
+    margin-left: auto;
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .team-row__remove:hover { background: #dc2626; }
+
+  .team-row__players { padding-left: 4px; }
+
+  .player-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .player-name-input { width: 200px; flex-shrink: 0; }
+
+  .load-btn {
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .load-btn:hover { background: #2563eb; }
+
+  .add-row-btn {
+    margin-top: 8px;
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--hcp-dark, #333);
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .add-row-btn:hover { background: #f3f4f6; }
+
+  /* Member chips (circular badges) */
+  .player-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .member-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e0f2fe;
+    border: 1px solid #93c5fd;
+    border-radius: 999px;
+    padding: 3px 10px 3px 4px;
+    font-size: 12px;
+  }
+  .member-chip__initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .member-chip__name { font-weight: 500; color: #1e40af; }
+  .member-chip__remove {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    line-height: 1;
+  }
+  .member-chip__remove:hover { color: #ef4444; }
+
+  /* Dropdown */
+  .member-dropdown {
+    position: absolute;
+    z-index: 100;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    width: 260px;
+    padding: 8px;
+    margin-top: 4px;
+  }
+  .member-search { margin-bottom: 6px; }
+  .member-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .member-list__item {
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .member-list__item:hover { background: #f0f9ff; }
+  .member-list__empty {
+    padding: 10px;
+    color: #9ca3af;
+    font-size: 13px;
+    text-align: center;
+  }
+  .team-row__players { position: relative; }
+  .hidden { display: none !important; }
+</style>

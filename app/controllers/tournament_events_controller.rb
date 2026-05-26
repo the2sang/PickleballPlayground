@@ -79,7 +79,7 @@ class TournamentEventsController < ApplicationController
 
   def event_params
     params.require(:tournament_event).permit(
-      :discipline, :scoring_format, :points_to_win, :advances_per_group
+      :discipline, :sub_category, :scoring_format, :points_to_win, :advances_per_group
     )
   end
 end

@@ -41,6 +41,19 @@ RSpec.describe TournamentEvent, type: :model do
     end
   end
 
+  describe "sub_category" do
+    it "선택 사항이며 저장 가능" do
+      event = build(:tournament_event, sub_category: "40+")
+      expect(event).to be_valid
+      expect(event.sub_category).to eq("40+")
+    end
+
+    it "nil이어도 유효" do
+      event = build(:tournament_event, sub_category: nil)
+      expect(event).to be_valid
+    end
+  end
+
   describe "#max_team_size" do
     it "returns 1 for singles" do
       event = build(:tournament_event, discipline: :womens_singles)

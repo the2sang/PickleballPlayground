@@ -17,6 +17,30 @@
           {}, class: "cl-form__select" %>
   </div>
 
+  <div class="cl-form__field"
+       data-controller="sub-category"
+       data-sub-category-custom-option-value="__custom__">
+    <%= f.label :sub_category, "세부 종목 (선택)", class: "cl-form__label" %>
+    <select data-sub-category-target="select"
+            data-action="change->sub-category#onSelectChange"
+            class="cl-form__select">
+      <option value="">-- 없음 --</option>
+      <option value="19+">19+</option>
+      <option value="30+">30+</option>
+      <option value="40+">40+</option>
+      <option value="50+">50+</option>
+      <option value="상위부">상위부</option>
+      <option value="하위부">하위부</option>
+      <option value="__custom__">직접 입력...</option>
+    </select>
+    <input type="text"
+           data-sub-category-target="customInput"
+           data-action="input->sub-category#onCustomInput"
+           placeholder="세부 종목 직접 입력"
+           class="cl-form__input hidden mt-2">
+    <%= f.hidden_field :sub_category, data: { "sub-category-target": "hiddenField" } %>
+  </div>
+
   <div class="cl-form__grid">
     <div class="cl-form__field">
       <%= f.label :scoring_format, "스코어링", class: "cl-form__label" %>
