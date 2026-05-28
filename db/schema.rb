@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_215136) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_215206) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -384,6 +384,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_215136) do
     t.index ["status"], name: "index_telegram_prompts_on_status"
   end
 
+  create_table "tournament_event_decks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "deck_id", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "tournament_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deck_id"], name: "index_tournament_event_decks_on_deck_id"
+    t.index ["tournament_event_id", "deck_id"], name: "index_ted_on_event_and_deck", unique: true
+    t.index ["tournament_event_id", "position"], name: "index_ted_on_event_and_position"
+    t.index ["tournament_event_id"], name: "index_tournament_event_decks_on_tournament_event_id"
+  end
+
   create_table "tournament_events", force: :cascade do |t|
     t.integer "advances_per_group", default: 2, null: false
     t.datetime "created_at", null: false
@@ -542,6 +554,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_215136) do
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "stock_infos", "users"
+  add_foreign_key "tournament_event_decks", "decks", on_delete: :cascade
+  add_foreign_key "tournament_event_decks", "tournament_events", on_delete: :cascade
   add_foreign_key "work_journals", "users"
   add_foreign_key "work_plans", "users"
 end
