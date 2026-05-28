@@ -3,6 +3,8 @@ class TournamentEvent < ApplicationRecord
   has_many :tournament_teams, dependent: :destroy
   has_many :tournament_groups, dependent: :destroy
   has_many :matches, as: :matchable, dependent: :destroy
+  has_many :tournament_event_decks, dependent: :destroy
+  has_many :decks, through: :tournament_event_decks
 
   enum :discipline, {
     mens_singles: 0, mens_doubles: 1,
