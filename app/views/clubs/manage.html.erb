@@ -208,7 +208,7 @@
   </section>
 
   <%# ── 운동 세션 관리 ──────────────────────────────── %>
-  <section class="admin-panel">
+  <section class="admin-panel" style="margin-bottom:16px;">
     <div class="admin-panel__header">
       <h2 class="admin-panel__title">
         <iconify-icon icon="lucide:calendar-days" style="vertical-align:-2px;"></iconify-icon>
@@ -260,6 +260,53 @@
       </table>
     <% else %>
       <p class="empty-state">등록된 운동 세션이 없습니다.</p>
+    <% end %>
+  </section>
+
+  <%# ── 공지사항 관리 ───────────────────────────────── %>
+  <section id="club-notices" class="admin-panel">
+    <div class="admin-panel__header">
+      <h2 class="admin-panel__title">
+        <iconify-icon icon="lucide:megaphone" style="vertical-align:-2px;"></iconify-icon>
+        공지사항 관리
+      </h2>
+      <%= link_to new_club_club_notice_path(@club), class: "btn btn--primary btn--sm" do %>
+        <iconify-icon icon="lucide:plus"></iconify-icon> 공지 등록
+      <% end %>
+    </div>
+    <% if @club_notices.any? %>
+      <table class="admin-table">
+        <thead>
+          <tr><th>제목</th><th>공지 일시</th><th>등록일</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% @club_notices.each do |notice| %>
+            <tr>
+              <td style="font-weight:600;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                <%= notice.title %>
+              </td>
+              <td class="admin-table__mono">
+                <%= (notice.published_at || notice.created_at).strftime("%Y-%m-%d %H:%M") %>
+              </td>
+              <td class="admin-table__mono"><%= notice.created_at.strftime("%Y-%m-%d") %></td>
+              <td style="text-align:right; display:flex; gap:6px; justify-content:flex-end;">
+                <%= link_to edit_club_club_notice_path(@club, notice), class: "btn btn--ghost btn--sm" do %>
+                  <iconify-icon icon="lucide:pencil"></iconify-icon>
+                <% end %>
+                <%= button_to club_club_notice_path(@club, notice),
+                    method: :delete,
+                    class: "btn btn--ghost btn--sm",
+                    style: "color:var(--hcp-danger);",
+                    data: { turbo_confirm: "\"#{notice.title}\" 공지사항을 삭제하시겠습니까?" } do %>
+                  <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="empty-state">등록된 공지사항이 없습니다.</p>
     <% end %>
   </section>
 </div>

@@ -36,6 +36,28 @@ module Admin
       end
     end
 
+    def restore_backup
+      authorize :data_management, policy_class: Admin::DataManagementPolicy
+
+      unless params[:confirm_restore] == "1"
+        redirect_to admin_data_management_path(anchor: "db-restore"),
+                    alert: "복원 확인 체크박스를 선택해 주세요." and return
+      end
+
+      result = Admin::DatabaseBackups::RestoreService.call(
+        upload: params[:backup_file],
+        user: current_user
+      )
+
+      if result.success?
+        redirect_to admin_data_management_path(anchor: "db-restore"),
+                    notice: "DB 복원이 완료되었습니다. 복원 전 현재 DB 백업도 생성했습니다."
+      else
+        redirect_to admin_data_management_path(anchor: "db-restore"),
+                    alert: "DB 복원에 실패했습니다: #{result.error}"
+      end
+    end
+
     def download_backup
       authorize :data_management, policy_class: Admin::DataManagementPolicy
 

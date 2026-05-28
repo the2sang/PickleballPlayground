@@ -96,7 +96,7 @@
                             class="btn btn--primary btn--sm"
                             data-action="click->modal#open">
                       <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
-                      회원가입
+                      클럽 정회원 신청
                     </button>
 
                     <dialog class="club-join-dialog"
@@ -117,7 +117,7 @@
                             <li>클럽 시설 및 장비를 소중히 사용하고 원상 복구합니다.</li>
                             <li>활동 일정 참석이 어려울 경우 사전에 알립니다.</li>
                             <li>클럽 내 개인 정보는 활동 목적 외에 사용하지 않습니다.</li>
-                            <li>가입 후 관리자 승인이 완료되어야 활동이 가능합니다.</li>
+                            <li>가입 후 관리자 승인 전 준회원으로 활동 가능합니다.</li>
                           </ol>
                         </div>
                         <div class="club-join-dialog__footer">
@@ -141,7 +141,7 @@
                   <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <%= link_to new_registration_path(return_to: club_path(@club)), class: "btn btn--primary btn--sm" do %>
                       <iconify-icon icon="lucide:user-plus" width="13"></iconify-icon>
-                      회원가입
+                      클럽 정회원 신청
                     <% end %>
                   </div>
                   <span style="font-size:11px; color:var(--hcp-cool-gray); margin-left:8px;">

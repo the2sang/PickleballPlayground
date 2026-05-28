@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     resources :club_memberships, only: %i[index create update destroy], shallow: false
     resources :guest_applications, only: %i[new create], path: "guest"
     resources :tournaments, only: %i[index new create]
+    resources :club_notices, except: %i[index show]
   end
 
   resources :tournaments, only: %i[show edit update destroy] do
@@ -80,6 +81,7 @@ Rails.application.routes.draw do
     get  "data_management",                         to: "data_management#show",            as: :data_management
     post "data_management/execute",                 to: "data_management#execute",         as: :data_management_execute
     post "data_management/backups",                 to: "data_management#create_backup",   as: :data_management_backups
+    post "data_management/backups/restore",         to: "data_management#restore_backup",  as: :data_management_backup_restore
     get  "data_management/backups/:id/*file",       to: "data_management#download_backup", as: :data_management_backup, format: false
   end
 

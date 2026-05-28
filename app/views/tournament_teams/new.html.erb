@@ -5,7 +5,7 @@
     <p class="cl-hero__eyebrow"><%= link_to @event.tournament.name, tournament_path(@event.tournament) %> / 팀 추가</p>
     <h1 class="cl-hero__title">팀 일괄 추가</h1>
   </div></div>
-  <div class="cl-content" style="max-width:640px;">
+  <div class="cl-content" style="max-width:920px;">
     <% if flash[:alert] %>
       <div class="cl-form__error"><p><%= flash[:alert] %></p></div>
     <% end %>
@@ -23,30 +23,30 @@
             <input type="number" min="1"
                    data-name-template="teams[__IDX__][seed]"
                    class="cl-form__input team-row__seed" placeholder="시드">
+            <div class="team-row__players"
+                 data-controller="member-picker"
+                 data-member-picker-name-prefix-value="teams[__IDX__]">
+              <div class="player-chips" data-member-picker-target="chips"></div>
+              <div class="player-input-row">
+                <input type="text"
+                       data-name-template="teams[__IDX__][player_names]"
+                       data-member-picker-target="textInput"
+                       class="cl-form__input player-name-input" placeholder="선수 이름 직접 입력">
+                <button type="button" data-action="click->member-picker#open" class="load-btn">
+                  불러오기
+                </button>
+              </div>
+              <div data-member-picker-target="hiddenFields"></div>
+              <div class="member-dropdown hidden" data-member-picker-target="dropdown">
+                <input type="text" data-member-picker-target="searchInput"
+                       data-action="input->member-picker#search"
+                       class="cl-form__input member-search" placeholder="이름 검색...">
+                <ul class="member-list" data-member-picker-target="list"></ul>
+              </div>
+            </div>
             <button type="button" data-action="click->team-rows#remove" class="team-row__remove">
               <i class="fa-solid fa-minus"></i> 삭제
             </button>
-          </div>
-          <div class="team-row__players"
-               data-controller="member-picker"
-               data-member-picker-name-prefix-value="teams[__IDX__]">
-            <div class="player-chips" data-member-picker-target="chips"></div>
-            <div class="player-input-row">
-              <input type="text"
-                     data-name-template="teams[__IDX__][player_names]"
-                     data-member-picker-target="textInput"
-                     class="cl-form__input player-name-input" placeholder="선수 이름 직접 입력">
-              <button type="button" data-action="click->member-picker#open" class="load-btn">
-                불러오기
-              </button>
-            </div>
-            <div data-member-picker-target="hiddenFields"></div>
-            <div class="member-dropdown hidden" data-member-picker-target="dropdown">
-              <input type="text" data-member-picker-target="searchInput"
-                     data-action="input->member-picker#search"
-                     class="cl-form__input member-search" placeholder="이름 검색...">
-              <ul class="member-list" data-member-picker-target="list"></ul>
-            </div>
           </div>
         </div>
       </template>
@@ -61,29 +61,29 @@
                        class="cl-form__input team-row__name" placeholder="팀명">
                 <input type="number" min="1" name="teams[<%= i %>][seed]"
                        class="cl-form__input team-row__seed" placeholder="시드">
+                <div class="team-row__players"
+                     data-controller="member-picker"
+                     data-member-picker-name-prefix-value="teams[<%= i %>]">
+                  <div class="player-chips" data-member-picker-target="chips"></div>
+                  <div class="player-input-row">
+                    <input type="text" name="teams[<%= i %>][player_names]"
+                           data-member-picker-target="textInput"
+                           class="cl-form__input player-name-input" placeholder="선수 이름 직접 입력">
+                    <button type="button" data-action="click->member-picker#open" class="load-btn">
+                      불러오기
+                    </button>
+                  </div>
+                  <div data-member-picker-target="hiddenFields"></div>
+                  <div class="member-dropdown hidden" data-member-picker-target="dropdown">
+                    <input type="text" data-member-picker-target="searchInput"
+                           data-action="input->member-picker#search"
+                           class="cl-form__input member-search" placeholder="이름 검색...">
+                    <ul class="member-list" data-member-picker-target="list"></ul>
+                  </div>
+                </div>
                 <button type="button" data-action="click->team-rows#remove" class="team-row__remove">
                   <i class="fa-solid fa-minus"></i> 삭제
                 </button>
-              </div>
-              <div class="team-row__players"
-                   data-controller="member-picker"
-                   data-member-picker-name-prefix-value="teams[<%= i %>]">
-                <div class="player-chips" data-member-picker-target="chips"></div>
-                <div class="player-input-row">
-                  <input type="text" name="teams[<%= i %>][player_names]"
-                         data-member-picker-target="textInput"
-                         class="cl-form__input player-name-input" placeholder="선수 이름 직접 입력">
-                  <button type="button" data-action="click->member-picker#open" class="load-btn">
-                    불러오기
-                  </button>
-                </div>
-                <div data-member-picker-target="hiddenFields"></div>
-                <div class="member-dropdown hidden" data-member-picker-target="dropdown">
-                  <input type="text" data-member-picker-target="searchInput"
-                         data-action="input->member-picker#search"
-                         class="cl-form__input member-search" placeholder="이름 검색...">
-                  <ul class="member-list" data-member-picker-target="list"></ul>
-                </div>
               </div>
             </div>
           <% end %>
@@ -99,18 +99,17 @@
 </div>
 
 <style>
-  .team-row { margin-bottom: 12px; }
+  .team-row { margin-bottom: 10px; }
 
   .team-row__main {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
-    margin-bottom: 6px;
+    width: 100%;
   }
-  .team-row__name  { width: 210px; flex-shrink: 0; }
-  .team-row__seed  { width: 110px; flex-shrink: 0; }
+  .team-row__name  { width: 260px; flex-shrink: 0; }
+  .team-row__seed  { width: 82px; flex-shrink: 0; }
   .team-row__remove {
-    margin-left: auto;
     flex-shrink: 0;
     padding: 6px 12px;
     background: #ef4444;
@@ -122,14 +121,18 @@
   }
   .team-row__remove:hover { background: #dc2626; }
 
-  .team-row__players { padding-left: 4px; }
+  .team-row__players {
+    position: relative;
+    flex: 1 1 320px;
+    min-width: 280px;
+  }
 
   .player-input-row {
     display: flex;
     align-items: center;
     gap: 6px;
   }
-  .player-name-input { width: 200px; flex-shrink: 0; }
+  .player-name-input { width: 100%; min-width: 260px; }
 
   .load-btn {
     padding: 6px 12px;
@@ -162,6 +165,7 @@
     gap: 6px;
     margin-bottom: 6px;
   }
+  .player-chips:empty { display: none; }
   .member-chip {
     display: inline-flex;
     align-items: center;
@@ -230,6 +234,25 @@
     font-size: 13px;
     text-align: center;
   }
-  .team-row__players { position: relative; }
+  @media (max-width: 760px) {
+    .team-row__main {
+      flex-wrap: wrap;
+    }
+    .team-row__name {
+      flex: 1 1 220px;
+      width: auto;
+    }
+    .team-row__players {
+      flex-basis: 100%;
+      min-width: 0;
+    }
+    .player-name-input {
+      min-width: 0;
+    }
+    .team-row__remove {
+      margin-left: auto;
+    }
+  }
+
   .hidden { display: none !important; }
 </style>

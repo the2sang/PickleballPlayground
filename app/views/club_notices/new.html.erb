@@ -1,0 +1,17 @@
+<% content_for :title, "공지사항 등록" %>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow">
+        <%= link_to @club.name, manage_club_path(@club) %>
+        <span class="sep">/</span> 공지사항
+      </p>
+      <h1 class="cl-hero__title">공지사항 등록</h1>
+    </div>
+  </div>
+
+  <div class="cl-content" style="max-width:640px;">
+    <%= render "form" %>
+  </div>
+</div>

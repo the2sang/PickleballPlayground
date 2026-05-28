@@ -28,6 +28,8 @@ class GameSessionsController < ApplicationController
       my_membership = @membership_map[Current.user.id]
       @is_manager = (my_membership&.manager? && my_membership&.approved?) || Current.user.role_admin?
     end
+
+    @club_notices = @game_session.club.club_notices.recent.limit(10)
   end
 
   def new

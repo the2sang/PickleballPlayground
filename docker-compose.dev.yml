@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: mytechinfo:dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      RAILS_ENV: development
+      RAILS_LOG_TO_STDOUT: "true"
+    volumes:
+      - .:/rails
+      - bundle:/bundle
+      - storage:/rails/storage
+    stdin_open: true
+    tty: true
+
+volumes:
+  bundle:
+  storage:

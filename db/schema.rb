@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_190637) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -32,6 +32,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_190637) do
     t.index ["club_id", "user_id"], name: "index_club_memberships_on_club_id_and_user_id", unique: true
     t.index ["club_id"], name: "index_club_memberships_on_club_id"
     t.index ["user_id"], name: "index_club_memberships_on_user_id"
+  end
+
+  create_table "club_notices", force: :cascade do |t|
+    t.text "body", null: false
+    t.integer "club_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "published_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id", "created_at"], name: "index_club_notices_on_club_id_and_created_at"
+    t.index ["club_id"], name: "index_club_notices_on_club_id"
   end
 
   create_table "clubs", force: :cascade do |t|
@@ -305,6 +316,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_190637) do
     t.integer "points_to_win", default: 11, null: false
     t.integer "scoring_format", default: 0, null: false
     t.integer "status", default: 0, null: false
+    t.string "sub_category"
     t.integer "tournament_id", null: false
     t.datetime "updated_at", null: false
     t.index ["status"], name: "index_tournament_events_on_status"
@@ -342,6 +354,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_190637) do
   create_table "tournament_teams", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "player_names"
     t.integer "seed"
     t.integer "tournament_event_id", null: false
     t.datetime "updated_at", null: false
@@ -428,6 +441,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_190637) do
   add_foreign_key "club_favorites", "users"
   add_foreign_key "club_memberships", "clubs"
   add_foreign_key "club_memberships", "users"
+  add_foreign_key "club_notices", "clubs"
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "comments", "users"
   add_foreign_key "flash_meetup_participations", "flash_meetups"

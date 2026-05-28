@@ -18,6 +18,70 @@
     %>
     <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <% if @club_notices.any? %>
+          <div data-controller="notice-carousel">
+            <button type="button"
+                    class="btn btn--secondary btn--sm"
+                    data-action="click->notice-carousel#open">
+              <iconify-icon icon="lucide:megaphone" width="13"></iconify-icon>
+              공지사항
+            </button>
+
+            <dialog class="club-notice-dialog"
+                    data-notice-carousel-target="dialog"
+                    data-action="click->notice-carousel#backdropClose">
+              <div class="club-notice-dialog__inner">
+                <div class="club-notice-dialog__header">
+                  <div>
+                    <p class="club-notice-dialog__eyebrow"><%= @game_session.club.name %></p>
+                    <h2 class="club-notice-dialog__title">공지사항</h2>
+                  </div>
+                  <button type="button"
+                          class="club-notice-dialog__close"
+                          aria-label="공지사항 닫기"
+                          data-action="click->notice-carousel#close">
+                    <iconify-icon icon="lucide:x" width="16"></iconify-icon>
+                  </button>
+                </div>
+
+                <div class="club-notice-carousel">
+                  <% @club_notices.each_with_index do |notice, index| %>
+                    <article class="club-notice-carousel__slide"
+                             data-notice-carousel-target="slide"
+                             aria-hidden="<%= index.zero? ? "false" : "true" %>">
+                      <p class="club-notice-carousel__date">
+                        <%= (notice.published_at || notice.created_at).strftime("%Y-%m-%d %H:%M") %>
+                      </p>
+                      <h3 class="club-notice-carousel__title"><%= notice.title %></h3>
+                      <div class="club-notice-carousel__body">
+                        <%= simple_format(notice.body) %>
+                      </div>
+                    </article>
+                  <% end %>
+                </div>
+
+                <div class="club-notice-dialog__footer">
+                  <button type="button"
+                          class="club-notice-dialog__arrow"
+                          aria-label="이전 공지사항"
+                          data-notice-carousel-target="prevButton"
+                          data-action="click->notice-carousel#prev">
+                    <iconify-icon icon="lucide:chevron-left" width="18"></iconify-icon>
+                  </button>
+                  <span class="club-notice-dialog__counter" data-notice-carousel-target="counter"></span>
+                  <button type="button"
+                          class="club-notice-dialog__arrow"
+                          aria-label="다음 공지사항"
+                          data-notice-carousel-target="nextButton"
+                          data-action="click->notice-carousel#next">
+                    <iconify-icon icon="lucide:chevron-right" width="18"></iconify-icon>
+                  </button>
+                </div>
+              </div>
+            </dialog>
+          </div>
+        <% end %>
+
         <% if @game_session.session_ended? %>
           <% if my_participation %>
             <span class="btn btn--secondary btn--sm" style="opacity:0.5;cursor:not-allowed;">
@@ -392,3 +456,113 @@
           comments_path: game_session_comments_path(@game_session) %>
   </div>
 </div>
+
+<style>
+  .club-notice-dialog {
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(720px, calc(100vh - 48px));
+    margin: auto;
+    border: none;
+    border-radius: 10px;
+    padding: 0;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+  }
+  .club-notice-dialog::backdrop { background: rgba(15, 23, 42, 0.42); }
+  .club-notice-dialog__inner {
+    background: #fff;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+  }
+  .club-notice-dialog__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--hcp-border-light);
+    background: #f8fafc;
+  }
+  .club-notice-dialog__eyebrow {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--hcp-cool-gray);
+  }
+  .club-notice-dialog__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--hcp-black);
+  }
+  .club-notice-dialog__close,
+  .club-notice-dialog__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--hcp-border-light);
+    background: #fff;
+    color: var(--hcp-mid-gray);
+    cursor: pointer;
+  }
+  .club-notice-dialog__close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+  }
+  .club-notice-carousel {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    min-height: 260px;
+  }
+  .club-notice-carousel__slide {
+    position: absolute;
+    inset: 0;
+    padding: 22px 24px;
+    overflow-y: auto;
+    transition: transform 220ms ease;
+  }
+  .club-notice-carousel__date {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: var(--hcp-cool-gray);
+  }
+  .club-notice-carousel__title {
+    margin: 0 0 14px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--hcp-black);
+    line-height: 1.35;
+  }
+  .club-notice-carousel__body {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--hcp-charcoal);
+  }
+  .club-notice-carousel__body p { margin: 0 0 10px; }
+  .club-notice-dialog__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--hcp-border-light);
+  }
+  .club-notice-dialog__arrow {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+  }
+  .club-notice-dialog__arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .club-notice-dialog__counter {
+    min-width: 48px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hcp-mid-gray);
+  }
+</style>

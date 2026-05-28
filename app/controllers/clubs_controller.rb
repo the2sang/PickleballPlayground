@@ -70,6 +70,7 @@ class ClubsController < ApplicationController
     @approved_memberships             = @club.club_memberships.approved.includes(:user).order("role DESC")
     @game_sessions                    = @club.game_sessions.order(scheduled_date: :desc).limit(20)
     @guest_applications               = @club.guest_applications.order(created_at: :desc)
+    @club_notices                     = @club.club_notices.recent
   end
 
   def edit

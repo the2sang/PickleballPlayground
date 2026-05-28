@@ -122,6 +122,61 @@
     <% end %>
   </div>
 
+  <%# 운영 백업 개발 복원 영역 %>
+  <div id="db-restore" class="admin-table" style="margin-bottom:24px;border-radius:10px;overflow:hidden;border-color:#bfdbfe;">
+    <div style="padding:14px 16px;background:#eff6ff;border-bottom:1px solid #bfdbfe;
+                display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.06em;">
+          <iconify-icon icon="lucide:upload-cloud" style="font-size:14px;color:#2563eb;"></iconify-icon>
+          운영 백업 업로드 복원
+        </span>
+        <p style="font-size:12px;color:#1e3a8a;line-height:1.5;margin:6px 0 0;">
+          운영 서버에서 생성한 DB 백업 zip 또는 sqlite3 파일을 개발 서버에 업로드해 현재 개발 DB를 교체합니다.
+          복원 전 현재 개발 DB 백업을 자동으로 생성합니다.
+        </p>
+      </div>
+    </div>
+
+    <% if Rails.env.production? %>
+      <div style="padding:14px 16px;background:#fff;color:#64748b;font-size:13px;line-height:1.55;">
+        이 기능은 개발/테스트 환경에서만 사용할 수 있습니다. 운영 환경에서는 DB 복원이 비활성화됩니다.
+      </div>
+    <% else %>
+      <div style="padding:14px 16px;background:#fff;">
+        <%= form_with url: admin_data_management_backup_restore_path,
+                      method: :post,
+                      local: true,
+                      multipart: true,
+                      style: "display:grid;gap:12px;" do %>
+          <div style="display:grid;gap:6px;">
+            <label for="backup_file" style="font-size:12px;font-weight:600;color:var(--hcp-mid-gray);">
+              백업 파일
+            </label>
+            <%= file_field_tag :backup_file,
+                               accept: ".zip,.sqlite3,.sqlite,.db,application/zip",
+                               required: true,
+                               style: "font-size:13px;" %>
+          </div>
+
+          <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#991b1b;line-height:1.5;">
+            <%= check_box_tag :confirm_restore, "1", false, required: true, style: "margin-top:2px;" %>
+            현재 개발 DB가 업로드한 운영 백업으로 교체된다는 것을 확인했습니다.
+          </label>
+
+          <div style="display:flex;justify-content:flex-end;">
+            <button class="btn btn--primary btn--sm"
+                    type="submit"
+                    onclick="return confirm('현재 개발 DB를 업로드한 백업으로 교체합니다. 계속할까요?')">
+              <iconify-icon icon="lucide:database-zap" style="font-size:13px;"></iconify-icon>
+              업로드 후 복원
+            </button>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
   <%# SQL 입력 영역 %>
   <div class="admin-table" style="margin-bottom:0;border-radius:10px 10px 0 0;overflow:hidden;">
     <div style="padding:14px 16px;background:var(--hcp-surface,#f5f5f7);border-bottom:1px solid var(--hcp-border-light);
