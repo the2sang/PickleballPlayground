@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_214858) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_215029) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -100,6 +100,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_214858) do
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "decks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "featured_at"
+    t.integer "forked_from_deck_id"
+    t.integer "owner_id"
+    t.string "owner_type"
+    t.integer "scope", default: 2, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["forked_from_deck_id"], name: "index_decks_on_forked_from_deck_id"
+    t.index ["owner_type", "owner_id"], name: "index_decks_on_owner_type_and_owner_id"
+    t.index ["scope", "featured_at"], name: "index_decks_on_scope_and_featured_at"
+    t.index ["scope"], name: "index_decks_on_scope"
   end
 
   create_table "flash_meetup_participations", force: :cascade do |t|
@@ -474,6 +490,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_214858) do
   add_foreign_key "club_notices", "clubs"
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "comments", "users"
+  add_foreign_key "decks", "decks", column: "forked_from_deck_id", on_delete: :nullify
   add_foreign_key "flash_meetup_participations", "flash_meetups"
   add_foreign_key "flash_meetup_participations", "users"
   add_foreign_key "flash_meetups", "users"
