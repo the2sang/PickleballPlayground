@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_215029) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_215110) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_215029) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "cards", force: :cascade do |t|
+    t.text "back", null: false
+    t.integer "card_type", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "deck_id", null: false
+    t.text "front", null: false
+    t.text "hint"
+    t.integer "position", default: 0, null: false
+    t.string "tags"
+    t.datetime "updated_at", null: false
+    t.index ["deck_id", "position"], name: "index_cards_on_deck_id_and_position"
+    t.index ["deck_id"], name: "index_cards_on_deck_id"
   end
 
   create_table "club_favorites", force: :cascade do |t|
@@ -483,6 +497,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_215029) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cards", "decks", on_delete: :cascade
   add_foreign_key "club_favorites", "clubs"
   add_foreign_key "club_favorites", "users"
   add_foreign_key "club_memberships", "clubs"
