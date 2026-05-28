@@ -16,6 +16,8 @@ class CardReviewPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
       return scope.none unless user.present?
+      # TODO(phase-4): join through cards/decks and merge DeckPolicy::Scope so revoked
+      # club members lose CardReview access on decks they can no longer see (PITFALLS §8).
       scope.where(user_id: user.id)
     end
   end
