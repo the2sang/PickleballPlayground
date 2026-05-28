@@ -5,16 +5,395 @@
 # 경고만 출력합니다 (블로킹 아님).
 #
 # 각 덱의 expected_card_count는 시드 로더가 강제하는 카운트 게이트입니다.
+# tags는 문자열 (쉼표 구분) — t.string :tags 컬럼.
+#
+# 작성 기준: IFP / USA Pickleball 공식 룰 (Official Rulebook). 모호한 영역은
+# 작성하지 않음. 사용자가 검토 후 draft 플래그 제거 또는 수정.
 official_decks:
   - title: "피클볼 기본 룰 30선"
     description: "코트 진입 전 반드시 알아야 할 핵심 룰 30가지"
     expected_card_count: 30
-    cards: []
+    cards:
+      - front: "서브는 어느 방향으로 보내야 하는가?"
+        back: "자기 코트의 오른쪽 또는 왼쪽 서비스 코트에서 대각선 반대편 상대 서비스 코트로."
+        hint: "테니스 서브 방향과 동일"
+        tags: "서브,기본"
+        draft: true
+      - front: "키친(Non-Volley Zone)의 정의는?"
+        back: "네트 양쪽으로 7피트(약 2.13m) 폭으로 그어진 구역. 이 구역에 발이 닿은 상태에서 발리(공중 타격) 금지."
+        hint: "단어가 의미하는 '주방'은 농담 — 공식 명칭은 NVZ"
+        tags: "키친,용어,기본"
+        draft: true
+      - front: "더블 바운스 룰이란?"
+        back: "서브 후 리시버는 반드시 한 번 바운스시킨 뒤 리턴해야 하고, 서버 팀도 첫 리턴은 바운스 후 쳐야 한다. 즉 첫 두 샷은 무조건 바운스."
+        hint: "초반 두 샷만 적용"
+        tags: "기본,서브,더블바운스"
+        draft: true
+      - front: "키친 라인을 밟으면서 발리하면?"
+        back: "폴트. 키친 라인은 NVZ에 포함되므로 라인 접촉만으로도 발리 시 폴트가 된다."
+        hint: "라인은 키친의 일부"
+        tags: "키친,룰,폴트"
+        draft: true
+      - front: "키친 안에서 바운스된 공을 치는 것은 허용되는가?"
+        back: "허용된다. NVZ는 발리(공중 타격)만 금지하며, 바운스된 공을 치는 것은 합법."
+        hint: "발리 ≠ 그라운드스트로크"
+        tags: "키친,룰"
+        draft: true
+      - front: "서브 시 발의 위치 규칙은?"
+        back: "한 발은 반드시 베이스라인 뒤에 있어야 하며, 양 발 모두 사이드라인과 센터라인의 가상 연장선 사이에 위치해야 한다."
+        hint: "베이스라인 밟으면 풋폴트"
+        tags: "서브,룰"
+        draft: true
+      - front: "전통적 언더핸드 서브의 정의는?"
+        back: "라켓 헤드를 손목 아래에서 위로 향하는 스윙으로 공에 접촉. 접촉 지점은 허리 아래여야 한다."
+        hint: "위에서 아래로 치면 폴트"
+        tags: "서브,룰"
+        draft: true
+      - front: "드롭 서브(Drop Serve)란?"
+        back: "공을 손에서 떨어뜨려 한 번 바운스시킨 후 서브하는 방식. 2021년 룰 개정으로 정식 허용. 언더핸드 제약을 받지 않는다."
+        hint: "토스나 추가 충격 금지 — 단순 낙하"
+        tags: "서브,룰"
+        draft: true
+      - front: "사이드아웃이란?"
+        back: "서브권을 상대팀에게 넘기는 것. 더블에서는 두 명의 서버가 모두 실점한 뒤 발생한다."
+        hint: "서브권 이동 사건"
+        tags: "스코어링,용어"
+        draft: true
+      - front: "전통(side-out) 스코어링에서 득점은 누가 가능한가?"
+        back: "서브 팀만 득점 가능. 리시브 팀이 랠리를 이겨도 점수가 아닌 서브권만 얻는다."
+        hint: "Rally 스코어링과의 핵심 차이"
+        tags: "스코어링,기본"
+        draft: true
+      - front: "더블에서 첫 서브 팀의 서버는 몇 명인가?"
+        back: "한 명만 서브한다 (첫 서브에서만 적용되는 'first server exception'). 사이드아웃되면 상대팀으로 넘어간다."
+        hint: "이후 사이드아웃마다 양 서버 사용"
+        tags: "서브,스코어링"
+        draft: true
+      - front: "스코어 콜은 몇 개의 숫자로 부르는가?"
+        back: "더블 전통 스코어링에서는 세 숫자: 서브 팀 점수 - 리시브 팀 점수 - 서버 번호(1 또는 2)."
+        hint: "예: 5-3-2"
+        tags: "스코어링,콜아웃"
+        draft: true
+      - front: "서버 번호 1과 2는 무엇을 뜻하는가?"
+        back: "현재 서브 팀의 첫 번째 서버(1) 또는 두 번째 서버(2)를 뜻한다. 사이드아웃되기 전 두 번의 서브 기회 중 어느 것인지 표시."
+        hint: "1 → 실점 → 2 → 실점 → 사이드아웃"
+        tags: "스코어링,용어"
+        draft: true
+      - front: "전통 스코어링에서 서버는 자기 점수가 짝수일 때 어디서 서브하는가?"
+        back: "코트 오른쪽(짝수 코트, even court)에서 서브한다. 홀수면 왼쪽."
+        hint: "0도 짝수"
+        tags: "서브,스코어링"
+        draft: true
+      - front: "게임 점수는 몇 점에 끝나는가? (표준)"
+        back: "11점. 단, 2점 이상 차이로 이겨야 종료된다. 토너먼트 결승은 15 또는 21점이 흔하다."
+        hint: "Win by 2"
+        tags: "스코어링,게임"
+        draft: true
+      - front: "공이 라인 위에 떨어지면 인인가 아웃인가?"
+        back: "인이다. 베이스라인/사이드라인/센터라인 모두 인플레이 라인. 단, 서브 시 NVZ 라인(키친 라인)에 떨어지면 폴트(아웃과 동일)."
+        hint: "예외: 서브 시 키친 라인은 폴트"
+        tags: "라인콜,서브"
+        draft: true
+      - front: "리시버가 더블 바운스 룰을 어기고 발리하면?"
+        back: "폴트 — 서브 팀에 점수(또는 서브권)를 빼앗긴다. 리시브 팀은 첫 리턴을 반드시 바운스 후 쳐야 한다."
+        hint: "더블 바운스 룰 위반"
+        tags: "기본,폴트,더블바운스"
+        draft: true
+      - front: "공이 영구 시설물(천장, 조명 등)에 맞으면?"
+        back: "그 샷을 친 플레이어의 폴트. 네트를 넘기 전에 닿았다면 친 사람 책임."
+        hint: "넘긴 후 영구물 접촉 → 그 팀의 폴트"
+        tags: "폴트,코트"
+        draft: true
+      - front: "네트에 맞고 넘어간 서브는?"
+        back: "2021년 룰 개정 이후 'let'은 폐지되었고, 네트를 맞고 적법한 서비스 코트에 떨어진 서브는 인플레이."
+        hint: "테니스 let과 다름"
+        tags: "서브,룰"
+        draft: true
+      - front: "랠리 중 공이 네트에 맞고 넘어가면?"
+        back: "인플레이. 네트 접촉 후 상대 코트 인사이드 라인 안에 떨어지면 정상 진행."
+        hint: "랠리에는 let 개념 없음"
+        tags: "기본,네트"
+        draft: true
+      - front: "파트너의 콜이 정확한 라인콜이 되려면?"
+        back: "양 팀 어느 누구도 공이 인이라고 명확히 보지 못했다면 아웃 콜은 인정된다. 의심스러우면 상대에게 유리하게(인) 콜하는 것이 매너."
+        hint: "When in doubt, call it in"
+        tags: "라인콜,매너"
+        draft: true
+      - front: "캐리(carry)란?"
+        back: "공이 라켓 면에 잠깐 머무르며 운반되듯 쳐지는 것. 폴트로 간주된다."
+        hint: "한 번의 접촉이 아니어야 함"
+        tags: "폴트,스트로크"
+        draft: true
+      - front: "더블 힛(double hit)이란?"
+        back: "한 번의 연속된 스윙으로 공을 두 번 친 것. 의도적이면 폴트, 한 동작이면 합법으로 인정될 수 있다."
+        hint: "의도/연속성이 판단 기준"
+        tags: "폴트,스트로크"
+        draft: true
+      - front: "공이 플레이어의 몸이나 옷에 닿으면?"
+        back: "폴트 (라켓 손목 아래 부위 포함). 네트를 넘은 후라도 공이 라켓이 아닌 신체에 닿으면 그 사람 폴트."
+        hint: "라켓 외 접촉은 폴트"
+        tags: "폴트,기본"
+        draft: true
+      - front: "발리(volley)란?"
+        back: "공이 바운스되기 전 공중에서 라켓으로 치는 것. 키친(NVZ) 안에 발이 있으면 금지."
+        hint: "그라운드스트로크와 대비"
+        tags: "용어,스트로크"
+        draft: true
+      - front: "딩크(dink)란?"
+        back: "키친 라인 근처에서 부드럽게 쳐서 상대 키친에 살짝 떨어뜨리는 컨트롤 샷."
+        hint: "공격성보다 정확성 중심"
+        tags: "용어,스트로크"
+        draft: true
+      - front: "발리 후 관성으로 키친에 진입하면?"
+        back: "폴트. 발리한 후 모멘텀으로 키친 라인을 밟거나 안쪽으로 들어가면 안 된다 (라켓이나 모자가 떨어져도 폴트)."
+        hint: "발리 후 정지 위치도 키친 밖이어야"
+        tags: "키친,폴트"
+        draft: true
+      - front: "키친에서 나와 발리하려면 어떻게 해야 하는가?"
+        back: "두 발이 모두 NVZ 밖에 있어야 발리 가능. 키친에서 벗어났더라도 직전 동작이 키친 안이었다면 안전을 위해 완전히 빠져나온 뒤 발리."
+        hint: "두 발 모두 NVZ 밖"
+        tags: "키친,발리,룰"
+        draft: true
+      - front: "워밍업 후 첫 서브 콜은 어떻게 시작되는가?"
+        back: "더블 전통 스코어링에서는 0-0-2(또는 0-0-start)로 시작 — 첫 서브 팀은 한 명만 서브하기 때문에 서버 번호 2로 표시."
+        hint: "first server exception"
+        tags: "스코어링,콜아웃,서브"
+        draft: true
+      - front: "라켓이 손에서 떨어진 상태에서 공이 라켓에 맞으면?"
+        back: "폴트. 라켓이 손에서 떨어지면 그 시점부터의 접촉은 더 이상 합법 스트로크가 아니다."
+        hint: "라켓을 잡고 있어야 정상 스트로크"
+        tags: "폴트,스트로크"
+        draft: true
   - title: "영어 콜아웃 & 용어"
     description: "국제 대회나 외국인과 경기 시 자주 듣는 영어 표현 모음"
     expected_card_count: 25
-    cards: []
+    cards:
+      - front: "dink"
+        back: "키친 근처에서 부드럽게 띄워 상대 키친에 살짝 떨어뜨리는 컨트롤 샷."
+        hint: "한국어 표기: 딩크"
+        tags: "스트로크,용어"
+        draft: true
+      - front: "third shot drop"
+        back: "서브-리턴-제3샷의 세 번째 샷으로, 베이스라인에서 상대 키친 근처에 떨어지도록 부드럽게 띄우는 샷. NVZ 진출을 위한 핵심 전략."
+        hint: "딩크 랠리 진입용"
+        tags: "전략,스트로크"
+        draft: true
+      - front: "lob"
+        back: "상대 머리 위로 높게 띄워 베이스라인 근처에 떨어뜨리는 샷. 상대를 키친에서 밀어내는 용도."
+        hint: "수비/전환용"
+        tags: "스트로크,전략"
+        draft: true
+      - front: "Erne"
+        back: "키친을 우회하여 사이드라인 바깥쪽에서 발리하는 고급 기술. 키친 밖에 발이 있으면 합법."
+        hint: "선수 이름에서 유래"
+        tags: "전략,발리"
+        draft: true
+      - front: "ATP (Around The Post)"
+        back: "공을 네트가 아닌 포스트(기둥) 옆으로 돌려서 보내는 샷. 네트 위를 넘기지 않아도 합법."
+        hint: "각도가 매우 예리할 때"
+        tags: "스트로크,전략"
+        draft: true
+      - front: "stack"
+        back: "복식에서 두 파트너가 코트 한쪽에 함께 서서 자기 선수에게 유리한 위치로 정렬하는 포메이션."
+        hint: "포핸드를 가운데로"
+        tags: "전략,포지셔닝"
+        draft: true
+      - front: "paddle"
+        back: "피클볼에서 사용하는 라켓. 테니스의 라켓이 아닌 패들(나무·복합소재 판)이다."
+        hint: "Racket이 아닌 Paddle"
+        tags: "용어,장비"
+        draft: true
+      - front: "fault"
+        back: "랠리를 잃게 만드는 룰 위반. 서브 실패, 키친 발리, 아웃, 네트 접촉 등 다양한 종류가 있다."
+        hint: "한국어: 폴트"
+        tags: "용어,룰"
+        draft: true
+      - front: "let"
+        back: "랠리를 무효로 하고 다시 시작하는 콜. 2021년 룰 개정으로 서브 let은 폐지됨."
+        hint: "현재는 매우 드물게만 사용"
+        tags: "용어,룰"
+        draft: true
+      - front: "side out"
+        back: "서브권이 상대 팀으로 넘어가는 것. 더블에서는 양 서버 모두 실점한 후 발생."
+        hint: "한국어: 사이드아웃"
+        tags: "스코어링,콜아웃"
+        draft: true
+      - front: "kitchen"
+        back: "Non-Volley Zone(NVZ)의 별명. 네트 양쪽 7피트 구역으로 발리 금지."
+        hint: "농담조 별명"
+        tags: "코트,용어"
+        draft: true
+      - front: "rally"
+        back: "서브 이후 점수가 결정될 때까지 양 팀이 공을 주고받는 구간."
+        hint: "득점 또는 사이드아웃으로 종료"
+        tags: "용어,기본"
+        draft: true
+      - front: "volley"
+        back: "공이 바운스되기 전 공중에서 치는 샷. NVZ 안에서는 금지."
+        hint: "발리"
+        tags: "스트로크,용어"
+        draft: true
+      - front: "ground stroke"
+        back: "공이 한 번 바운스된 후 치는 샷. NVZ 안에서도 합법."
+        hint: "발리와 대비"
+        tags: "스트로크,용어"
+        draft: true
+      - front: "poach"
+        back: "복식에서 파트너의 공을 가로채서 발리하는 공격적 움직임."
+        hint: "주로 네트 플레이"
+        tags: "전략,복식"
+        draft: true
+      - front: "first server exception"
+        back: "더블 게임 시작 시 첫 서브 팀은 서버 한 명만 사용한다는 규칙. 이후 사이드아웃부터는 양 서버 사용."
+        hint: "0-0-2로 시작하는 이유"
+        tags: "서브,룰"
+        draft: true
+      - front: "ace"
+        back: "리시버가 라켓에 닿지도 못한 채 끝나는 서브. 직접 득점."
+        hint: "서브 즉시 득점"
+        tags: "서브,용어"
+        draft: true
+      - front: "drop serve"
+        back: "공을 손에서 떨어뜨려 한 번 바운스시킨 뒤 서브하는 방식. 2021년 정식 허용."
+        hint: "토스 금지"
+        tags: "서브,용어"
+        draft: true
+      - front: "open / closed face"
+        back: "패들 면이 위로(open) 또는 아래로(closed) 향한 상태. 슬라이스/탑스핀과 궤적을 결정."
+        hint: "면 각도 용어"
+        tags: "스트로크,용어"
+        draft: true
+      - front: "non-volley zone (NVZ)"
+        back: "키친의 공식 명칭. 네트 양쪽 7피트 구역으로 발리 금지."
+        hint: "줄여서 NVZ"
+        tags: "코트,용어"
+        draft: true
+      - front: "baseline"
+        back: "코트의 가장 뒤쪽 라인. 서브 시 한 발이 이 라인 뒤에 있어야 한다."
+        hint: "서브 발 위치 기준선"
+        tags: "코트,용어"
+        draft: true
+      - front: "centerline"
+        back: "서비스 코트를 좌우로 나누는 중앙선. 서브 위치 결정에 사용."
+        hint: "센터라인"
+        tags: "코트,용어"
+        draft: true
+      - front: "sideline"
+        back: "코트의 좌우 경계선. 라인 위에 떨어지면 인."
+        hint: "사이드라인"
+        tags: "코트,용어"
+        draft: true
+      - front: "punch volley"
+        back: "팔로스루 없이 짧게 끊어 치는 발리. 키친 근처에서 강한 압박용."
+        hint: "Block volley와 유사"
+        tags: "스트로크,발리"
+        draft: true
+      - front: "rally scoring"
+        back: "서브 팀이 아니어도 랠리를 이기면 득점하는 방식. 일부 토너먼트에서만 사용 (기본은 전통 side-out)."
+        hint: "전통 스코어링과 구분"
+        tags: "스코어링,용어"
+        draft: true
   - title: "스코어링 시나리오 20"
     description: "전통/Rally 스코어링 상황별 점수 변화 시나리오"
     expected_card_count: 20
-    cards: []
+    cards:
+      - front: "[전통] 게임 시작 시 첫 콜은?"
+        back: "0-0-2 (또는 0-0-start). 첫 서브 팀은 first server exception으로 한 명만 서브."
+        hint: "서버 번호 2"
+        tags: "전통,시작"
+        draft: true
+      - front: "[전통] 서버 1이 서브 → 랠리 이김. 다음 콜은?"
+        back: "1-0-1. 같은 서버가 계속 서브하며 점수만 1 증가."
+        hint: "서브 측면도 짝/홀에 따라 바뀜"
+        tags: "전통,득점"
+        draft: true
+      - front: "[전통] 점수 1-0-1에서 서버가 실점. 다음 콜은?"
+        back: "0-1-2. 서브권은 그대로 같은 팀에 남고 두 번째 서버에게 넘어간다."
+        hint: "사이드아웃 아님"
+        tags: "전통,실점"
+        draft: true
+      - front: "[전통] 점수 0-1-2에서 서버 2도 실점. 다음 콜은?"
+        back: "1-0-1. 사이드아웃 — 서브권이 상대 팀으로 넘어가고 상대 팀의 서버 1부터 시작."
+        hint: "양 서버 모두 실점 → 사이드아웃"
+        tags: "전통,사이드아웃"
+        draft: true
+      - front: "[전통] 점수 0-0-2(시작)에서 서버 실점. 다음 콜은?"
+        back: "0-0-1. 첫 서브 팀은 한 명만 서브하므로 즉시 사이드아웃되어 상대팀의 서버 1로 넘어간다."
+        hint: "first server exception 적용"
+        tags: "전통,사이드아웃,시작"
+        draft: true
+      - front: "[전통] 서브 팀 점수가 짝수일 때 서버는 어디에 서야 하는가?"
+        back: "코트의 오른쪽(짝수 코트). 점수 0, 2, 4 등."
+        hint: "0도 짝수"
+        tags: "전통,서브위치"
+        draft: true
+      - front: "[전통] 서브 팀 점수가 홀수일 때 서버 위치는?"
+        back: "코트의 왼쪽(홀수 코트). 점수 1, 3, 5 등."
+        hint: "짝/홀 규칙"
+        tags: "전통,서브위치"
+        draft: true
+      - front: "[전통] 서브 콜을 잘못 부르고 랠리가 진행되면?"
+        back: "원칙: 랠리 시작 전 정정 가능. 시작된 후에는 그 랠리를 마치고 다음 서브 전에 정정. 콜 자체는 폴트 사유 아님."
+        hint: "오심성 폴트 아님"
+        tags: "전통,콜아웃,룰"
+        draft: true
+      - front: "[전통] 잘못된 코트(짝/홀 반대)에서 서브하고 발견되면?"
+        back: "그 랠리는 폴트 처리. 적용 시점은 룰북 §4 참조 — 발견된 직후 폴트."
+        hint: "wrong server 또는 wrong court fault"
+        tags: "전통,서브,폴트"
+        draft: true
+      - front: "[전통] 점수 10-9-2에서 서버 실점. 다음 콜은?"
+        back: "9-10-1. 사이드아웃, 상대 팀의 서버 1이 9점으로 시작."
+        hint: "11점 게임 매치포인트 직전"
+        tags: "전통,사이드아웃"
+        draft: true
+      - front: "[전통] 점수 10-5-1에서 서버 득점. 다음 콜은?"
+        back: "11-5-1. 11점 도달 + 6점차로 게임 종료(win by 2 충족)."
+        hint: "Game point"
+        tags: "전통,게임종료"
+        draft: true
+      - front: "[전통] 점수 10-10에서 서버가 득점하면?"
+        back: "11-10-X로 진행. 단 2점차 룰 때문에 게임은 끝나지 않는다 (11-9가 되어야 종료)."
+        hint: "Win by 2"
+        tags: "전통,듀스"
+        draft: true
+      - front: "[Rally] 점수 5-3에서 리시브 팀이 랠리 이기면?"
+        back: "리시브 팀이 1점 득점하여 5-4 (서브권도 넘어감). Rally scoring은 서브 팀이 아니어도 득점 가능."
+        hint: "전통과의 핵심 차이"
+        tags: "Rally,득점"
+        draft: true
+      - front: "[Rally] Rally 스코어링의 게임 종료 점수는?"
+        back: "토너먼트별로 다르지만 흔히 15점 또는 21점, 2점차 필수. 전통(11점)보다 높게 설정."
+        hint: "Win by 2"
+        tags: "Rally,게임종료"
+        draft: true
+      - front: "[전통] 5-3-2 콜 의미는?"
+        back: "서브 팀이 5점, 리시브 팀이 3점, 현재 서버 번호 2(두 번째 서버)."
+        hint: "세 숫자 콜"
+        tags: "전통,콜아웃"
+        draft: true
+      - front: "[전통] 서버가 서브 시 베이스라인을 밟으면?"
+        back: "풋폴트 — 즉시 폴트. 다음 서버에게 넘어가거나 사이드아웃."
+        hint: "발 위치 룰"
+        tags: "전통,폴트,서브"
+        draft: true
+      - front: "[전통] 서브가 키친 라인에 떨어지면?"
+        back: "폴트. 서브는 키친 라인을 포함한 NVZ 내부에 떨어지면 안 된다."
+        hint: "서브에 한해 NVZ 라인=아웃"
+        tags: "전통,서브,폴트"
+        draft: true
+      - front: "[전통] 리시버가 서브를 발리로 받으면?"
+        back: "폴트 — 더블 바운스 룰 위반. 서버 팀에 1점 또는 서브권 유지."
+        hint: "첫 두 샷은 필수 바운스"
+        tags: "전통,더블바운스,폴트"
+        draft: true
+      - front: "[전통] 점수 0-0-2에서 서버 득점. 다음 콜은?"
+        back: "1-0-2. 점수가 1로 증가하고 서버는 짝→홀 코트로 측면 이동."
+        hint: "서버 번호 유지"
+        tags: "전통,득점,시작"
+        draft: true
+      - front: "[전통] 11점 도달했으나 점수차가 1일 때 (예: 11-10) 게임은?"
+        back: "끝나지 않는다. Win by 2 룰에 따라 12-10 이상이 되어야 종료."
+        hint: "딜레마: 듀스 연장"
+        tags: "전통,듀스,게임종료"
+        draft: true
