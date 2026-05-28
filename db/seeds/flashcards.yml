@@ -1,0 +1,20 @@
+# 낱말카드 v1 — 공식 덱 시드 데이터.
+#
+# Wave 5.1 (AI-assisted draft + human review) 단계에서 cards: 배열을 채웁니다.
+# 각 카드의 `draft: true` 플래그는 검토 전 임시 카드를 표시하며, 시드 로더는
+# 경고만 출력합니다 (블로킹 아님).
+#
+# 각 덱의 expected_card_count는 시드 로더가 강제하는 카운트 게이트입니다.
+official_decks:
+  - title: "피클볼 기본 룰 30선"
+    description: "코트 진입 전 반드시 알아야 할 핵심 룰 30가지"
+    expected_card_count: 30
+    cards: []
+  - title: "영어 콜아웃 & 용어"
+    description: "국제 대회나 외국인과 경기 시 자주 듣는 영어 표현 모음"
+    expected_card_count: 25
+    cards: []
+  - title: "스코어링 시나리오 20"
+    description: "전통/Rally 스코어링 상황별 점수 변화 시나리오"
+    expected_card_count: 20
+    cards: []

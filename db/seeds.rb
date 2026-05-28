@@ -219,4 +219,7 @@ else
   puts "   SITE_ADMIN_EMAIL / SITE_ADMIN_PASSWORD 환경변수 없음 — 건너뜀"
 end
 
+puts "== Flashcards =="
+load Rails.root.join("db/seeds/flashcards.rb")
+
 puts "== Done =="
