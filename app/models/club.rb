@@ -10,6 +10,7 @@ class Club < ApplicationRecord
   has_many :club_favorites, dependent: :destroy
   has_many :tournaments, dependent: :destroy
   has_many :club_notices, dependent: :destroy
+  has_many :decks, as: :owner, dependent: :destroy
 
   enum :status, { pending: 0, approved: 1, suspended: 2 }, default: :pending
 
