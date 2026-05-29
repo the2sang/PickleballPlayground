@@ -10,7 +10,66 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_215206) do
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "card_reviews", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "ease", precision: 4, scale: 2, default: "2.5", null: false
+    t.integer "interval_days", default: 0, null: false
+    t.integer "last_rating"
+    t.datetime "last_reviewed_at"
+    t.datetime "next_review_at"
+    t.integer "repetitions", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["card_id"], name: "index_card_reviews_on_card_id"
+    t.index ["user_id", "card_id"], name: "index_card_reviews_on_user_id_and_card_id", unique: true
+    t.index ["user_id", "next_review_at"], name: "index_card_reviews_on_user_id_and_next_review_at"
+    t.index ["user_id"], name: "index_card_reviews_on_user_id"
+  end
+
+  create_table "cards", force: :cascade do |t|
+    t.text "back", null: false
+    t.integer "card_type", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "deck_id", null: false
+    t.text "front", null: false
+    t.text "hint"
+    t.integer "position", default: 0, null: false
+    t.string "tags"
+    t.datetime "updated_at", null: false
+    t.index ["deck_id", "position"], name: "index_cards_on_deck_id_and_position"
+    t.index ["deck_id"], name: "index_cards_on_deck_id"
+  end
+
   create_table "club_favorites", force: :cascade do |t|
     t.integer "club_id", null: false
     t.datetime "created_at", null: false
@@ -72,6 +131,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "decks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "featured_at"
+    t.integer "forked_from_deck_id"
+    t.integer "owner_id"
+    t.string "owner_type"
+    t.integer "scope", default: 2, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["forked_from_deck_id"], name: "index_decks_on_forked_from_deck_id"
+    t.index ["owner_type", "owner_id"], name: "index_decks_on_owner_type_and_owner_id"
+    t.index ["scope", "featured_at"], name: "index_decks_on_scope_and_featured_at"
+    t.index ["scope"], name: "index_decks_on_scope"
   end
 
   create_table "flash_meetup_participations", force: :cascade do |t|
@@ -309,6 +384,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
     t.index ["status"], name: "index_telegram_prompts_on_status"
   end
 
+  create_table "tournament_event_decks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "deck_id", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "tournament_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deck_id"], name: "index_tournament_event_decks_on_deck_id"
+    t.index ["tournament_event_id", "deck_id"], name: "index_ted_on_event_and_deck", unique: true
+    t.index ["tournament_event_id", "position"], name: "index_ted_on_event_and_position"
+    t.index ["tournament_event_id"], name: "index_tournament_event_decks_on_tournament_event_id"
+  end
+
   create_table "tournament_events", force: :cascade do |t|
     t.integer "advances_per_group", default: 2, null: false
     t.datetime "created_at", null: false
@@ -437,6 +524,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
     t.index ["user_id"], name: "index_work_plans_on_user_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "card_reviews", "cards", on_delete: :cascade
+  add_foreign_key "card_reviews", "users", on_delete: :cascade
+  add_foreign_key "cards", "decks", on_delete: :cascade
   add_foreign_key "club_favorites", "clubs"
   add_foreign_key "club_favorites", "users"
   add_foreign_key "club_memberships", "clubs"
@@ -444,6 +536,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
   add_foreign_key "club_notices", "clubs"
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "comments", "users"
+  add_foreign_key "decks", "decks", column: "forked_from_deck_id", on_delete: :nullify
   add_foreign_key "flash_meetup_participations", "flash_meetups"
   add_foreign_key "flash_meetup_participations", "users"
   add_foreign_key "flash_meetups", "users"
@@ -461,6 +554,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_044049) do
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "stock_infos", "users"
+  add_foreign_key "tournament_event_decks", "decks", on_delete: :cascade
+  add_foreign_key "tournament_event_decks", "tournament_events", on_delete: :cascade
   add_foreign_key "work_journals", "users"
   add_foreign_key "work_plans", "users"
 end

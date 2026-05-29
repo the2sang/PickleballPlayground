@@ -1,0 +1,26 @@
+class DeckPolicy < ApplicationPolicy
+  # Phase 1 stubs. Real rules in Phase 4.
+  # The minimum to make Phase 2 personal-deck CRUD work:
+
+  def show?    = personal_owner?
+  def create?  = user.present?
+  def new?     = create?
+  def update?  = personal_owner?
+  def edit?    = update?
+  def destroy? = personal_owner?
+
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      # TODO(phase-4): implement 3-tier official ∪ club(approved) ∪ personal(owner) resolver
+      scope.none
+    end
+  end
+
+  private
+
+  def personal_owner?
+    return false unless user.present?
+    return true  if site_admin?            # bypass — matches ClubPolicy precedent
+    record.respond_to?(:owner) && record.owner == user
+  end
+end

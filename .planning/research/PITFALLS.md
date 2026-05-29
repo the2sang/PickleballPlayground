@@ -11,13 +11,13 @@
 ### Pitfall 1: SM-2 Algorithm — Rating Scale Mismatch
 
 **What goes wrong:**
-The canonical SM-2 algorithm uses a 0–5 quality scale. This project uses a 4-step (1–4) scale. If you implement the SM-2 formula verbatim (`EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02))`), the ease factor will decay incorrectly because the formula assumes ratings from 0 (blackout) to 5 (perfect). Mapping 1→0, 2→2, 3→3, 4→5 without verifying the ease factor boundary constraints causes EF to drop below the 1.3 floor on repeated "어려움" ratings, effectively locking cards into a daily repetition loop that never resolves.
+The canonical SM-2 algorithm uses a 0–5 quality scale. This project uses a 4-step (1–4) scale. If you implement the SM-2 formula verbatim (`EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02))`), the ease factor will decay incorrectly because the formula assumes ratings from 0 (blackout) to 5 (perfect). The locked Phase 1 quality mapping is `다시=1, 어려움=3, 보통=4, 쉬움=5` (per user decision during Phase 1 planning). Earlier drafts mapped 다시→0 / 어려움→2; those values put 어려움 on the lapse side of the cutoff (q<3), collapsing legitimate progress on hard cards into a daily repetition loop that never resolves.
 
 **Why it happens:**
 Developers copy the formula from Wikipedia/SuperMemo documentation without adapting it to the project's rating scale.
 
 **How to avoid:**
-Define a `QUALITY_MAP = { 1 => 0, 2 => 2, 3 => 3, 4 => 5 }` constant in `Sm2Service` and translate before applying the formula. Also enforce `ease = [1.3, calculated_ease].max` explicitly. Write unit tests for all four rating values with a fresh card (repetitions=0) and a mature card (interval=21+) to catch boundary violations before shipping.
+Define `QUALITY_MAP = { 1 => 1, 2 => 3, 3 => 4, 4 => 5 }.freeze` in `Flashcards::Sm2Service` (다시=1, 어려움=3, 보통=4, 쉬움=5 — per user decision during Phase 1 planning; locked in `Sm2Service::QUALITY_MAP`) and translate before applying the formula. Also enforce `ease = [1.3, calculated_ease].max` explicitly. Write unit tests for all four rating values with a fresh card (repetitions=0) and a mature card (interval=21+) to catch boundary violations before shipping.
 
 **Warning signs:**
 Cards rated "어려움" every time don't recover after 7+ days. Cards rated "쉬움" accumulate interval longer than 6 months. EF values appear as negative or > 4.0 in the database.

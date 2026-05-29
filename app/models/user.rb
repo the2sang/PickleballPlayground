@@ -26,6 +26,8 @@ class User < ApplicationRecord
   has_many :participations, dependent: :destroy
   has_many :flash_meetups, dependent: :destroy
   has_many :flash_meetup_participations, dependent: :destroy
+  has_many :decks, as: :owner, dependent: :destroy
+  has_many :card_reviews, dependent: :destroy
 
   def group_member_ids
     group_ids = group_memberships.select(:group_id)
