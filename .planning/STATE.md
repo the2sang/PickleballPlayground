@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-05-30T08:48:49.692Z"
+status: ready_to_plan
+stopped_at: Phase 03 complete (5/5) — ready to discuss Phase 4
+last_updated: 2026-05-30T09:05:34.130Z
 last_activity: 2026-05-30 -- Phase 03 execution started
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 11
-  completed_plans: 10
+  completed_plans: 11
   percent: 40
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-29)
 
 **Core value:** 학습 세션에서 카드를 평가하면 SM-2 알고리즘이 다음 복습 시각을 계산하고 Turbo Stream으로 즉시 다음 카드를 보여준다 — 이 사이클이 끊기면 모든 것이 무의미하다.
-**Current focus:** Phase 03 — srs-learning-loop
+**Current focus:** Phase 4 — permissions + club/official integration
 
 ## Current Position
 
-Phase: 03 (srs-learning-loop) — EXECUTING
-Plan: 1 of 5
-Status: Executing Phase 03
-Last activity: 2026-05-30 -- Phase 03 execution started
+Phase: 4
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-30
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -36,7 +36,7 @@ Progress: [░░░░░░░░░░] 0%
 
 **Velocity:**
 
-- Total plans completed: 6
+- Total plans completed: 11
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -46,6 +46,7 @@ Progress: [░░░░░░░░░░] 0%
 |-------|-------|-------|----------|
 | 01 | 1 | - | - |
 | 2 | 5 | - | - |
+| 03 | 5 | - | - |
 
 **Recent Trend:** N/A (no plans completed yet)
 
