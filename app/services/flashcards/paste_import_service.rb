@@ -32,8 +32,11 @@ module Flashcards
       # 덱 내 중복 front 검출 (DB 쿼리 1회 — N+1 회피)
       fronts = parsed.map(&:front).compact_blank
       existing_fronts = @deck.cards.where(front: fronts).pluck(:front).to_set
+      batch_dupes = parsed.map(&:front).compact_blank.tally.select { |_, count| count > 1 }.keys.to_set
       parsed.each do |c|
-        c.warnings << "덱 내 중복 카드: #{c.front}" if c.front.present? && existing_fronts.include?(c.front)
+        next if c.front.blank?
+        c.warnings << "덱 내 중복 카드: #{c.front}" if existing_fronts.include?(c.front)
+        c.warnings << "배치 내 중복 카드: #{c.front}" if batch_dupes.include?(c.front)
       end
 
       importable = parsed.count(&:importable?)
@@ -57,8 +60,8 @@ module Flashcards
       front, back, hint, tags = parts[0], parts[1], parts[2], parts[3]
       warnings = []
       warnings << "앞면 또는 뒷면이 비어 있습니다." if front.blank? || back.blank?
-      if [ front, back, hint, tags ].compact.any? { |f| f.include?(@separator) }
-        warnings << "구분자 충돌 — 내용에 '#{@separator}' 포함"
+      if parts.compact_blank.size > 4
+        warnings << "구분자 충돌 — 열 수 초과 (#{parts.compact_blank.size}개 열 감지됨)"
       end
       ParsedCard.new(front: front, back: back, hint: hint, tags: tags, row_index: index, warnings: warnings)
     end
