@@ -32,16 +32,51 @@ RSpec.describe Flashcards::PasteImportService do
       expect(result.preview_cards.first.importable?).to be false
     end
 
-    it "구분자가 필드 내부에 포함된 줄을 경고로 표시" do
-      text = "앞\t뒤\t힌트에\t포함"  # 4번째 칸에 구분자가 있어 split이 5개 이상으로 됨
-      # 실제 구분자 충돌 테스트: front/back/hint/tags 안에 구분자가 포함된 경우
-      text2 = "앞면\t탭이\t안에있는\t뒤면"
-      result = described_class.call(text: text2, separator: "\t", deck: deck, mode: :preview)
+    context "구분자 충돌 감지 (CR-01)" do
+      it "실제 열이 4개를 초과하면 해당 행에 경고를 추가하고 importable? == false를 반환한다" do
+        text = "앞면\t뒷면\t힌트\t태그\t초과열"
+        result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
 
-      # 경고 있어야 함 (구분자 충돌)
-      first_card = result.preview_cards.first
-      # 구분자가 포함된 필드가 있으면 경고
-      expect(result.success?).to be true
+        card = result.preview_cards.first
+        expect(card.warnings).not_to be_empty
+        expect(card.warnings.first).to include("구분자 충돌")
+        expect(card.importable?).to be false
+      end
+
+      it "후행 빈 열만 있는 행은 구분자 충돌 경고를 생성하지 않는다" do
+        text = "앞면\t뒷면\t\t\t"
+        result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
+
+        expect(result.preview_cards.first.warnings).not_to include(a_string_including("구분자 충돌"))
+      end
+
+      it "정상적인 4열 이하 행은 구분자 충돌 경고를 생성하지 않는다" do
+        text = "앞면\t뒷면\t힌트"
+        result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
+
+        expect(result.preview_cards.first.warnings).not_to include(a_string_including("구분자 충돌"))
+      end
+    end
+
+    context "배치 내 중복 감지 (CR-02)" do
+      it "동일 배치 내 같은 front가 두 번 등장하면 두 행 모두 경고를 받는다" do
+        text = "같은앞면\t뒤1\n같은앞면\t뒤2"
+        result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
+
+        expect(result.success?).to be true
+        warned = result.preview_cards.select { |c| c.warnings.any? }
+        expect(warned.size).to eq 2
+        expect(warned.first.warnings.first).to include("배치 내 중복")
+      end
+
+      it "배치 내 중복 카드가 있으면 save 모드에서 저장을 거부한다" do
+        text = "같은앞면\t뒤1\n같은앞면\t뒤2"
+        expect {
+          result = described_class.call(text: text, separator: "\t", deck: deck, mode: :save)
+          expect(result.success?).to be false
+          expect(result.errors).not_to be_empty
+        }.not_to change { deck.cards.count }
+      end
     end
   end
 
