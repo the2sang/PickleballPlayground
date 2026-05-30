@@ -1,6 +1,9 @@
 <% content_for :title, @deck.title %>
 
-<% can_edit = @deck.personal? && Current.user == @deck.owner %>
+<% deck_policy = policy(@deck) %>
+<% can_edit    = deck_policy.update? %>
+<% can_fork    = deck_policy.fork? %>
+<% can_feature = deck_policy.feature? %>
 
 <div class="cl-page">
   <div class="cl-hero">
@@ -11,6 +14,9 @@
             <%= link_to "낱말카드", decks_path %>
             <span class="sep">/</span>
             <%= { "official" => "공식", "club" => "클럽", "personal" => "내 덱" }[@deck.scope] %>
+            <% if @deck.featured_at? %>
+              <span style="color:#f59e0b; font-size:0.8rem;">★ 피처드</span>
+            <% end %>
           </p>
           <h1 class="cl-hero__title"><%= @deck.title %></h1>
           <% if @deck.description.present? %>
@@ -28,12 +34,28 @@
               <button type="button" class="btn btn--primary btn--sm" disabled aria-disabled="true" title="카드를 먼저 추가하세요">학습 시작</button>
               <span style="font-size:0.85rem; color:#6b7280; align-self:center;">카드를 먼저 추가하세요</span>
             <% end %>
+            <% if can_fork %>
+              <%= button_to "내 덱으로 복제", deck_fork_path(@deck), method: :post,
+                    class: "btn btn--ghost btn--sm",
+                    form: { data: { turbo_confirm: "이 덱을 내 학습 덱으로 복제하시겠습니까?" } } %>
+            <% end %>
           </div>
           <% if can_edit %>
             <div style="display:flex; gap:8px;">
               <%= link_to "수정", edit_deck_path(@deck), class: "btn btn--ghost btn--sm" %>
               <%= button_to "삭제", @deck, method: :delete, class: "btn btn--danger btn--sm",
                     form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+            </div>
+          <% end %>
+          <% if can_feature %>
+            <div style="display:flex; gap:8px;">
+              <% if @deck.featured_at? %>
+                <%= button_to "피처드 해제", deck_feature_path(@deck), method: :delete,
+                      class: "btn btn--ghost btn--sm" %>
+              <% else %>
+                <%= button_to "피처드 설정", deck_feature_path(@deck), method: :post,
+                      class: "btn btn--ghost btn--sm" %>
+              <% end %>
             </div>
           <% end %>
         </div>

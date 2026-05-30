@@ -1,23 +1,94 @@
 class DeckPolicy < ApplicationPolicy
-  # Phase 1 stubs. Real rules in Phase 4.
-  # The minimum to make Phase 2 personal-deck CRUD work:
+  # ── Visibility ──────────────────────────────────────────────────────────
 
   def show?
     return true if record.official?
-    return personal_owner? if record.personal?
+    return true if site_admin?
     return false unless user.present?
-    user.club_memberships.approved.exists?(club_id: record.owner_id)
+    return club_member? if record.club?
+    personal_owner?
   end
-  def create?  = user.present?
-  def new?     = create?
-  def update?  = personal_owner?
-  def edit?    = update?
-  def destroy? = personal_owner?
+
+  # ── Creation ─────────────────────────────────────────────────────────────
+
+  def create?
+    return false unless user.present?
+    return site_admin?  if record.official?
+    return club_member? if record.club?
+    true # personal
+  end
+
+  def new? = create?
+
+  # ── Mutation ─────────────────────────────────────────────────────────────
+
+  def update?
+    return true  if site_admin?
+    return false unless user.present?
+    return club_manager? if record.club?
+    personal_owner?
+  end
+
+  def edit? = update?
+
+  def destroy?
+    return true  if site_admin?
+    return false unless user.present?
+    return club_manager? if record.club?
+    personal_owner?
+  end
+
+  # ── Domain actions ────────────────────────────────────────────────────────
+
+  def fork?
+    return false unless user.present?
+    return false if record.personal?
+    return true  if site_admin?
+    return club_member? if record.club?
+    true # official
+  end
+
+  def feature?
+    return false unless user.present?
+    return false if record.personal?
+    return true  if site_admin?
+    return false unless record.club?
+    club_manager?
+  end
+
+  def moderate?
+    return false unless user.present?
+    return false if record.personal?
+    return true  if site_admin?
+    return false unless record.club?
+    club_manager?
+  end
+
+  # ── Scope ─────────────────────────────────────────────────────────────────
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      # TODO(phase-4): implement 3-tier official ∪ club(approved) ∪ personal(owner) resolver
-      scope.none
+      return scope.all if admin?
+
+      conditions = [ "decks.scope = #{Deck.scopes[:official]}" ]
+
+      if user.present?
+        conditions << "decks.scope = #{Deck.scopes[:personal]} AND decks.owner_type = 'User' AND decks.owner_id = #{user.id}"
+
+        approved_club_ids = user.club_memberships.approved.pluck(:club_id)
+        if approved_club_ids.any?
+          ids = approved_club_ids.join(",")
+          conditions << "decks.scope = #{Deck.scopes[:club]} AND decks.owner_type = 'Club' AND decks.owner_id IN (#{ids})"
+        end
+      end
+
+      scope.where(conditions.map { |c| "(#{c})" }.join(" OR "))
+    end
+
+    private
+
+    def admin?
+      user.present? && user.role_admin?
     end
   end
 
@@ -25,7 +96,18 @@ class DeckPolicy < ApplicationPolicy
 
   def personal_owner?
     return false unless user.present?
-    return true  if site_admin?            # bypass — matches ClubPolicy precedent
-    record.respond_to?(:owner) && record.owner == user
+    record.personal? && record.owner == user
+  end
+
+  def club_member?
+    return false unless record.club?
+    club = record.owner
+    return true if club.owner_id == user.id
+    user.club_memberships.approved.exists?(club_id: club.id)
+  end
+
+  def club_manager?
+    return false unless record.club?
+    super(record.owner)
   end
 end

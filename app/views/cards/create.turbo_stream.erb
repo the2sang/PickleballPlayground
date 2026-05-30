@@ -1,5 +1,5 @@
 <%= turbo_stream.append "deck-cards-#{@deck.id}" do %>
-  <%= render "decks/card_row", card: @card, deck: @deck %>
+  <%= render "decks/card_row", card: @card, deck: @deck, can_edit: @can_edit %>
 <% end %>
 <%= turbo_stream.replace "deck-add-form-#{@deck.id}" do %>
   <%= render "decks/card_add_form", deck: @deck, card: Card.new %>

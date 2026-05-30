@@ -1,6 +1,8 @@
 class CardsController < ApplicationController
   before_action :set_deck
   before_action :set_card, only: %i[edit update destroy]
+  before_action :set_can_edit
+  after_action :verify_authorized
 
   def create
     @card = @deck.cards.build(card_params.merge(card_type: :basic))
@@ -57,8 +59,11 @@ class CardsController < ApplicationController
   private
 
   def set_deck
-    # policy_scope(Deck) 사용 금지 (scope.none 반환) — 명시적 owner 스코프
-    @deck = Deck.where(owner: Current.user).find(params[:deck_id])
+    @deck = Deck.find(params[:deck_id])
+  end
+
+  def set_can_edit
+    @can_edit = policy(@deck).update?
   end
 
   def set_card

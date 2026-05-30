@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "card_#{card.id}" do %>
   <div class="deck-row">
-    <span class="deck-row__num"><%= card_counter %></span>
+    <span class="deck-row__num"><%= card.position %></span>
     <div class="deck-row__content">
       <p class="deck-row__front"><%= card.front %></p>
       <p class="deck-row__back"><%= card.back %></p>

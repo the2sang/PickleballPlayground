@@ -40,7 +40,7 @@ class DecksController < ApplicationController
   end
 
   def create
-    @deck = Deck.new(deck_params.merge(scope: :personal, owner: Current.user))
+    @deck = Deck.new(deck_params.merge(resolved_scope_and_owner))
     authorize @deck
     if @deck.save
       redirect_to @deck, notice: "덱이 생성되었습니다."
@@ -76,6 +76,19 @@ class DecksController < ApplicationController
 
   def deck_params
     params.require(:deck).permit(:title, :description)
-    # owner/scope/owner_id/owner_type 명시 제외 — T-02-01 (mass assignment 차단)
+  end
+
+  # Determines scope and owner explicitly — never trust raw params for these.
+  # Permitted: club (if owner_id provided) or personal (default).
+  # Official scope can only be set by site_admin; all others fall through to personal.
+  def resolved_scope_and_owner
+    requested_scope = params.dig(:deck, :scope)
+
+    if requested_scope == "club"
+      club = Club.find_by(id: params.dig(:deck, :owner_id))
+      return { scope: :club, owner: club } if club
+    end
+
+    { scope: :personal, owner: Current.user }
   end
 end

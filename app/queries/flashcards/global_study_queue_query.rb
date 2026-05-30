@@ -9,10 +9,7 @@ module Flashcards
     end
 
     def call
-      # TODO(phase-4): replace with DeckPolicy::Scope when 3-tier resolver is implemented
-      # policy_scope(Deck) 절대 사용 금지 — DeckPolicy::Scope#resolve가 scope.none 반환 (D-19)
-      accessible_decks = Deck.where(scope: :personal, owner: @user)
-                             .or(Deck.where(scope: :official))
+      accessible_decks = DeckPolicy::Scope.new(user, Deck.all).resolve
 
       Card.where(deck: accessible_decks)
           .joins(join_clause)

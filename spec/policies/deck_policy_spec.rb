@@ -1,73 +1,231 @@
 require "rails_helper"
 
 RSpec.describe DeckPolicy do
-  def create_user(role: :role_user, nick_prefix: "u")
-    User.create!(
-      email_address: "#{nick_prefix}#{SecureRandom.hex(3)}@example.com",
-      nickname:      "#{nick_prefix}#{SecureRandom.hex(3)}",
-      password:      "password",
-      role:          role,
-      sport_level:   :beginner,
-      age_group:     :twenties,
-      gender:        :unspecified
-    )
+  subject(:policy) { described_class.new(actor, deck) }
+
+  let(:admin)        { create(:user, :admin) }
+  let(:club)         { create(:club) }
+  let(:club_owner)   { club.owner }
+
+  let(:manager_membership) do
+    create(:club_membership, club: club, user: manager_user, role: :manager, status: :approved)
+  end
+  let(:manager_user)  { create(:user) }
+
+  let(:member_user)   { create(:user) }
+  let(:member_membership) do
+    create(:club_membership, club: club, user: member_user, role: :member, status: :approved)
   end
 
-  let(:user)       { create_user(nick_prefix: "owner") }
-  let(:other_user) { create_user(nick_prefix: "other") }
-  let(:admin)      { create_user(role: :role_admin, nick_prefix: "admin") }
-
-  let(:owned_deck) { Deck.create!(scope: :personal, owner: user, title: "내 덱") }
-  let(:other_deck) { Deck.create!(scope: :personal, owner: other_user, title: "남의 덱") }
-
-  describe "personal deck owned by user" do
-    subject(:policy) { described_class.new(user, owned_deck) }
-
-    it { expect(policy.show?).to be true }
-    it { expect(policy.update?).to be true }
-    it { expect(policy.destroy?).to be true }
+  let(:pending_user)  { create(:user) }
+  let(:pending_membership) do
+    create(:club_membership, club: club, user: pending_user, role: :member, status: :pending)
   end
 
-  describe "personal deck owned by another user" do
-    subject(:policy) { described_class.new(user, other_deck) }
+  let(:outsider) { create(:user) }
 
-    it { expect(policy.show?).to be false }
-    it { expect(policy.update?).to be false }
-    it { expect(policy.destroy?).to be false }
-  end
+  # ── Official decks ────────────────────────────────────────────────────────
 
-  describe "any authenticated user" do
-    subject(:policy) { described_class.new(user, Deck.new) }
-    it { expect(policy.create?).to be true }
-    it { expect(policy.new?).to be true }
-  end
+  describe "official deck" do
+    let(:deck) { create(:deck, :official) }
 
-  describe "nil user" do
-    subject(:policy) { described_class.new(nil, owned_deck) }
+    context "site_admin" do
+      let(:actor) { admin }
+      it { is_expected.to be_show }
+      it { is_expected.to be_create }
+      it { is_expected.to be_update }
+      it { is_expected.to be_destroy }
+      it { is_expected.to be_fork }
+    end
 
-    it { expect(policy.show?).to be false }
-    it { expect(policy.update?).to be false }
-    it { expect(policy.destroy?).to be false }
-    it { expect(policy.create?).to be false }
-  end
+    context "authenticated user (non-admin)" do
+      let(:actor) { outsider }
+      it { is_expected.to     be_show }
+      it { is_expected.not_to be_create }
+      it { is_expected.not_to be_update }
+      it { is_expected.not_to be_destroy }
+      it { is_expected.to     be_fork }
+    end
 
-  describe "site_admin bypass" do
-    subject(:policy) { described_class.new(admin, other_deck) }
-
-    it "shows / updates / destroys other users' decks" do
-      expect(policy.show?).to be true
-      expect(policy.update?).to be true
-      expect(policy.destroy?).to be true
+    context "unauthenticated (nil user)" do
+      let(:actor) { nil }
+      it { is_expected.to     be_show }
+      it { is_expected.not_to be_create }
+      it { is_expected.not_to be_fork }
     end
   end
 
-  describe "Scope" do
-    it "returns empty relation (TODO phase-4)" do
-      Deck.create!(scope: :personal, owner: user, title: "a")
-      Deck.create!(scope: :personal, owner: other_user, title: "b")
+  # ── Club decks ────────────────────────────────────────────────────────────
 
-      resolved = DeckPolicy::Scope.new(user, Deck.all).resolve
-      expect(resolved).to be_empty
+  describe "club deck" do
+    let(:deck) { create(:deck, :club, owner: club) }
+
+    context "site_admin" do
+      let(:actor) { admin }
+      it { is_expected.to be_show }
+      it { is_expected.to be_update }
+      it { is_expected.to be_destroy }
+      it { is_expected.to be_fork }
+      it { is_expected.to be_feature }
+      it { is_expected.to be_moderate }
+    end
+
+    context "club owner (implicitly a manager)" do
+      let(:actor) { club_owner }
+      before { manager_membership } # ensure club_owner has membership record if needed
+      it { is_expected.to be_show }
+      it { is_expected.to be_update }
+      it { is_expected.to be_destroy }
+      it { is_expected.to be_fork }
+      it { is_expected.to be_feature }
+      it { is_expected.to be_moderate }
+    end
+
+    context "approved manager" do
+      let(:actor) { manager_user }
+      before { manager_membership }
+      it { is_expected.to be_show }
+      it { is_expected.to be_update }
+      it { is_expected.to be_destroy }
+      it { is_expected.to be_fork }
+      it { is_expected.to be_feature }
+      it { is_expected.to be_moderate }
+    end
+
+    context "approved member" do
+      let(:actor) { member_user }
+      before { member_membership }
+      it { is_expected.to     be_show }
+      it { is_expected.to     be_fork }
+      it { is_expected.not_to be_update }
+      it { is_expected.not_to be_destroy }
+      it { is_expected.not_to be_feature }
+      it { is_expected.not_to be_moderate }
+    end
+
+    context "pending member" do
+      let(:actor) { pending_user }
+      before { pending_membership }
+      it { is_expected.not_to be_show }
+      it { is_expected.not_to be_fork }
+      it { is_expected.not_to be_update }
+    end
+
+    context "outsider (authenticated, not a member)" do
+      let(:actor) { outsider }
+      it { is_expected.not_to be_show }
+      it { is_expected.not_to be_fork }
+      it { is_expected.not_to be_update }
+    end
+
+    context "unauthenticated" do
+      let(:actor) { nil }
+      it { is_expected.not_to be_show }
+      it { is_expected.not_to be_fork }
+    end
+  end
+
+  # ── Club deck creation (new?) ─────────────────────────────────────────────
+
+  describe "creating a club-scoped deck (new deck record)" do
+    let(:new_club_deck) { build(:deck, :club, owner: club) }
+    let(:deck) { new_club_deck }
+
+    context "approved member" do
+      let(:actor) { member_user }
+      before { member_membership }
+      it { is_expected.to be_create }
+    end
+
+    context "pending member" do
+      let(:actor) { pending_user }
+      before { pending_membership }
+      it { is_expected.not_to be_create }
+    end
+
+    context "outsider" do
+      let(:actor) { outsider }
+      it { is_expected.not_to be_create }
+    end
+  end
+
+  # ── Personal decks ────────────────────────────────────────────────────────
+
+  describe "personal deck" do
+    let(:owner) { create(:user) }
+    let(:deck)  { create(:deck, :personal, owner: owner) }
+
+    context "owner" do
+      let(:actor) { owner }
+      it { is_expected.to be_show }
+      it { is_expected.to be_update }
+      it { is_expected.to be_destroy }
+      it { is_expected.not_to be_fork }
+    end
+
+    context "other authenticated user" do
+      let(:actor) { outsider }
+      it { is_expected.not_to be_show }
+      it { is_expected.not_to be_update }
+      it { is_expected.not_to be_destroy }
+    end
+
+    context "site_admin" do
+      let(:actor) { admin }
+      it { is_expected.to be_show }
+      it { is_expected.to be_update }
+      it { is_expected.to be_destroy }
+    end
+
+    context "unauthenticated" do
+      let(:actor) { nil }
+      it { is_expected.not_to be_show }
+    end
+  end
+
+  # ── Scope ─────────────────────────────────────────────────────────────────
+
+  describe "Scope" do
+    let!(:official_deck) { create(:deck, :official) }
+    let!(:club_deck)     { create(:deck, :club, owner: club) }
+    let!(:my_deck)       { create(:deck, :personal, owner: member_user) }
+    let!(:other_deck)    { create(:deck, :personal, owner: outsider) }
+
+    def resolved(actor)
+      described_class::Scope.new(actor, Deck.all).resolve
+    end
+
+    context "site_admin" do
+      it "sees all decks" do
+        expect(resolved(admin)).to include(official_deck, club_deck, my_deck, other_deck)
+      end
+    end
+
+    context "approved club member" do
+      before { member_membership }
+
+      it "sees official, club, own personal — not others' personal" do
+        result = resolved(member_user)
+        expect(result).to include(official_deck, club_deck, my_deck)
+        expect(result).not_to include(other_deck)
+      end
+    end
+
+    context "outsider (authenticated, no club memberships)" do
+      it "sees official and own personal only" do
+        result = resolved(outsider)
+        expect(result).to include(official_deck)
+        expect(result).not_to include(club_deck, my_deck)
+        expect(result).to include(other_deck)
+      end
+    end
+
+    context "unauthenticated" do
+      it "sees official decks only" do
+        result = resolved(nil)
+        expect(result).to include(official_deck)
+        expect(result).not_to include(club_deck, my_deck, other_deck)
+      end
     end
   end
 end

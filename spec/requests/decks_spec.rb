@@ -115,4 +115,49 @@ RSpec.describe "Decks", type: :request do
       expect { card.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe "Phase 4: club deck creation" do
+    let(:club)  { create(:club) }
+
+    context "approved club member creates club deck" do
+      before do
+        create(:club_membership, club: club, user: user, status: :approved)
+        sign_in(user)
+      end
+
+      it "creates club deck owned by the club" do
+        post decks_path, params: {
+          deck: { title: "클럽 덱", description: "설명", scope: "club", owner_id: club.id, owner_type: "Club" }
+        }
+        deck = Deck.last
+        expect(deck.club?).to be true
+        expect(deck.owner).to eq(club)
+        expect(deck.title).to eq("클럽 덱")
+        expect(response).to redirect_to(deck_path(deck))
+      end
+    end
+
+    context "non-member attempts to create club deck" do
+      before { sign_in(user) }
+
+      it "is rejected with alert" do
+        post decks_path, params: {
+          deck: { title: "해킹 덱", scope: "club", owner_id: club.id, owner_type: "Club" }
+        }
+        expect(response).to have_http_status(:found)
+        expect(flash[:alert]).to be_present
+        expect(Deck.where(title: "해킹 덱")).to be_empty
+      end
+    end
+
+    context "mass assignment: scope/owner cannot be set to official via params" do
+      before { sign_in(user) }
+
+      it "ignores scope=official override and creates personal deck" do
+        post decks_path, params: { deck: { title: "공식인 척 덱", scope: "official" } }
+        deck = Deck.last
+        expect(deck.personal?).to be true
+      end
+    end
+  end
 end

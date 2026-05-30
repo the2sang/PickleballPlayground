@@ -59,12 +59,13 @@ RSpec.describe "Cards", type: :request do
         expect(response.body).to include("card_#{card.id}")
       end
 
-      it "타인 덱 카드 편집 시도 시 404" do
+      it "타인 덱 카드 편집 시도 시 접근 거부" do
         other_deck = create(:deck, scope: :personal, owner: other_user)
         other_card = create(:card, deck: other_deck)
 
         get edit_deck_card_path(other_deck, other_card)
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:found)
+        expect(flash[:alert]).to be_present
       end
     end
   end
@@ -96,10 +97,11 @@ RSpec.describe "Cards", type: :request do
     context "타인 덱 카드 수정 시도" do
       before { sign_in(other_user) }
 
-      it "404를 반환한다" do
+      it "접근 거부로 redirect한다" do
         patch deck_card_path(deck, card),
           params: { card: { front: "수정된 앞면", back: "수정된 뒷면" } }
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:found)
+        expect(flash[:alert]).to be_present
       end
     end
   end
