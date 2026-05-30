@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_215206) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_30_220429) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -368,6 +368,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_215206) do
     t.index ["user_id"], name: "index_stock_infos_on_user_id"
   end
 
+  create_table "study_session_answers", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "is_correct", null: false
+    t.integer "rating", null: false
+    t.integer "study_session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_id"], name: "index_study_session_answers_on_card_id"
+    t.index ["study_session_id", "card_id"], name: "index_study_session_answers_on_study_session_id_and_card_id", unique: true
+    t.index ["study_session_id"], name: "index_study_session_answers_on_study_session_id"
+  end
+
+  create_table "study_sessions", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.integer "correct_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "deck_id", null: false
+    t.boolean "repeat", default: false, null: false
+    t.integer "total_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["deck_id"], name: "index_study_sessions_on_deck_id"
+    t.index ["user_id", "completed_at"], name: "index_study_sessions_on_user_id_and_completed_at"
+    t.index ["user_id", "deck_id"], name: "index_study_sessions_on_user_id_and_deck_id"
+    t.index ["user_id"], name: "index_study_sessions_on_user_id"
+  end
+
   create_table "telegram_prompts", force: :cascade do |t|
     t.string "chat_id", null: false
     t.string "command"
@@ -554,6 +581,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_215206) do
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "stock_infos", "users"
+  add_foreign_key "study_session_answers", "cards", on_delete: :cascade
+  add_foreign_key "study_session_answers", "study_sessions", on_delete: :cascade
+  add_foreign_key "study_sessions", "decks", on_delete: :cascade
+  add_foreign_key "study_sessions", "users", on_delete: :cascade
   add_foreign_key "tournament_event_decks", "decks", on_delete: :cascade
   add_foreign_key "tournament_event_decks", "tournament_events", on_delete: :cascade
   add_foreign_key "work_journals", "users"
