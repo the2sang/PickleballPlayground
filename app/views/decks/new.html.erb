@@ -1,0 +1,16 @@
+<% content_for :title, "새 덱 만들기" %>
+
+<div class="cl-page">
+  <div class="cl-content cl-content--form">
+    <div style="margin-bottom:32px;">
+      <p class="cl-hero__eyebrow">
+        <%= link_to "낱말카드", decks_path %>
+        <span class="sep">/</span> 새 덱
+      </p>
+      <h1 class="cl-hero__title">새 덱 만들기</h1>
+    </div>
+    <div class="cl-form-card">
+      <%= render "form", deck: @deck %>
+    </div>
+  </div>
+</div>

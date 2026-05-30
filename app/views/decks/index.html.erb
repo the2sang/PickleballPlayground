@@ -1,0 +1,112 @@
+<% content_for :title, "낱말카드" %>
+
+<div class="cl-page">
+  <% if authenticated? && @personal_decks.empty? %>
+    <%# 빈 상태 hero — 0개 personal 덱 사용자에게 학습 시작 유도 (DECK-07) %>
+    <div class="cl-hero">
+      <div class="cl-hero__inner">
+        <div class="cl-hero__row">
+          <div>
+            <p class="cl-hero__eyebrow">낱말카드</p>
+            <h1 class="cl-hero__title">낱말카드로 학습을 시작해 보세요</h1>
+            <p class="cl-hero__subtitle">직접 덱을 만들거나 텍스트를 붙여넣어 카드를 빠르게 추가하세요.</p>
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:24px;">
+          <%= link_to new_deck_path, class: "btn btn--primary" do %>
+            <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+            내 덱 만들기
+          <% end %>
+          <%= link_to new_deck_path, class: "btn btn--secondary" do %>
+            <iconify-icon icon="lucide:clipboard-paste" width="14"></iconify-icon>
+            붙여넣기 가져오기
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# 공식 덱 미리보기 %>
+    <% if @official_decks.any? %>
+    <div class="cl-content" style="margin-top:32px;">
+      <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">공식 덱</h2>
+      <div class="cl-grid">
+        <%= render partial: "deck", collection: @official_decks, as: :deck %>
+      </div>
+    </div>
+    <% end %>
+
+  <% elsif authenticated? %>
+    <%# 3섹션 허브 — personal 덱 보유 사용자 %>
+    <div class="cl-hero">
+      <div class="cl-hero__inner">
+        <div class="cl-hero__row">
+          <div>
+            <p class="cl-hero__eyebrow">낱말카드</p>
+            <h1 class="cl-hero__title">낱말카드 허브</h1>
+          </div>
+          <%= link_to new_deck_path, class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+            새 덱 만들기
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-content">
+      <%# 공식 덱 섹션 %>
+      <% if @official_decks.any? %>
+      <section style="margin-bottom:40px;">
+        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">공식 덱</h2>
+        <div class="cl-grid">
+          <%= render partial: "deck", collection: @official_decks, as: :deck %>
+        </div>
+      </section>
+      <% end %>
+
+      <%# 클럽 덱 섹션 (approved 멤버십 보유 시에만) %>
+      <% if @show_club_section && @club_decks.any? %>
+      <section style="margin-bottom:40px;">
+        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">클럽 덱</h2>
+        <div class="cl-grid">
+          <%= render partial: "deck", collection: @club_decks, as: :deck %>
+        </div>
+      </section>
+      <% end %>
+
+      <%# 내 덱 섹션 %>
+      <section>
+        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">내 덱</h2>
+        <div class="cl-grid">
+          <%= render partial: "deck", collection: @personal_decks, as: :deck %>
+        </div>
+      </section>
+    </div>
+
+  <% else %>
+    <%# 비인증 사용자 — 공식 덱만 표시 + 로그인 CTA %>
+    <div class="cl-hero">
+      <div class="cl-hero__inner">
+        <div class="cl-hero__row">
+          <div>
+            <p class="cl-hero__eyebrow">낱말카드</p>
+            <h1 class="cl-hero__title">피클볼 낱말카드</h1>
+            <p class="cl-hero__subtitle">규칙·용어·전술을 카드로 학습하세요.</p>
+          </div>
+          <%= link_to new_session_path, class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:log-in" width="13"></iconify-icon>
+            로그인하고 시작하기
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if @official_decks.any? %>
+    <div class="cl-content">
+      <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">공식 덱</h2>
+      <div class="cl-grid">
+        <%= render partial: "deck", collection: @official_decks, as: :deck %>
+      </div>
+    </div>
+    <% end %>
+  <% end %>
+</div>

@@ -6,6 +6,8 @@ RSpec.describe "Decks", type: :request do
 
   describe "GET /decks (DECK-04, DECK-06, DECK-07)" do
     context "비인증 사용자" do
+      before { create(:deck, :official) }
+
       it "공식 섹션을 렌더하고 200 반환" do
         get decks_path
         expect(response).to have_http_status(:ok)
