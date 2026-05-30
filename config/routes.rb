@@ -34,6 +34,13 @@ Rails.application.routes.draw do
     resources :club_notices, except: %i[index show]
   end
 
+  resources :decks do
+    resources :cards, only: %i[new create edit update destroy]
+    namespace :cards do
+      resource :imports, only: %i[new create]
+    end
+  end
+
   resources :tournaments, only: %i[show edit update destroy] do
     member { patch :advance_status }
     resources :tournament_events, only: %i[new create]
