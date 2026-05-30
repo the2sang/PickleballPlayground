@@ -47,7 +47,8 @@ key_files:
     - app/views/decks/browses/_card.html.erb
     - app/javascript/controllers/browse_controller.js
     - spec/requests/decks/browses_spec.rb
-  modified: []
+  modified:
+    - app/controllers/decks/browses_controller.rb
 
 decisions:
   - "as_json(only: %i[id front back]) whitelist — no field leak even if Card model gains new columns"
@@ -81,6 +82,7 @@ metrics:
 |------|------|-------------|
 | 5a6d46f | feat | Decks::BrowsesController + browse views + request spec (7 examples) |
 | d7da2fb | feat | browse_controller.js — client-side flip/prev/next/shuffle + Fisher-Yates |
+| 24d4d69 | refactor | remove unused set_deck private method (Rule 1 auto-fix) |
 
 ## Verification Results
 
@@ -113,7 +115,15 @@ metrics:
 
 ## Deviations from Plan
 
-None — plan executed exactly as written.
+### Auto-fixed Issues
+
+**1. [Rule 1 - Cleanup] Removed unused `set_deck` private method**
+- **Found during:** Post-implementation review
+- **Issue:** `set_deck` private method was defined in `Decks::BrowsesController` but never called — the `show` action loads `@deck` inline. Dead code inconsistent with the "Explicit over implicit" principle.
+- **Fix:** Removed the `private` section and unused `set_deck` method entirely. The controller now has a single `show` action with inline `@deck` load, which is cleaner for a single-action controller.
+- **Files modified:** `app/controllers/decks/browses_controller.rb`
+- **Commit:** 24d4d69
+- **Spec impact:** 7/7 browses_spec examples remain green after the removal.
 
 ## Known Stubs
 
@@ -143,3 +153,4 @@ Files exist:
 Commits exist:
 - 5a6d46f: FOUND
 - d7da2fb: FOUND
+- 24d4d69: FOUND (Rule 1 auto-fix)
