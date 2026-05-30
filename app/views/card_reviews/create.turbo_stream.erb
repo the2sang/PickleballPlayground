@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "study-card" do %>
+  <% if @next_card %>
+    <%= render "decks/studies/card", card: @next_card, deck: @deck %>
+  <% else %>
+    <%= render "decks/studies/complete", deck: @deck %>
+  <% end %>
+<% end %>
