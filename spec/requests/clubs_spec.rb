@@ -68,7 +68,7 @@ RSpec.describe "Clubs", type: :request do
         styles = ad_links.map { |link| link["style"] }
         expect(styles[0]).to include("unitb-1")
         expect(styles[1]).to include("unitb-2")
-        expect(styles[2]).to include("unitb-3")
+        expect(styles[2]).to include("unitb-4")
         expect(grid_items[3].at_css(".cl-card__name").text).to include(approved_club.name)
       end
 
