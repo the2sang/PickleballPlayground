@@ -39,8 +39,9 @@ Rails.application.routes.draw do
     namespace :cards do
       resource :imports, only: %i[new create]
     end
-    resource :study, only: %i[show], module: :decks
-    resource :browse, only: %i[show], module: :decks
+    resource  :study,          only: %i[show], module: :decks
+    resource  :browse,         only: %i[show], module: :decks
+    resources :study_sessions, only: %i[show], module: :decks
   end
 
   resources :card_reviews, only: %i[create]
