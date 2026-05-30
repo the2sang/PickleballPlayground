@@ -1,0 +1,40 @@
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="mb-4 text-sm text-gray-500">
+    <%= link_to @deck.title, deck_path(@deck), class: "hover:underline" %> > 훑어보기
+    <span class="ml-2 text-gray-400">· 진도 미기록</span>
+  </div>
+
+  <% if @cards.any? %>
+    <div data-controller="browse"
+         data-browse-cards-value="<%= @cards_json.to_json %>"
+         class="space-y-2">
+      <%= render "card", deck: @deck %>
+
+      <div class="mt-4 flex justify-between items-center">
+        <button type="button"
+                data-action="click->browse#prev"
+                data-browse-target="prevButton"
+                aria-label="이전 카드"
+                class="min-h-[44px] border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed">이전</button>
+        <div data-browse-target="counter" aria-live="polite" class="text-sm text-gray-500">1 / 전체 <%= @cards.size %></div>
+        <button type="button"
+                data-action="click->browse#next"
+                data-browse-target="nextButton"
+                aria-label="다음 카드"
+                class="min-h-[44px] border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed">다음</button>
+      </div>
+
+      <div class="mt-2 text-right">
+        <button type="button"
+                data-action="click->browse#toggleShuffle"
+                data-browse-target="shuffleButton"
+                class="text-sm text-gray-500 hover:text-gray-700">셔플</button>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-gray-50 rounded-xl p-12 text-center">
+      <div class="text-5xl mb-6">📚</div>
+      <p class="text-gray-500">이 덱에 카드가 없습니다. 카드를 추가하면 여기에 표시됩니다.</p>
+    </div>
+  <% end %>
+</div>
