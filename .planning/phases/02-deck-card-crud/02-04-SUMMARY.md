@@ -245,6 +245,51 @@ Security Warnings: 3
 | Task 2 RED | e7d955a | test(02-04): replace pending stubs with real failing specs for Cards::ImportsController (RED) |
 | Task 2 GREEN | 80f1fd6 | feat(02-04): implement Cards::ImportsController + paste import views + Stimulus (GREEN) |
 
+## Deferred Issues
+
+### T-02-08 구분자 충돌 감지 — 구조적 데드코드
+
+**발견 시점:** 전체 검증 단계 (Plan 완료 후 advisor 리뷰)
+
+**문제:**
+`parse_line` 내부의 구분자 충돌 감지 코드가 실제로는 절대 작동하지 않는다:
+
+```ruby
+# parse_line 내부
+parts = line.split(@separator, -1).map { |p| p&.strip }
+front, back, hint, tags = parts[0], parts[1], parts[2], parts[3]
+
+# 이 조건은 항상 false:
+if [front, back, hint, tags].compact.any? { |f| f.include?(@separator) }
+  warnings << "구분자 충돌 — 내용에 '#{@separator}' 포함"
+end
+```
+
+`split(@separator, -1)` 호출이 구분자 문자를 모든 위치에서 분리하므로, 결과 배열의 어떤 요소도 구분자를 포함할 수 없다. 따라서 `f.include?(@separator)` 조건은 항상 `false`를 반환한다.
+
+**검증:**
+```ruby
+result = Flashcards::PasteImportService.call(
+  text: "앞면\t탭이\t안에있는\t뒤면", separator: "\t", deck: deck, mode: :preview
+)
+result.preview_cards.first.warnings
+# => []  (구분자 충돌 경고가 발생하지 않음)
+```
+
+**영향:**
+- T-02-08 위협(Tampering — front에 separator 포함)은 현재 서비스 레벨에서 미탐지된다.
+- 단, `lines.size > IMPORT_LIMIT` 검사(T-02-04), 중복 front 검사(T-02-10), 트랜잭션 롤백(T-02-09)은 정상 작동한다.
+- 실질적 피해: 구분자가 내용에 포함된 줄이 파싱 오류 없이 저장될 수 있다. 예: `"A|B|C"`를 파이프 구분자로 split하면 front="A", back="B", hint="C"로 파싱됨 — 사용자 의도가 왜곡될 수 있음.
+
+**권장 수정 방향 (다음 계획 주기에서 결정):**
+- `parts.size > 4` 조건으로 대체: 구분자가 포함된 내용은 split 후 필드가 4개를 초과한다.
+- 또는 `line.count(@separator) > 3` 원본 줄에서 구분자 초과 개수 검사.
+- 현재 spec "구분자가 필드 내부에 포함된 줄을 경고로 표시"는 `result.success?`만 검증하므로 이 데드코드를 포착하지 못함 — spec도 함께 수정 필요.
+
+**현재 상태:** 구현 코드와 spec 모두 수정하지 않음. 다음 계획 주기에서 T-02-08 재검토 필요.
+
+---
+
 ## Self-Check: PASSED
 
 - app/services/flashcards/paste_import_service.rb: FOUND
