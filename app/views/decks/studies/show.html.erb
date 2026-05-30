@@ -14,7 +14,8 @@
   <div class="study-page__body">
     <div id="study-card" class="study-page__card-wrap">
       <%= render "card", card: @current_card, deck: @deck,
-          options: @options, completed_count: @completed_count, total_count: @total_count %>
+          options: @options, completed_count: @completed_count, total_count: @total_count,
+          study_session: @study_session %>
     </div>
   </div>
 </div>

@@ -3,15 +3,33 @@ class Decks::StudiesController < ApplicationController
 
   def show
     authorize @deck, :show?
-    @due_cards = Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
+
+    repeat = params[:repeat].present?
+
+    @due_cards = if repeat
+                   @deck.cards
+    else
+                   Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
+    end
+
     if @due_cards.empty?
       render :complete
-    else
-      @current_card = @due_cards.first
-      @total_count = @deck.cards.count
-      @completed_count = @total_count - @due_cards.size
-      @options = @current_card.quiz_options(@deck)
+      return
     end
+
+    # Discard any abandoned in-progress session for this user+deck
+    StudySession.where(user: Current.user, deck: @deck, completed_at: nil).destroy_all
+
+    @study_session = StudySession.create!(
+      user:   Current.user,
+      deck:   @deck,
+      repeat: repeat
+    )
+
+    @current_card    = @due_cards.first
+    @total_count     = @deck.cards.count
+    @completed_count = 0
+    @options         = @current_card.quiz_options(@deck)
   end
 
   private
