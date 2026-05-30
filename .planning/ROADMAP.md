@@ -22,7 +22,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 
 - [x] **Phase 1: Foundations** — Schema, models, SM-2 service, factories, seed structure; data layer works in console *(완료: 2026-05-29)*
 - [x] **Phase 2: Deck + Card CRUD** — Authoring UX (single form + paste import + inline edit); nav entry; user can build a personal deck (completed 2026-05-30)
-- [ ] **Phase 3: SRS Learning Loop** — CardReview persistence, study controllers, Turbo Stream next-card swap, 4-button rating, flip browse
+- [x] **Phase 3: SRS Learning Loop** — CardReview persistence, study controllers, Turbo Stream next-card swap, 4-button rating, flip browse (completed 2026-05-30)
 - [ ] **Phase 4: Permissions + Club/Official Integration** — Full Pundit coverage, 3-tier scopes, fork, club moderation/featured, official deck rendering, manager onboarding nudge
 - [ ] **Phase 5: Tournament Linkage + Stats + Badge** — TournamentEventDeck join + UI, /decks hub stats (streak, today, mastery, 7-day forecast), nav due-count badge with Solid Cache
 
@@ -203,9 +203,9 @@ Each phase ends in a green test suite and a feature a user can touch.
 
 **Plans**: 4 plans
 - [x] 03-01-PLAN.md — Wave 1: SubmitReviewService + GlobalStudyQueueQuery + 라우트 3종 (백엔드 기반)
-- [ ] 03-02-PLAN.md — Wave 2: CardReviewsController + _card.html.erb 확장 + study_session_controller.js (덱별 SRS 학습 루프)
-- [ ] 03-03-PLAN.md — Wave 2: StudyController + study/show + study/complete (글로벌 큐)
-- [ ] 03-04-PLAN.md — Wave 2: Decks::BrowsesController + browse_controller.js (Flip browse 모드)
+- [x] 03-02-PLAN.md — Wave 2: CardReviewsController + _card.html.erb 확장 + study_session_controller.js (덱별 SRS 학습 루프)
+- [x] 03-03-PLAN.md — Wave 2: StudyController + study/show + study/complete (글로벌 큐)
+- [x] 03-04-PLAN.md — Wave 2: Decks::BrowsesController + browse_controller.js (Flip browse 모드)
 **UI hint**: yes
 
 ---
@@ -387,7 +387,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 |-------|----------------|--------|-----------|
 | 1. Foundations | 1/1 | Complete | 2026-05-29 |
 | 2. Deck + Card CRUD | 5/5 | Complete    | 2026-05-30 |
-| 3. SRS Learning Loop | 1/4 | In Progress|  |
+| 3. SRS Learning Loop | 4/4 | Complete   | 2026-05-30 |
 | 4. Permissions + Club/Official | 0/TBD | Not started | - |
 | 5. Tournament + Stats + Badge | 0/TBD | Not started | - |
 
