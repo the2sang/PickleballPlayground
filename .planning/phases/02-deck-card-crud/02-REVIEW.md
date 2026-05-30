@@ -2,45 +2,18 @@
 phase: 02-deck-card-crud
 reviewed: 2026-05-30T00:00:00Z
 depth: standard
-files_reviewed: 32
+files_reviewed: 5
 files_reviewed_list:
-  - app/controllers/cards/imports_controller.rb
-  - app/controllers/cards_controller.rb
-  - app/controllers/decks_controller.rb
-  - app/javascript/controllers/card_form_controller.js
-  - app/javascript/controllers/paste_import_controller.js
-  - app/policies/deck_policy.rb
   - app/services/flashcards/paste_import_service.rb
-  - app/views/cards/create.turbo_stream.erb
-  - app/views/cards/destroy.turbo_stream.erb
-  - app/views/cards/edit.html.erb
-  - app/views/cards/imports/_actions.html.erb
-  - app/views/cards/imports/_preview_table.html.erb
-  - app/views/cards/imports/create.turbo_stream.erb
-  - app/views/cards/imports/new.html.erb
-  - app/views/cards/update.turbo_stream.erb
-  - app/views/decks/_card_add_form.html.erb
-  - app/views/decks/_card_edit_form.html.erb
-  - app/views/decks/_card_row.html.erb
-  - app/views/decks/_deck.html.erb
-  - app/views/decks/_form.html.erb
-  - app/views/decks/edit.html.erb
-  - app/views/decks/index.html.erb
-  - app/views/decks/new.html.erb
-  - app/views/decks/show.html.erb
-  - app/views/layouts/application.html.erb
-  - config/routes.rb
-  - spec/requests/cards/imports_spec.rb
-  - spec/requests/cards_spec.rb
-  - spec/requests/decks_spec.rb
   - spec/services/flashcards/paste_import_service_spec.rb
-  - spec/support/system_test_helpers.rb
-  - spec/system/deck_authoring_spec.rb
+  - app/javascript/controllers/card_form_controller.js
+  - app/views/decks/_card_edit_form.html.erb
+  - config/routes.rb
 findings:
   critical: 2
-  warning: 6
-  info: 1
-  total: 9
+  warning: 5
+  info: 3
+  total: 10
 status: issues_found
 ---
 
@@ -48,208 +21,286 @@ status: issues_found
 
 **Reviewed:** 2026-05-30
 **Depth:** standard
-**Files Reviewed:** 32
+**Files Reviewed:** 5
 **Status:** issues_found
 
 ## Summary
 
-Reviewed the full deck + card CRUD implementation including controllers, Pundit policies, the paste-import service, Turbo Stream views, Stimulus controllers, routes, and all specs. The authorization model is correctly structured — owner-scoped `set_deck` in `CardsController` and `Cards::ImportsController`, policy delegation in `CardPolicy`, and `DeckPolicy` default-deny stubs are all sound. Turbo Stream error responses correctly use `status: :unprocessable_entity`. No SQL injection, mass-assignment, or authentication bypass issues were found.
+Five files from the Phase 02 gap closure plan were reviewed at standard depth: the
+`PasteImportService` (separator-conflict fix CR-01, batch-duplicate fix CR-02), its spec
+suite, the `card_form_controller.js` Stimulus Escape handler fix, the `_card_edit_form.html.erb`
+cancel-target addition, and `config/routes.rb`. Card model, deck model, and the cards
+controller were also read for cross-reference.
 
-Two correctness defects require fixing before ship: the separator-collision guard in `PasteImportService` is logically dead and can never fire (split strips the separator before the check runs), and the in-batch duplicate detection silently allows two rows with the same `front` to be saved when both are pasted together. Six additional quality and behavioral warnings are called out below.
+The separator-conflict detection (CR-01) is correctly implemented using column-count
+rather than field-content inspection. The batch-duplicate detection (CR-02) is correctly
+implemented. Two critical issues were found unrelated to the named fixes: the paste
+service never assigns `position` to imported cards (ordering corruption risk), and
+`button_to` is nested inside `form_with` in the edit partial (invalid HTML5 that silently
+breaks in some browsers). Five warnings and three info items are documented below.
 
 ---
 
 ## Critical Issues
 
-### CR-01: Separator Collision Detection Is Dead Code — Warning Never Fires
+### CR-01: `save_cards!` Never Sets `position` — Imported Cards Land at position=0
 
-**File:** `app/services/flashcards/paste_import_service.rb:60`
+**File:** `app/services/flashcards/paste_import_service.rb:73`
 
-**Issue:** The check for separator collision inside `parse_line` can never trigger. `split(@separator, -1)` is called on line 56 first — by definition that operation removes all occurrences of the separator from the resulting fields. By the time line 60 runs `f.include?(@separator)`, none of the fields can contain the separator. The intended guard (warn when a field value contains the separator, signaling that the user pasted content with embedded delimiters) is completely non-functional. Any paste where separator characters appear inside field values silently discards the overflow columns with no user feedback.
+**Issue:** `@deck.cards.create!` does not pass a `position:` value. The schema default is 0,
+so every paste-imported card is created with `position = 0`. The `Deck` model sorts cards
+via `has_many :cards, -> { order(:position) }` and `scope :ordered, -> { order(:position, :id) }`.
+All N imported cards share position=0 and will cluster at the front of any ordered list,
+sorted only by `id` among themselves. Any existing card that was assigned position > 0 (e.g.,
+through a future reordering feature) will be pushed behind the imported cluster without the
+user's knowledge.
 
-**Concrete example:** Input `"앞면|뒤:내용에|포함됨"` with `|` separator → `split("|", -1)` → `["앞면", "뒤:내용에", "포함됨"]` → `front="앞면"`, `back="뒤:내용에"`, `hint="포함됨"`, no warning. The user's third field is silently truncated.
+Cross-check: `CardsController#create` (the single-card UI path) also omits `position:`, so
+both paths share the same default-0 behaviour today. However, the paste path creates many
+cards at once, making the collision surface larger. If positions are ever assigned by any
+future migration, seed, or drag-and-drop feature, this silent assumption will corrupt ordering
+in bulk.
 
-**Fix:** Replace the field-content check with a column-count check:
-
+**Fix:**
 ```ruby
-# app/services/flashcards/paste_import_service.rb
-
-def parse_line(line, index)
-  parts = line.split(@separator, -1).map { |p| p&.strip }
-  front, back, hint, tags = parts[0], parts[1], parts[2], parts[3]
-  warnings = []
-  warnings << "앞면 또는 뒷면이 비어 있습니다." if front.blank? || back.blank?
-  # Warn when more columns than expected — indicates separator appears inside field values
-  if parts.size > 4
-    warnings << "구분자 충돌 — 예상보다 많은 열: #{parts.size}개 (최대 4개)"
+def save_cards!(cards)
+  saved = 0
+  ActiveRecord::Base.transaction do
+    next_position = (@deck.cards.maximum(:position) || -1) + 1
+    cards.each_with_index do |c, i|
+      @deck.cards.create!(
+        front: c.front, back: c.back, hint: c.hint,
+        tags: c.tags, card_type: :basic,
+        position: next_position + i
+      )
+      saved += 1
+    end
   end
-  ParsedCard.new(front: front, back: back, hint: hint, tags: tags, row_index: index, warnings: warnings)
+  Result.new(
+    success?: true, preview_cards: cards, importable_count: cards.size,
+    warnings: [], errors: [], saved_count: saved
+  )
+rescue ActiveRecord::RecordInvalid => e
+  failure("저장 실패 (전체 롤백): #{e.message}")
 end
 ```
 
 ---
 
-### CR-02: In-Batch Duplicate `front` Values Are Not Detected
+### CR-02: `button_to` (Delete) Nested Inside `form_with` — Invalid HTML5, Delete May Silently Fail
 
-**File:** `app/services/flashcards/paste_import_service.rb:33-37`
+**File:** `app/views/decks/_card_edit_form.html.erb:19`
 
-**Issue:** The duplicate-front detection (lines 33-37) only checks against cards already in the database. If the pasted text contains two rows with the same `front` value (neither yet in the DB), both pass the duplicate guard and are saved, silently creating two cards with identical `front` values in the same deck. There is no DB-level unique index on `(deck_id, front)` (confirmed: `db/schema.rb` shows only `index_cards_on_deck_id_and_position` and `index_cards_on_deck_id`) and no model-level uniqueness validation. The documented intent ("덱 내 중복 카드" detection) is only half-implemented.
+**Issue:** `button_to` renders its own `<form>` element. Rails places it at line 19, which is
+inside the outer `<form>` block opened by `form_with` on line 4. HTML5 forbids nested `<form>`
+elements. Browsers auto-close the outer form when they parse the inner `<form>` opening tag.
+Depending on where in the DOM the correction occurs, the delete button's inner form may be
+treated as a sibling of the outer form, not a child, causing the click to submit to a
+different target or fail entirely. The current field order (submit + cancel link appear before
+`button_to` on lines 15-18) means the edit-form fields are likely intact, but the correction
+is browser-specific and fragile.
 
-**Concrete example:** Paste `"apple\tA\napple\tB"` with tab separator in save mode → both rows have `warnings = []` → both `importable?` → both `create!` → deck has two cards with `front="apple"`.
-
-**Fix:** After building `parsed`, cross-check fronts within the batch itself before the DB query:
-
-```ruby
-# app/services/flashcards/paste_import_service.rb, inside call
-
-# Detect duplicates within the pasted batch itself
-batch_fronts = parsed.map(&:front).compact_blank
-batch_dupes  = batch_fronts.group_by(&:itself).select { |_, v| v.size > 1 }.keys.to_set
-parsed.each do |c|
-  c.warnings << "배치 내 중복 카드: #{c.front}" if c.front.present? && batch_dupes.include?(c.front)
-end
-
-# Then existing DB duplicate check ...
-fronts = parsed.map(&:front).compact_blank
-existing_fronts = @deck.cards.where(front: fronts).pluck(:front).to_set
-parsed.each do |c|
-  c.warnings << "덱 내 중복 카드: #{c.front}" if c.front.present? && existing_fronts.include?(c.front)
-end
+**Fix:** Move the `button_to` call outside the `form_with` block:
+```erb
+<td colspan="5" data-controller="card-form"
+                data-action="keydown->card-form#handleKeydown">
+  <%= form_with model: [deck, card], class: "card-edit-form" do |f| %>
+    <%# ... error block, fields, submit, cancel link ... %>
+    <%= f.submit "저장", class: "btn btn--primary btn--sm" %>
+    <%= link_to "취소", deck_path(deck),
+        data: { turbo_frame: "_top", card_form_target: "cancel" },
+        class: "btn btn--ghost btn--sm" %>
+  <% end %>
+  <%= button_to "삭제", deck_card_path(deck, card), method: :delete,
+      class: "btn btn--danger btn--sm",
+      form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+</td>
 ```
 
 ---
 
 ## Warnings
 
-### WR-01: Escape Key Handler Cannot Restore the Read-Only Card Row
+### WR-01: Mixed-Validity Save Silently Skips Warned Rows With No User Feedback
 
-**File:** `app/javascript/controllers/card_form_controller.js:22-28`
+**File:** `app/services/flashcards/paste_import_service.rb:44-53`
 
-**Issue:** When the user presses Escape inside an inline edit form, the handler calls `frame.removeAttribute("src")` followed by `frame.reload()`. Turbo's `reload()` implementation re-fetches `this.src`. After `removeAttribute("src")`, `this.src` is `""` or `null`, so `reload()` is a no-op — the edit form stays visible and the read-only card row is never restored. The Cancel button (which uses `data: { turbo_frame: "_top" }` to navigate the full page back to `deck_path`) still works, but Escape is broken.
+**Issue:** When `importable > 0` but the batch also contains warned rows (e.g., 3 clean cards
+plus 1 duplicate), `save_cards!` is called with only the 3 importable cards. The returned
+`Result` sets `warnings: []` and `preview_cards:` to only the saved subset. The caller
+(`Cards::ImportsController#create`) redirects on success with `"#{@result.saved_count}장을
+가져왔습니다."` — no indication that any rows were silently dropped. The CR-02 spec only
+covers the all-duplicate case (importable == 0); the partial-success mixed case is not
+exercised and the user gets no signal.
 
-**Fix direction:** Instead of manipulating `src`, navigate the frame to the card's read-only source URL. Store the card ID in a Stimulus value and construct the `deck_card_path`, or replace the frame's content with a `turbo_stream:replace` initiated by a lightweight server round-trip. The simplest client-side approach is:
+**Fix:** Propagate skipped-row information in the success result:
+```ruby
+def save_cards!(importable_cards)
+  # pass original parsed list to report skipped rows
+  skipped_warnings = ...  # built before filtering
+  saved = 0
+  # ... transaction ...
+  Result.new(
+    success?: true, preview_cards: importable_cards,
+    importable_count: importable_cards.size,
+    warnings: skipped_warnings,
+    errors: [], saved_count: saved
+  )
+end
+```
+Or surface the skip count in the controller redirect notice:
+`"#{result.saved_count}장 저장됨 (#{skipped}장 건너뜀)."`.
 
-```js
+---
+
+### WR-02: Stimulus Escape Handler Frame-ID Check Matches Non-Card Frames
+
+**File:** `app/javascript/controllers/card_form_controller.js:19`
+
+**Issue:** `frame.id.startsWith("card_")` will also match any turbo-frame whose ID starts
+with `card_` — e.g., `card_form`, `card_new`, `card_imports`, or any future frame sharing
+the prefix. The comment "add form은 frame 밖에 위치 — Escape 무시" is accurate for the
+current template structure but is a structural assumption that cannot be enforced by this
+check. If a future partial wraps an add-form in a frame named `card_add_form`, Escape will
+unexpectedly trigger `cancelTarget.click()`.
+
+**Fix:** Constrain to numeric IDs:
+```javascript
 if (event.key === "Escape") {
   const frame = this.element.closest("turbo-frame")
-  if (frame && frame.id.startsWith("card_")) {
+  if (frame && /^card_\d+$/.test(frame.id)) {
     event.preventDefault()
-    // Navigate the frame back to the deck show page (shows the read-only row)
-    const cancelLink = this.element.querySelector("a[data-turbo-frame='_top']")
-    if (cancelLink) cancelLink.click()
+    if (this.hasCancelTarget) this.cancelTarget.click()
   }
 }
 ```
 
 ---
 
-### WR-02: `붙여넣기 가져오기` CTA on Index Page Links to Wrong Route
+### WR-03: Rollback Spec Does Not Test the Transactional Rollback Path
 
-**File:** `app/views/decks/index.html.erb:20`
+**File:** `spec/services/flashcards/paste_import_service_spec.rb:102`
 
-**Issue:** In the empty-state hero (zero personal decks), the `붙여넣기 가져오기` button links to `new_deck_path` (the new deck form), not to an import page. The import page at `new_deck_cards_imports_path` requires an existing deck, so this two-step flow is arguable, but the button label creates a false expectation — users clicking `붙여넣기 가져오기` will land on a blank "새 덱 만들기" form with no indication that import is coming next.
-
-**Fix:** Either retitle the button to clarify the prerequisite step (`"덱 만들고 가져오기"`) or add a hint below it explaining the flow. If the UX intent is truly to import first, consider a flow where a deck is auto-created and the user is redirected to the import page.
-
----
-
-### WR-03: `cards :new` Route Declared but Action Is Missing
-
-**File:** `config/routes.rb:38`, `app/controllers/cards_controller.rb`
-
-**Issue:** `resources :cards, only: %i[new create edit update destroy]` declares a `GET /decks/:deck_id/cards/new` route (`new_deck_card_path`), but `CardsController` has no `def new` action. Any request to that URL raises `AbstractController::ActionNotFound` in production (Rails raises a 404 to the user). Since no current view links to `new_deck_card_path`, this is a latent bug — it will be hit if a developer adds such a link without noticing the missing action.
-
-**Fix:** Either remove `:new` from the routes or add the action:
-
-```ruby
-# config/routes.rb
-resources :cards, only: %i[create edit update destroy]
-
-# OR add to CardsController:
-def new
-  authorize @deck, :update?
-  @card = @deck.cards.build
-end
-```
-
----
-
-### WR-04: `sign_in` Helper Duplicated in `imports_spec.rb`
-
-**File:** `spec/requests/cards/imports_spec.rb:8-10`
-
-**Issue:** `imports_spec.rb` defines a local `def sign_in(u)` at line 8. An identical helper is already provided by `spec/support/request_helpers.rb` and included into all `type: :request` specs via `RSpec.configure`. The local definition shadows the shared one. If `RequestHelpers#sign_in` is ever updated (e.g., to handle 2FA or OTP), the local copy will silently diverge.
-
-**Fix:** Delete lines 8-10 from `imports_spec.rb`. The shared helper is already available.
-
----
-
-### WR-05: Separator Collision Spec Does Not Assert the Warning
-
-**File:** `spec/services/flashcards/paste_import_service_spec.rb:35-45`
-
-**Issue:** The test titled "구분자가 필드 내부에 포함된 줄을 경고로 표시" (line 35) only asserts `expect(result.success?).to be true` — it never asserts that any warning was present on the card. Combined with CR-01 (the collision check is dead code), this test passes for the wrong reason and provides no protection against regression. Even after CR-01 is fixed, the assertion gap remains.
+**Issue:** The test "한 카드 저장 실패 시 전체 롤백" (line 102) submits a line with no
+`back`, which produces `importable? == false` for all rows, triggering the `importable == 0`
+guard before the transaction begins. The comment in the spec acknowledges this. The actual
+`rescue ActiveRecord::RecordInvalid` path in `save_cards!` — where some cards pass
+`importable?`, enter the transaction, and then `create!` raises on a later row — is never
+exercised. The advertised "전체 롤백" guarantee has no regression test.
 
 **Fix:**
 ```ruby
-it "구분자가 필드 내부에 포함된 줄을 경고로 표시" do
-  # 5 columns for tab separator means col 5 is excess — warns about separator collision
-  text = "앞면\t뒷면\t힌트\t태그\t초과열"
-  result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
-
-  expect(result.success?).to be true
-  expect(result.preview_cards.first.warnings).to include(match(/구분자 충돌/))
-  expect(result.preview_cards.first.importable?).to be false
+it "create! 실패 시 이미 삽입된 행도 전체 롤백된다" do
+  call_count = 0
+  allow_any_instance_of(ActiveRecord::Associations::CollectionProxy)
+    .to receive(:create!).and_wrap_original do |original, *args|
+      call_count += 1
+      raise ActiveRecord::RecordInvalid.new(Card.new) if call_count == 2
+      original.call(*args)
+    end
+  text = "앞1\t뒤1\n앞2\t뒤2\n앞3\t뒤3"
+  expect {
+    result = described_class.call(text: text, separator: "\t", deck: deck, mode: :save)
+    expect(result.success?).to be false
+  }.not_to change { deck.cards.count }
 end
 ```
 
 ---
 
-### WR-06: Unauthenticated Test Placed Inside Authenticated Context
+### WR-04: Cancel Link Forces Full-Page Reload via `turbo_frame: "_top"`
 
-**File:** `spec/requests/cards_spec.rb:21-26`
+**File:** `app/views/decks/_card_edit_form.html.erb:16`
 
-**Issue:** The example `"비인증 시 redirect"` (line 21) lives inside the `context "인증된 본인 덱에 카드 생성"` block which has `before { sign_in(user) }`. The test calls `sign_out` immediately, which works, but the structure is misleading: the context name says "authenticated owner" but the test exercises the unauthenticated path. Future readers may not notice `sign_out` and assume the before-hook is in effect. This can cause incorrect test grouping in failure output.
+**Issue:** The cancel link uses `data: { turbo_frame: "_top" }`, which breaks out of all
+turbo frames and performs a full-page navigation to `deck_path(deck)`. This discards scroll
+position and any other in-flight inline edits. The partial is rendered inside a
+`turbo_frame_tag "card_#{card.id}"`, so a frame-scoped reload of that frame would restore
+the read-only row without a full-page visit.
 
-**Fix:** Move the unauthenticated test into its own context at the `describe "POST /decks/:deck_id/cards"` level, without the `sign_in` before-hook:
-
-```ruby
-context "비인증 사용자" do
-  it "비인증 시 로그인 페이지로 리다이렉트" do
-    post deck_cards_path(deck),
-      params: { card: { front: "앞면", back: "뒷면" } }
-    expect(response).to redirect_to(new_session_path)
-  end
-end
+**Fix:** Target the card's own frame instead:
+```erb
+<%= link_to "취소", deck_card_path(deck, card),
+    data: { turbo_frame: "card_#{card.id}", card_form_target: "cancel" },
+    class: "btn btn--ghost btn--sm" %>
 ```
+Requires the `cards#show` action (or a read-only partial rendered by `cards#edit` on cancel)
+to be available.
+
+---
+
+### WR-05: `PasteImportService` Does Not Inherit from `ApplicationService`
+
+**File:** `app/services/flashcards/paste_import_service.rb:2`
+
+**Issue:** Project rules in `.claude/rules/services.md` specify: "Inherit from `ApplicationService`
+base class (`app/services/application_service.rb`)." The service uses plain `class PasteImportService`
+with no base class. Additionally, the rules specify `Data.define` for result objects; the
+service uses `Struct.new`. Note: `ApplicationService` does not currently exist in the repo
+(confirmed via filesystem search), so the convention is aspirational, but the service should
+adopt it when the base class is introduced to avoid technical debt accumulation.
+
+**Fix:** When `application_service.rb` is created, update the service to inherit from it.
+Replace `Struct.new(..., keyword_init: true)` with `Data.define(...)` for `ParsedCard` and
+`Result` to align with project conventions.
 
 ---
 
 ## Info
 
-### IN-01: `decode_separator` Passes Arbitrary User Input Through
+### IN-01: `batch_dupes` Computes `parsed.map(&:front).compact_blank` Twice
 
-**File:** `app/controllers/cards/imports_controller.rb:42-44`
+**File:** `app/services/flashcards/paste_import_service.rb:33-35`
 
-**Issue:** The `else` branch of `decode_separator` returns `raw.to_s` unmodified. A user who manually crafts a POST request with `separator="\n"` or `separator=" "` gets that literal string used as the split delimiter. This is not an injection vector (it's a plain Ruby `String#split`, not regex or eval), but it could produce surprising parse results (e.g., `"\n"` as separator splits on nothing useful since lines are pre-split on newlines, yielding single-element arrays for every line). There is no user-facing control for this, so exploitation requires a crafted request.
+**Issue:** Line 33 assigns `fronts = parsed.map(&:front).compact_blank`. Line 35 recomputes
+`parsed.map(&:front).compact_blank.tally...` from scratch. The second pass is redundant.
 
-**Fix (optional):** Add a whitelist guard in `decode_separator` to reject unrecognized values:
-
+**Fix:**
 ```ruby
-def decode_separator(raw)
-  case raw
-  when "tab", "\\t" then "\t"
-  when "pipe"       then "|"
-  when "dash"       then "=="
-  when "comma"      then ","
-  else
-    failure_flash_or_nil  # or simply: raise Pundit::NotAuthorizedError
-    "\t"  # safe default
-  end
-end
+fronts = parsed.map(&:front).compact_blank
+existing_fronts = @deck.cards.where(front: fronts).pluck(:front).to_set
+batch_dupes = fronts.tally.select { |_, count| count > 1 }.keys.to_set
 ```
 
-Alternatively, validate `params[:separator]` against the allowed set before calling the service.
+---
+
+### IN-02: `card_type: :basic` in `save_cards!` Is Redundant
+
+**File:** `app/services/flashcards/paste_import_service.rb:75`
+
+**Issue:** The `Card` enum declares `{ basic: 0 }, default: :basic`. Passing `card_type: :basic`
+explicitly in `create!` duplicates the default with no added clarity.
+
+**Fix:** Remove the `card_type: :basic` argument, or add an inline comment if the explicit
+assignment is intentional documentation: `card_type: :basic # v1 only`.
+
+---
+
+### IN-03: Spec Has No CRLF Test and No Multi-Warning Row Test
+
+**File:** `spec/services/flashcards/paste_import_service_spec.rb`
+
+**Issue:** No test exercises Windows-style CRLF line endings (`\r\n`). The service uses
+`@text.lines.map(&:chomp)` which correctly handles both `\n` and `\r\n` via `chomp`, but
+this is unverified. Additionally, no test places a row that accumulates multiple simultaneous
+warnings (e.g., blank front AND separator collision), which would exercise the `warnings <<`
+accumulation path more thoroughly.
+
+**Fix:**
+```ruby
+it "CRLF 줄바꿈을 올바르게 처리한다" do
+  text = "앞면\t뒷면\r\n다음\t카드\r\n"
+  result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
+  expect(result.preview_cards.size).to eq 2
+  expect(result.preview_cards.all?(&:importable?)).to be true
+end
+
+it "한 행에 복수 경고가 누적된다" do
+  text = "\t\t\t\t\t"  # blank front + blank back + excess columns
+  result = described_class.call(text: text, separator: "\t", deck: deck, mode: :preview)
+  expect(result.preview_cards.first.warnings.size).to be >= 2
+end
+```
 
 ---
 
