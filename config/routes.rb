@@ -39,7 +39,12 @@ Rails.application.routes.draw do
     namespace :cards do
       resource :imports, only: %i[new create]
     end
+    resource :study, only: %i[show], module: :decks
+    resource :browse, only: %i[show], module: :decks
   end
+
+  resources :card_reviews, only: %i[create]
+  get "/study", to: "study#show", as: :study
 
   resources :tournaments, only: %i[show edit update destroy] do
     member { patch :advance_status }
