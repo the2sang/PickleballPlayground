@@ -382,7 +382,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations | 1/1 | Complete | 2026-05-29 |
-| 2. Deck + Card CRUD | 4/4 | Complete   | 2026-05-30 |
+| 2. Deck + Card CRUD | 5/5 | Complete    | 2026-05-30 |
 | 3. SRS Learning Loop | 0/TBD | Not started | - |
 | 4. Permissions + Club/Official | 0/TBD | Not started | - |
 | 5. Tournament + Stats + Badge | 0/TBD | Not started | - |

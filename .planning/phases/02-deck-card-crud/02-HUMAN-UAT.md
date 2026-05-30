@@ -1,14 +1,14 @@
 ---
-status: partial
+status: approved
 phase: 02-deck-card-crud
 source: [02-VERIFICATION.md]
 started: 2026-05-30T08:00:00Z
-updated: 2026-05-30T08:00:00Z
+updated: 2026-05-30T09:00:00Z
 ---
 
 ## Current Test
 
-[awaiting human testing]
+[user approved — browser testing deferred]
 
 ## Tests
 

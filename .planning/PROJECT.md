@@ -111,7 +111,7 @@ PBPlayground의 피클볼 룰·용어 학습용 SRS(간격 반복) 카드 시스
 - Pundit base policy (`ApplicationPolicy`) + 21개 기존 policy 파일 패턴 확립됨
 - Solid Cache + Solid Queue 이미 사용 중
 
-**시드 콘텐츠 정책**: 카드 텍스트는 사람이 직접 작성 (AI 생성 금지 — 룰 오류 위험).
+**시드 콘텐츠 정책**: 카드 텍스트는 AI 초안 작성 후 사람이 검토·승인 (룰 오류는 사람이 최종 확인 — 사람이 최종 권위).
 
 ## Constraints
 
@@ -137,4 +137,4 @@ PBPlayground의 피클볼 룰·용어 학습용 SRS(간격 반복) 카드 시스
 | TournamentEventDeck 조인 테이블 | 토너먼트 이벤트당 N개 덱 매핑, position 정렬 | — Pending |
 
 ---
-*Last updated: 2026-05-29 — initial PROJECT.md from PRD v1*
+*Last updated: 2026-05-30 — Phase 2 complete (Deck + Card CRUD, paste import, inline edit, gap closure)*
