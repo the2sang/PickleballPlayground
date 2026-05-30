@@ -202,7 +202,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 - `spec/system/browse_mode_spec.rb` — flip만 가능, 평가 버튼 부재
 
 **Plans**: 4 plans
-- [ ] 03-01-PLAN.md — Wave 1: SubmitReviewService + GlobalStudyQueueQuery + 라우트 3종 (백엔드 기반)
+- [x] 03-01-PLAN.md — Wave 1: SubmitReviewService + GlobalStudyQueueQuery + 라우트 3종 (백엔드 기반)
 - [ ] 03-02-PLAN.md — Wave 2: CardReviewsController + _card.html.erb 확장 + study_session_controller.js (덱별 SRS 학습 루프)
 - [ ] 03-03-PLAN.md — Wave 2: StudyController + study/show + study/complete (글로벌 큐)
 - [ ] 03-04-PLAN.md — Wave 2: Decks::BrowsesController + browse_controller.js (Flip browse 모드)
@@ -387,7 +387,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 |-------|----------------|--------|-----------|
 | 1. Foundations | 1/1 | Complete | 2026-05-29 |
 | 2. Deck + Card CRUD | 5/5 | Complete    | 2026-05-30 |
-| 3. SRS Learning Loop | 0/4   | Planning    | - |
+| 3. SRS Learning Loop | 1/4 | In Progress|  |
 | 4. Permissions + Club/Official | 0/TBD | Not started | - |
 | 5. Tournament + Stats + Badge | 0/TBD | Not started | - |
 
