@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 2 context gathered
-last_updated: "2026-05-30T00:54:41.567Z"
-last_activity: 2026-05-30 -- Phase 02 planning complete
+last_updated: "2026-05-30T01:02:09.566Z"
+last_activity: 2026-05-30 -- Phase 02 execution started
 progress:
   total_phases: 5
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-29)
 
 **Core value:** 학습 세션에서 카드를 평가하면 SM-2 알고리즘이 다음 복습 시각을 계산하고 Turbo Stream으로 즉시 다음 카드를 보여준다 — 이 사이클이 끊기면 모든 것이 무의미하다.
-**Current focus:** Phase 2 — deck + card crud
+**Current focus:** Phase 02 — deck-card-crud
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-05-30 -- Phase 02 planning complete
+Phase: 02 (deck-card-crud) — EXECUTING
+Plan: 1 of 4
+Status: Executing Phase 02
+Last activity: 2026-05-30 -- Phase 02 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
