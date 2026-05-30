@@ -1,0 +1,17 @@
+<%= turbo_stream.update "import-preview-#{@deck.id}" do %>
+  <% if @result.success? %>
+    <%= render "preview_table", preview_cards: @result.preview_cards %>
+  <% else %>
+    <div class="cl-form__error">
+      <% @result.errors.each do |e| %>
+        <p><%= e %></p>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "import-actions-#{@deck.id}" do %>
+  <% if @result.success? %>
+    <%= render "actions", deck: @deck, importable_count: @result.importable_count %>
+  <% end %>
+<% end %>

@@ -50,6 +50,11 @@
   </div>
 
   <% if @deck.personal? && Current.user == @deck.owner %>
+    <div class="deck-import-cta">
+      <%= link_to "붙여넣기 가져오기",
+            new_deck_cards_imports_path(@deck),
+            class: "btn btn--ghost btn--sm" %>
+    </div>
     <div id="deck-add-form-<%= @deck.id %>">
       <%= render "decks/card_add_form", deck: @deck, card: Card.new %>
     </div>
