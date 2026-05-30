@@ -51,6 +51,27 @@ RSpec.describe "Clubs", type: :request do
     let!(:suspended_club) { create(:club, status: :suspended) }
 
     context "비로그인 사용자" do
+      it "유닛비 광고 링크 3개를 클럽 카드보다 먼저 표시한다" do
+        get clubs_path
+
+        document = Nokogiri::HTML(response.body)
+        grid_items = document.css(".cl-grid > .cl-card-wrapper")
+        ad_links = grid_items.first(3).map { |item| item.at_css("a.cl-ad-card") }
+
+        expect(ad_links.compact.size).to eq(3)
+        expect(ad_links.map { |link| link["href"] }).to all(eq("https://unit-b.co.kr"))
+        expect(ad_links.map { |link| link.at_css("img.cl-ad-card__label")["alt"] }).to all(eq("유닛비 쇼핑몰"))
+        expect(ad_links.map { |link| link.at_css("img.cl-ad-card__label")["width"] }).to all(eq("30"))
+        expect(ad_links.map { |link| link.at_css("img.cl-ad-card__label")["height"] }).to all(eq("30"))
+        expect(ad_links.map { |link| link.at_css("img.cl-ad-card__label")["src"] }).to all(include("unitb-icon"))
+        expect(ad_links.map(&:text).join).to include("피클볼과 함께하는 유닛비…")
+        styles = ad_links.map { |link| link["style"] }
+        expect(styles[0]).to include("unitb-1")
+        expect(styles[1]).to include("unitb-2")
+        expect(styles[2]).to include("unitb-3")
+        expect(grid_items[3].at_css(".cl-card__name").text).to include(approved_club.name)
+      end
+
       it "승인된 클럽만 표시한다" do
         get clubs_path
         expect(response.body).to include(approved_club.name)
