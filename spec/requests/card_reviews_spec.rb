@@ -14,6 +14,8 @@ RSpec.describe "CardReviews", type: :request do
       before { sign_in(user) }
 
       it "rating=3 평가 시 CardReview를 생성하고 Turbo Stream으로 응답한다" do
+        # Second card ensures a next-card exists after reviewing the first → turbo stream
+        create(:card, deck: deck, position: 2)
         expect {
           post card_reviews_path,
             params: { card_review: { card_id: card.id, deck_id: deck.id, rating: 3 } },
@@ -24,13 +26,12 @@ RSpec.describe "CardReviews", type: :request do
         expect(response.body).to include("study-card")
       end
 
-      it "Turbo Stream으로 #study-card를 다음 카드 또는 complete partial로 replace한다" do
-        # 추가 카드 없으면 complete 렌더 검증
+      it "마지막 카드 평가 후 study_session 없으면 deck으로 리다이렉트한다" do
+        # One card, no study_session_id → completing redirects to deck page
         post card_reviews_path,
           params: { card_review: { card_id: card.id, deck_id: deck.id, rating: 3 } },
           headers: headers
-        expect(response.body).to include("turbo-stream").and include("study-card")
-        expect(response.body).to include("오늘의 학습 완료")  # complete partial
+        expect(response).to redirect_to(deck_path(deck))
       end
 
       it "두 번째 due 카드가 있으면 complete가 아닌 _card partial로 replace" do
@@ -100,6 +101,8 @@ RSpec.describe "CardReviews", type: :request do
       end
 
       it "Spec B: 본인 덱 카드를 deck_id 없이 평가해도 성공한다 (회귀 방지)" do
+        # Second card ensures next_card exists after review → turbo stream (not redirect)
+        create(:card, deck: deck, position: 2)
         expect {
           post card_reviews_path,
             params: { card_review: { card_id: card.id, rating: 3 } },

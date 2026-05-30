@@ -18,9 +18,13 @@ class Decks::StudySessionsController < ApplicationController
 
   def set_deck
     @deck = Deck.find(params[:deck_id])
+    authorize @deck, :show?
   end
 
   def set_session
-    @study_session = StudySession.find(params[:id])
+    # Scope to deck + current user so a session from a different deck or user
+    # cannot be accessed via URL manipulation before the Pundit check.
+    @study_session = StudySession.where(deck: @deck, user: Current.user)
+                                 .find(params[:id])
   end
 end
