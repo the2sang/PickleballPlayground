@@ -2,7 +2,12 @@ class DeckPolicy < ApplicationPolicy
   # Phase 1 stubs. Real rules in Phase 4.
   # The minimum to make Phase 2 personal-deck CRUD work:
 
-  def show?    = personal_owner?
+  def show?
+    return true if record.official?
+    return personal_owner? if record.personal?
+    return false unless user.present?
+    user.club_memberships.approved.exists?(club_id: record.owner_id)
+  end
   def create?  = user.present?
   def new?     = create?
   def update?  = personal_owner?

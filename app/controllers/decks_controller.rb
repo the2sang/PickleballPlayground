@@ -24,7 +24,7 @@ class DecksController < ApplicationController
   end
 
   def show
-    authorize @deck if @deck.personal?
+    authorize @deck
     @cards = @deck.cards.order(:position, :id)
   end
 
