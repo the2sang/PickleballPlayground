@@ -28,7 +28,30 @@
     </div>
   </div>
 
-  <%# Wave 2가 채울 영역 — 빈 컨테이너만 자리 잡음 %>
-  <div id="deck-cards-<%= @deck.id %>" class="deck-cards"></div>
-  <div id="deck-add-form-<%= @deck.id %>"></div>
+  <div id="deck-cards-<%= @deck.id %>" class="deck-cards">
+    <% if @cards.any? %>
+      <table class="deck-cards__table">
+        <thead>
+          <tr>
+            <th>앞면</th>
+            <th>뒷면</th>
+            <th>힌트</th>
+            <th>태그</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: "decks/card_row", collection: @cards, as: :card, locals: { deck: @deck } %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="deck-cards__empty">아직 카드가 없습니다. 아래 폼에서 첫 카드를 추가하세요.</p>
+    <% end %>
+  </div>
+
+  <% if @deck.personal? && Current.user == @deck.owner %>
+    <div id="deck-add-form-<%= @deck.id %>">
+      <%= render "decks/card_add_form", deck: @deck, card: Card.new %>
+    </div>
+  <% end %>
 </div>

@@ -1,0 +1,22 @@
+<div data-controller="card-form"
+     data-card-form-saved-count-value="<%= deck.cards.size %>">
+  <header class="card-form__counter">
+    <span data-card-form-target="counter"><%= deck.cards.size %></span>장 저장됨
+  </header>
+  <%= form_with model: [deck, card],
+        data: { action: "keydown->card-form#handleKeydown" } do |f| %>
+    <% if card.errors.any? %>
+      <div class="cl-form__error">
+        <% card.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+      </div>
+    <% end %>
+    <%= f.text_field :front, placeholder: "앞면",
+        class: "cl-form__input",
+        data: { card_form_target: "front" }, autofocus: true %>
+    <%= f.text_field :back, placeholder: "뒷면", class: "cl-form__input" %>
+    <%= f.text_field :hint, placeholder: "힌트 (선택)", class: "cl-form__input" %>
+    <%= f.text_field :tags, placeholder: "태그 (쉼표 구분)", class: "cl-form__input" %>
+    <%= f.submit "저장하고 다음 (Cmd+Enter)", class: "btn btn--primary btn--sm" %>
+  <% end %>
+  <p class="card-form__hint">Cmd+Enter로 저장하고 다음 카드 입력 · Esc로 취소</p>
+</div>

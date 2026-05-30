@@ -1,0 +1,10 @@
+<%= turbo_frame_tag "card_#{card.id}", tag: :tr do %>
+  <td><%= card.front %></td>
+  <td><%= card.back %></td>
+  <td><%= card.hint %></td>
+  <td><%= card.tags %></td>
+  <td>
+    <%= link_to "편집", edit_deck_card_path(deck, card),
+        data: { turbo_frame: "card_#{card.id}" } %>
+  </td>
+<% end %>
