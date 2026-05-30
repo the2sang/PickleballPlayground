@@ -28,6 +28,16 @@
     </div>
   </div>
 
+  <div class="deck-actions" style="display:flex; gap:8px; margin:16px 0;">
+    <% if @deck.cards.size.positive? %>
+      <%= link_to "학습 시작", deck_study_path(@deck), class: "btn btn--primary btn--sm" %>
+      <%= link_to "훑어보기", deck_browse_path(@deck), class: "btn btn--ghost btn--sm" %>
+    <% else %>
+      <button type="button" class="btn btn--primary btn--sm" disabled aria-disabled="true" title="카드를 먼저 추가하세요">학습 시작</button>
+      <span class="deck-actions__hint" style="font-size:0.85rem; color:#6b7280; align-self:center;">카드를 먼저 추가하세요</span>
+    <% end %>
+  </div>
+
   <div id="deck-cards-<%= @deck.id %>" class="deck-cards">
     <% if @cards.any? %>
       <table class="deck-cards__table">

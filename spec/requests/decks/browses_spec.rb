@@ -86,4 +86,34 @@ RSpec.describe "Decks::Browses", type: :request do
       end
     end
   end
+
+  describe "GET /decks/:deck_id (entry points)" do
+    context "카드가 있는 덱" do
+      before do
+        create(:card, deck: deck)
+        sign_in(user)
+      end
+
+      it "훑어보기 링크가 deck_browse_path로 렌더된다" do
+        get deck_path(deck)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("decks/#{deck.id}/browse")
+      end
+
+      it "훑어보기 텍스트가 보인다" do
+        get deck_path(deck)
+        expect(response.body).to include("훑어보기")
+      end
+    end
+
+    context "카드가 없는 덱" do
+      before { sign_in(user) }
+
+      it "훑어보기 링크가 없다" do
+        get deck_path(deck)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("decks/#{deck.id}/browse")
+      end
+    end
+  end
 end

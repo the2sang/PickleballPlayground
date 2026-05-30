@@ -52,11 +52,11 @@ RSpec.describe "CardReviews", type: :request do
         expect(CardReview.where(user: user, card: card).count).to eq(1)
       end
 
-      it "out-of-range rating (5)은 422 응답 (T-03-02)" do
+      it "out-of-range rating (5)은 422 응답 (T-03-02 / CR-02)" do
         post card_reviews_path,
           params: { card_review: { card_id: card.id, deck_id: deck.id, rating: 5 } },
           headers: headers
-        expect(response).to have_http_status(:unprocessable_entity).or have_http_status(:bad_request)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
@@ -80,6 +80,33 @@ RSpec.describe "CardReviews", type: :request do
         post card_reviews_path,
           params: { card_review: { card_id: card.id, deck_id: deck.id, rating: 3 } }
         expect(response).to redirect_to(new_session_path)
+      end
+    end
+
+    context "타 사용자 카드에 deck_id 없이 평가 시도 (T-03-IDOR / CR-01)" do
+      before { sign_in(user) }
+
+      let(:other_user)   { create(:user) }
+      let(:foreign_deck) { create(:deck, :personal, owner: other_user) }
+      let(:foreign_card) { create(:card, deck: foreign_deck) }
+
+      it "Spec A: CardReview가 생성되지 않고 차단된다 (IDOR 차단)" do
+        expect {
+          post card_reviews_path,
+            params: { card_review: { card_id: foreign_card.id, rating: 3 } },
+            headers: headers
+        }.not_to change(CardReview, :count)
+        expect(response).to redirect_to(root_path).or have_http_status(:forbidden)
+      end
+
+      it "Spec B: 본인 덱 카드를 deck_id 없이 평가해도 성공한다 (회귀 방지)" do
+        expect {
+          post card_reviews_path,
+            params: { card_review: { card_id: card.id, rating: 3 } },
+            headers: headers
+        }.to change(CardReview, :count).by(1)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("study-card")
       end
     end
   end
