@@ -1,10 +1,22 @@
-<%= turbo_frame_tag "card_#{card.id}", tag: :tr do %>
-  <td><%= card.front %></td>
-  <td><%= card.back %></td>
-  <td><%= card.hint %></td>
-  <td><%= card.tags %></td>
-  <td>
-    <%= link_to "편집", edit_deck_card_path(deck, card),
-        data: { turbo_frame: "card_#{card.id}" } %>
-  </td>
+<%= turbo_frame_tag "card_#{card.id}" do %>
+  <div class="deck-row">
+    <span class="deck-row__num"><%= card_counter %></span>
+    <div class="deck-row__content">
+      <p class="deck-row__front"><%= card.front %></p>
+      <p class="deck-row__back"><%= card.back %></p>
+      <% if card.hint.present? %>
+        <p class="deck-row__meta">힌트: <%= card.hint %></p>
+      <% end %>
+      <% if card.tags.present? %>
+        <p class="deck-row__meta">태그: <%= card.tags %></p>
+      <% end %>
+    </div>
+    <% if can_edit %>
+      <div class="deck-row__actions">
+        <%= link_to "편집", edit_deck_card_path(deck, card),
+            class: "btn btn--ghost btn--sm",
+            data: { turbo_frame: "card_#{card.id}" } %>
+      </div>
+    <% end %>
+  </div>
 <% end %>

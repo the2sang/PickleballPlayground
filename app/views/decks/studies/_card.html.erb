@@ -6,7 +6,8 @@
 %>
 
 <div data-controller="quiz-session"
-     data-quiz-session-correct-value="<%= card.back %>">
+     data-quiz-session-correct-value="<%= card.back %>"
+     data-quiz-session-duration-value="60">
 
   <%# ── Progress ─────────────────────────────────────────── %>
   <div class="quiz-progress" aria-label="학습 진행률 <%= completed %>/<%= total %>">
@@ -20,6 +21,23 @@
 
   <%# ── Card ──────────────────────────────────────────────── %>
   <div class="quiz-card">
+
+    <%# Timer — top right %>
+    <button type="button"
+            class="quiz-timer"
+            data-quiz-session-target="timer"
+            data-action="click->quiz-session#pauseToggle"
+            aria-label="타이머 일시정지/재생">
+      <svg class="quiz-timer__svg" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="quiz-timer__track" cx="20" cy="20" r="16"/>
+        <circle class="quiz-timer__ring" cx="20" cy="20" r="16"
+                data-quiz-session-target="timerRing"/>
+      </svg>
+      <span class="quiz-timer__num" data-quiz-session-target="timerDisplay">60</span>
+      <iconify-icon class="quiz-timer__icon"
+                    data-quiz-session-target="pauseIcon"
+                    icon="lucide:pause" width="9" aria-hidden="true"></iconify-icon>
+    </button>
 
     <%# Question area %>
     <div class="quiz-card__question">

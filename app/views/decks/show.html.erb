@@ -1,5 +1,7 @@
 <% content_for :title, @deck.title %>
 
+<% can_edit = @deck.personal? && Current.user == @deck.owner %>
+
 <div class="cl-page">
   <div class="cl-hero">
     <div class="cl-hero__inner">
@@ -17,56 +19,47 @@
           <p style="font-size:0.85rem; color:#6b7280; margin-top:8px;"><%= @deck.cards.size %>장의 카드</p>
         </div>
 
-        <% if @deck.personal? && Current.user == @deck.owner %>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
           <div style="display:flex; gap:8px;">
-            <%= link_to "수정", edit_deck_path(@deck), class: "btn btn--ghost btn--sm" %>
-            <%= button_to "삭제", @deck, method: :delete, class: "btn btn--danger btn--sm",
-                  form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+            <% if @deck.cards.size.positive? %>
+              <%= link_to "학습 시작", deck_study_path(@deck), class: "btn btn--primary btn--sm" %>
+              <%= link_to "훑어보기", deck_browse_path(@deck), class: "btn btn--ghost btn--sm" %>
+            <% else %>
+              <button type="button" class="btn btn--primary btn--sm" disabled aria-disabled="true" title="카드를 먼저 추가하세요">학습 시작</button>
+              <span style="font-size:0.85rem; color:#6b7280; align-self:center;">카드를 먼저 추가하세요</span>
+            <% end %>
           </div>
-        <% end %>
+          <% if can_edit %>
+            <div style="display:flex; gap:8px;">
+              <%= link_to "수정", edit_deck_path(@deck), class: "btn btn--ghost btn--sm" %>
+              <%= button_to "삭제", @deck, method: :delete, class: "btn btn--danger btn--sm",
+                    form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="deck-actions" style="display:flex; gap:8px; margin:16px 0;">
-    <% if @deck.cards.size.positive? %>
-      <%= link_to "학습 시작", deck_study_path(@deck), class: "btn btn--primary btn--sm" %>
-      <%= link_to "훑어보기", deck_browse_path(@deck), class: "btn btn--ghost btn--sm" %>
-    <% else %>
-      <button type="button" class="btn btn--primary btn--sm" disabled aria-disabled="true" title="카드를 먼저 추가하세요">학습 시작</button>
-      <span class="deck-actions__hint" style="font-size:0.85rem; color:#6b7280; align-self:center;">카드를 먼저 추가하세요</span>
+  <div class="cl-content">
+    <div id="deck-cards-<%= @deck.id %>" class="deck-rows">
+      <% if @cards.any? %>
+        <%= render partial: "decks/card_row", collection: @cards, as: :card,
+                   locals: { deck: @deck, can_edit: can_edit } %>
+      <% else %>
+        <p class="deck-rows__empty">아직 카드가 없습니다. 아래 폼에서 첫 카드를 추가하세요.</p>
+      <% end %>
+    </div>
+
+    <% if can_edit %>
+      <div class="deck-import-cta">
+        <%= link_to "붙여넣기 가져오기",
+              new_deck_cards_imports_path(@deck),
+              class: "btn btn--ghost btn--sm" %>
+      </div>
+      <div id="deck-add-form-<%= @deck.id %>">
+        <%= render "decks/card_add_form", deck: @deck, card: Card.new %>
+      </div>
     <% end %>
   </div>
-
-  <div id="deck-cards-<%= @deck.id %>" class="deck-cards">
-    <% if @cards.any? %>
-      <table class="deck-cards__table">
-        <thead>
-          <tr>
-            <th>앞면</th>
-            <th>뒷면</th>
-            <th>힌트</th>
-            <th>태그</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= render partial: "decks/card_row", collection: @cards, as: :card, locals: { deck: @deck } %>
-        </tbody>
-      </table>
-    <% else %>
-      <p class="deck-cards__empty">아직 카드가 없습니다. 아래 폼에서 첫 카드를 추가하세요.</p>
-    <% end %>
-  </div>
-
-  <% if @deck.personal? && Current.user == @deck.owner %>
-    <div class="deck-import-cta">
-      <%= link_to "붙여넣기 가져오기",
-            new_deck_cards_imports_path(@deck),
-            class: "btn btn--ghost btn--sm" %>
-    </div>
-    <div id="deck-add-form-<%= @deck.id %>">
-      <%= render "decks/card_add_form", deck: @deck, card: Card.new %>
-    </div>
-  <% end %>
 </div>

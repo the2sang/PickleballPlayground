@@ -33,7 +33,7 @@ class CardReviewsController < ApplicationController
       # T-03-02: invalid rating value (e.g. 0, 5, "abc".to_i=0)
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("study-card", partial: "card_reviews/error"),
+          render turbo_stream: turbo_stream.update("study-card", partial: "card_reviews/error"),
                  status: :unprocessable_entity
         end
         format.html { redirect_back_or_to(root_path, alert: "잘못된 평가입니다.") }
@@ -56,7 +56,7 @@ class CardReviewsController < ApplicationController
     else
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("study-card", partial: "card_reviews/error"),
+          render turbo_stream: turbo_stream.update("study-card", partial: "card_reviews/error"),
                  status: :unprocessable_entity
         end
         format.html { redirect_back_or_to(root_path, alert: result.errors.join(", ")) }

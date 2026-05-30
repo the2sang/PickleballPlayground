@@ -1,3 +1,3 @@
-<%= turbo_frame_tag "card_#{@card.id}", tag: :tr do %>
+<%= turbo_frame_tag "card_#{@card.id}" do %>
   <%= render "decks/card_edit_form", card: @card, deck: @deck %>
 <% end %>

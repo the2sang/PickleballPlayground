@@ -1,6 +1,5 @@
-<%# 이 partial은 turbo_frame_tag "card_#{card.id}", tag: :tr 안에서 렌더링됨 %>
-<td colspan="5" data-controller="card-form"
-                data-action="keydown->card-form#handleKeydown">
+<div class="deck-row__edit-form" data-controller="card-form"
+                               data-action="keydown->card-form#handleKeydown">
   <%= form_with model: [deck, card], class: "card-edit-form" do |f| %>
     <% if card.errors.any? %>
       <div class="cl-form__error">
@@ -20,4 +19,4 @@
         class: "btn btn--danger btn--sm",
         form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
   <% end %>
-</td>
+</div>
