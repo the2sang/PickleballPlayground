@@ -1,0 +1,34 @@
+<% content_for :title, @deck.title %>
+
+<div class="cl-page">
+  <div class="cl-hero">
+    <div class="cl-hero__inner">
+      <div class="cl-hero__row">
+        <div>
+          <p class="cl-hero__eyebrow">
+            <%= link_to "낱말카드", decks_path %>
+            <span class="sep">/</span>
+            <%= { "official" => "공식", "club" => "클럽", "personal" => "내 덱" }[@deck.scope] %>
+          </p>
+          <h1 class="cl-hero__title"><%= @deck.title %></h1>
+          <% if @deck.description.present? %>
+            <p class="cl-hero__subtitle"><%= @deck.description %></p>
+          <% end %>
+          <p style="font-size:0.85rem; color:#6b7280; margin-top:8px;"><%= @deck.cards.size %>장의 카드</p>
+        </div>
+
+        <% if @deck.personal? && Current.user == @deck.owner %>
+          <div style="display:flex; gap:8px;">
+            <%= link_to "수정", edit_deck_path(@deck), class: "btn btn--ghost btn--sm" %>
+            <%= button_to "삭제", @deck, method: :delete, class: "btn btn--danger btn--sm",
+                  form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Wave 2가 채울 영역 — 빈 컨테이너만 자리 잡음 %>
+  <div id="deck-cards-<%= @deck.id %>" class="deck-cards"></div>
+  <div id="deck-add-form-<%= @deck.id %>"></div>
+</div>

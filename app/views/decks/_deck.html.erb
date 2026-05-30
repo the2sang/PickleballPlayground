@@ -1,0 +1,9 @@
+<%= link_to deck, class: "deck-card" do %>
+  <div class="deck-card__scope-badge deck-card__scope-badge--<%= deck.scope %>">
+    <%= { "official" => "공식", "club" => "클럽", "personal" => "내 덱" }[deck.scope] %>
+  </div>
+  <h3 class="deck-card__title"><%= deck.title %></h3>
+  <p class="deck-card__meta">
+    <%= deck.cards.size %>장 · <%= deck.updated_at.strftime("%Y.%m.%d") %>
+  </p>
+<% end %>

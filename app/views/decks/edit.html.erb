@@ -1,0 +1,18 @@
+<% content_for :title, "덱 수정" %>
+
+<div class="cl-page">
+  <div class="cl-content cl-content--form">
+    <div style="margin-bottom:32px;">
+      <p class="cl-hero__eyebrow">
+        <%= link_to "낱말카드", decks_path %>
+        <span class="sep">/</span>
+        <%= link_to @deck.title, @deck %>
+        <span class="sep">/</span> 수정
+      </p>
+      <h1 class="cl-hero__title">덱 수정</h1>
+    </div>
+    <div class="cl-form-card">
+      <%= render "form", deck: @deck %>
+    </div>
+  </div>
+</div>
