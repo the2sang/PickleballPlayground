@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   end
 
   resources :decks do
-    resources :cards, only: %i[new create edit update destroy]
+    resources :cards, only: %i[create edit update destroy]
     namespace :cards do
       resource :imports, only: %i[new create]
     end

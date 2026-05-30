@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["front", "counter"]
+  static targets = ["front", "counter", "cancel"]
   static values = { savedCount: { type: Number, default: 0 } }
 
   handleKeydown(event) {
@@ -18,12 +18,8 @@ export default class extends Controller {
     if (event.key === "Escape") {
       const frame = this.element.closest("turbo-frame")
       if (frame && frame.id.startsWith("card_")) {
-        // 인라인 편집 컨텍스트: frame을 reload하여 read-only 행으로 복원
         event.preventDefault()
-        frame.removeAttribute("src")
-        if (typeof frame.reload === "function") {
-          frame.reload()
-        }
+        if (this.hasCancelTarget) this.cancelTarget.click()
       }
       // add form은 frame 밖에 위치 — Escape 무시 (no-op)
     }
