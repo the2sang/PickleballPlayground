@@ -1,11 +1,20 @@
-<div class="max-w-2xl mx-auto px-4 py-8">
-  <div class="mb-4 text-sm text-gray-500">
-    <%= link_to @deck.title, deck_path(@deck), class: "hover:underline" %> &gt; 학습
-  </div>
+<div class="study-page">
+  <header class="study-page__bar">
+    <%= link_to deck_path(@deck), class: "study-page__back", aria: { label: "덱으로 돌아가기" } do %>
+      <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+      <span class="study-page__back-label"><%= @deck.title %></span>
+    <% end %>
 
-  <div class="mb-2 text-xs text-gray-400 text-right">남은 카드 <%= @due_cards.size %>장</div>
+    <span class="study-page__mode-chip">
+      <iconify-icon icon="lucide:brain-circuit" width="13"></iconify-icon>
+      학습 모드
+    </span>
+  </header>
 
-  <div id="study-card">
-    <%= render "card", card: @due_cards.first, deck: @deck %>
+  <div class="study-page__body">
+    <div id="study-card" class="study-page__card-wrap">
+      <%= render "card", card: @current_card, deck: @deck,
+          options: @options, completed_count: @completed_count, total_count: @total_count %>
+    </div>
   </div>
 </div>

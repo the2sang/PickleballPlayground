@@ -42,8 +42,13 @@ class CardReviewsController < ApplicationController
     end
 
     if result.success?
-      # Step 7: Fetch next due card for Turbo Stream swap
-      @next_card = Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call.first
+      due_remaining = Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
+      @next_card = due_remaining.first
+      if @next_card
+        @options = @next_card.quiz_options(@deck)
+        @total_count = @deck.cards.count
+        @completed_count = @total_count - due_remaining.size
+      end
       respond_to do |format|
         format.turbo_stream  # -> app/views/card_reviews/create.turbo_stream.erb
         format.html { redirect_back_or_to(root_path) }

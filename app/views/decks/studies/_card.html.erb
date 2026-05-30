@@ -1,66 +1,77 @@
-<div data-controller="study-session" class="space-y-2">
-  <div class="bg-white rounded-xl shadow-md p-8 text-center">
-    <p class="text-base text-gray-800"><%= card.front %></p>
-    <div class="border-t border-gray-100 mt-6 mb-4 hidden" data-study-session-target="divider"></div>
-    <p class="text-base text-gray-700 mt-4 hidden" data-study-session-target="back" aria-live="polite"><%= card.back %></p>
+<%
+  total     = local_assigns.fetch(:total_count, 0)
+  completed = local_assigns.fetch(:completed_count, 0)
+  opts      = local_assigns.fetch(:options, [card.back])
+  pct       = total > 0 ? (completed.to_f / total * 100).round : 0
+%>
+
+<div data-controller="quiz-session"
+     data-quiz-session-correct-value="<%= card.back %>">
+
+  <%# ── Progress ─────────────────────────────────────────── %>
+  <div class="quiz-progress" aria-label="학습 진행률 <%= completed %>/<%= total %>">
+    <span class="quiz-progress__num quiz-progress__num--done"><%= completed %></span>
+    <div class="quiz-progress__track" role="progressbar"
+         aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100">
+      <div class="quiz-progress__fill" style="width: <%= pct %>%"></div>
+    </div>
+    <span class="quiz-progress__num quiz-progress__num--total"><%= total %></span>
   </div>
 
-  <%= form_with url: card_reviews_path, method: :post, data: { turbo: true } do |f| %>
-    <%= f.hidden_field "card_review[card_id]", value: card.id %>
-    <%= f.hidden_field "card_review[deck_id]", value: deck.id %>
+  <%# ── Card ──────────────────────────────────────────────── %>
+  <div class="quiz-card">
 
-    <button type="button"
-            data-study-session-target="showButton"
-            data-action="click->study-session#flip"
-            aria-expanded="false"
-            class="mt-4 w-full min-h-[44px] bg-gray-900 text-white rounded-lg font-semibold py-3 hover:bg-gray-700">
-      답 보기
-    </button>
-
-    <div data-study-session-target="ratingRow" class="hidden mt-2 flex gap-2">
-      <button type="submit"
-              name="card_review[rating]"
-              value="1"
-              data-study-session-target="ratingButton"
-              data-action="click->study-session#submitRating"
-              aria-label="다시 (1)"
-              class="flex-1 min-h-[44px] border border-red-600 text-red-600 hover:bg-red-50 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
-        다시
-      </button>
-      <button type="submit"
-              name="card_review[rating]"
-              value="2"
-              data-study-session-target="ratingButton"
-              data-action="click->study-session#submitRating"
-              aria-label="어려움 (2)"
-              class="flex-1 min-h-[44px] border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
-        어려움
-      </button>
-      <button type="submit"
-              name="card_review[rating]"
-              value="3"
-              data-study-session-target="ratingButton"
-              data-action="click->study-session#submitRating"
-              aria-label="보통 (3)"
-              class="flex-1 min-h-[44px] bg-gray-900 text-white hover:bg-gray-700 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
-        보통
-      </button>
-      <button type="submit"
-              name="card_review[rating]"
-              value="4"
-              data-study-session-target="ratingButton"
-              data-action="click->study-session#submitRating"
-              aria-label="쉬움 (4)"
-              class="flex-1 min-h-[44px] border border-green-600 text-green-700 hover:bg-green-50 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
-        쉬움
-      </button>
+    <%# Question area %>
+    <div class="quiz-card__question">
+      <div class="quiz-card__type">
+        <span>단어</span>
+        <iconify-icon icon="lucide:volume-2" width="12"></iconify-icon>
+      </div>
+      <p class="quiz-card__text"><%= card.front %></p>
     </div>
 
-    <div data-study-session-target="keyHints" class="hidden mt-2 flex gap-2 text-xs text-gray-400 justify-center">
-      <kbd class="flex-1 text-center">1</kbd>
-      <kbd class="flex-1 text-center">2</kbd>
-      <kbd class="flex-1 text-center">3</kbd>
-      <kbd class="flex-1 text-center">4</kbd>
+    <%# Divider + section label %>
+    <div class="quiz-card__divider">
+      <span class="quiz-card__divider-line"></span>
+      <span class="quiz-card__section-label">정답을 고르세요</span>
+      <span class="quiz-card__divider-line"></span>
     </div>
-  <% end %>
+
+    <%# Options + form %>
+    <%= form_with url: card_reviews_path, method: :post,
+        data: { turbo: true, "quiz-session-target": "form" } do |f| %>
+      <%= f.hidden_field "card_review[card_id]", value: card.id %>
+      <%= f.hidden_field "card_review[deck_id]", value: deck.id %>
+      <%= f.hidden_field "card_review[rating]", value: "",
+          data: { "quiz-session-target": "rating" } %>
+
+      <div class="quiz-options">
+        <% opts.each_with_index do |option, idx| %>
+          <button type="button"
+                  class="quiz-option"
+                  data-quiz-session-target="option"
+                  data-value="<%= option %>"
+                  data-action="click->quiz-session#selectOption"
+                  aria-label="선택지 <%= idx + 1 %>: <%= option %>">
+            <span class="quiz-option__key"><%= idx + 1 %></span>
+            <span class="quiz-option__text"><%= option %></span>
+          </button>
+        <% end %>
+      </div>
+
+      <%# Don't know %>
+      <div class="quiz-card__footer">
+        <button type="button"
+                class="quiz-skip"
+                data-action="click->quiz-session#skipCard">
+          <iconify-icon icon="lucide:flag" width="13"></iconify-icon>
+          모르겠어요?
+        </button>
+      </div>
+    <% end %>
+
+  </div>
+
+  <%# Keyboard hint %>
+  <p class="quiz-hint">키보드 <kbd>1</kbd>–<kbd>4</kbd> 로도 선택할 수 있어요</p>
 </div>

@@ -6,6 +6,11 @@ class Decks::StudiesController < ApplicationController
     @due_cards = Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
     if @due_cards.empty?
       render :complete
+    else
+      @current_card = @due_cards.first
+      @total_count = @deck.cards.count
+      @completed_count = @total_count - @due_cards.size
+      @options = @current_card.quiz_options(@deck)
     end
   end
 

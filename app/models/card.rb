@@ -26,6 +26,11 @@ class Card < ApplicationRecord
 
   scope :ordered, -> { order(:position, :id) }
 
+  def quiz_options(deck, size: 3)
+    distractors = deck.cards.where.not(id: id).order("RANDOM()").limit(size)
+    ([ back ] + distractors.map(&:back)).shuffle
+  end
+
   private
 
   def front_image_format = validate_image(:front_image)
