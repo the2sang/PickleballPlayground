@@ -319,7 +319,22 @@ module Flashcards
       )
       Result.new(success?: true, card_review: card_review, errors: [])
     rescue ActiveRecord::RecordNotUnique
-      retry
+      # 경쟁 조건: 동시 요청이 동일 (user_id, card_id)에 대해 insert 경쟁.
+      # bare `retry`는 무한 루프 위험 — re-find 후 직접 update!로 처리.
+      begin
+        card_review = CardReview.find_by!(user: @user, card_id: @card_id)
+        card_review.update!(
+          ease:             sm2_result.ease,
+          interval_days:    sm2_result.interval_days,
+          repetitions:      sm2_result.repetitions,
+          next_review_at:   sm2_result.next_review_at,
+          last_reviewed_at: Time.current,
+          last_rating:      @rating
+        )
+        Result.new(success?: true, card_review: card_review, errors: [])
+      rescue ActiveRecord::RecordInvalid => e
+        Result.new(success?: false, card_review: nil, errors: e.record.errors.full_messages)
+      end
     rescue ActiveRecord::RecordInvalid => e
       Result.new(success?: false, card_review: nil, errors: e.record.errors.full_messages)
     end
@@ -518,7 +533,7 @@ export default class extends Controller {
 ### Pitfall 1: ActiveRecord::RecordNotUnique 미처리
 **What goes wrong:** 두 탭에서 동일 카드 동시 평가 시 `(user_id, card_id)` unique 제약 위반으로 500 에러.
 **Why it happens:** `build` + `save` 대신 `find_or_initialize_by` 사용하지 않거나 rescue 없음.
-**How to avoid:** `find_or_initialize_by(user_id:, card_id:)` + `update!` + `rescue ActiveRecord::RecordNotUnique` → retry.
+**How to avoid:** `find_or_initialize_by(user_id:, card_id:)` + `update!` + `rescue ActiveRecord::RecordNotUnique` → `find_by!` 후 직접 `update!`. 절대 bare `retry` 사용 금지 (Pitfall 9 참조).
 **Warning signs:** 테스트에서 동시 요청 없이 통과 → 운영에서만 발생.
 
 ### Pitfall 2: policy_scope(Deck) 호출
@@ -557,6 +572,12 @@ export default class extends Controller {
 **What goes wrong:** Turbo Stream이 `#study-card`를 replace하면 새 DOM에 `data-controller`가 있어도 Stimulus이 연결되지 않을 수 있음.
 **Why it happens:** Turbo Stream은 기본적으로 `MutationObserver`로 Stimulus를 재연결함. 그러나 카드 partial이 올바른 `data-controller` 속성을 포함하지 않으면 연결 안됨.
 **How to avoid:** `_card.html.erb`의 최외곽 div에 `data-controller="study-session"`을 포함시킬 것. 또는 `show.html.erb`의 `#study-card` 외부 wrapper에 controller 마운트.
+
+### Pitfall 9: bare `retry` on RecordNotUnique → 무한 루프
+**What goes wrong:** `rescue ActiveRecord::RecordNotUnique; retry; end` 패턴이 무한 루프를 유발할 수 있음. `find_or_initialize_by`가 이미 존재하는 레코드를 찾았음에도 경합이 계속되면 루프 탈출 불가.
+**Why it happens:** `retry`는 `call` 메서드 전체를 재실행 — `find_or_initialize_by` 포함. 경쟁이 해소되지 않으면 무한 반복.
+**How to avoid:** `RecordNotUnique` 발생 시 `find_by!`로 기존 레코드를 직접 찾아 `update!` 호출. `retry` 사용 금지. Pattern 2 코드 예시 참조.
+**Warning signs:** 운영 환경에서 요청이 영구적으로 block됨. DB connection pool 고갈.
 
 ---
 
