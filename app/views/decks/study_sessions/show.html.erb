@@ -1,0 +1,67 @@
+<% content_for :title, "학습 결과 — #{@deck.title}" %>
+
+<div class="cl-page">
+  <div class="study-results">
+
+    <%# ── Score header ───────────────────────────────────── %>
+    <div class="study-results__header">
+      <p class="study-results__emoji">🎉</p>
+      <h1 class="study-results__title">학습 완료</h1>
+      <p class="study-results__score">
+        <%= @study_session.correct_count %> / <%= @study_session.total_count %> 정답
+        <% if @study_session.score_pct %>
+          <span class="study-results__pct">(<%= @study_session.score_pct %>%)</span>
+        <% end %>
+      </p>
+    </div>
+
+    <%# ── Correct cards ───────────────────────────────────── %>
+    <% if @correct_answers.any? %>
+    <section class="study-results__section">
+      <h2 class="study-results__section-title study-results__section-title--correct">
+        ✅ 맞춘 카드 (<%= @correct_answers.size %>)
+      </h2>
+      <div class="study-results__list">
+        <% @correct_answers.each do |answer| %>
+          <div class="study-results__item study-results__item--correct">
+            <span class="study-results__item-front"><%= answer.card.front %></span>
+            <span class="study-results__item-sep">—</span>
+            <span class="study-results__item-back"><%= answer.card.back %></span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+    <% end %>
+
+    <%# ── Incorrect cards ─────────────────────────────────── %>
+    <% if @incorrect_answers.any? %>
+    <section class="study-results__section">
+      <h2 class="study-results__section-title study-results__section-title--incorrect">
+        ❌ 틀린 카드 (<%= @incorrect_answers.size %>)
+      </h2>
+      <div class="study-results__list">
+        <% @incorrect_answers.each do |answer| %>
+          <div class="study-results__item study-results__item--incorrect">
+            <span class="study-results__item-front"><%= answer.card.front %></span>
+            <span class="study-results__item-sep">—</span>
+            <span class="study-results__item-back"><%= answer.card.back %></span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+    <% end %>
+
+    <%# ── Actions ─────────────────────────────────────────── %>
+    <div class="study-results__actions">
+      <%= link_to deck_path(@deck), class: "btn btn--secondary" do %>
+        <iconify-icon icon="lucide:arrow-left" width="13"></iconify-icon>
+        덱으로 돌아가기
+      <% end %>
+      <%= link_to deck_study_path(@deck, repeat: true), class: "btn btn--primary" do %>
+        <iconify-icon icon="lucide:refresh-cw" width="13"></iconify-icon>
+        다시 학습하기
+      <% end %>
+    </div>
+
+  </div>
+</div>
