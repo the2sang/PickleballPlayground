@@ -69,10 +69,11 @@ Exceptions:
 | Label | 11px (text-xs) | 600 (font-semibold) | 1.4 | Keyboard shortcut hints, meta badges |
 | Body | 14px (text-sm) | 400 (font-normal) | 1.63 | Breadcrumb, progress counter, helper text |
 | Card text | 16px (text-base) | 400 (font-normal) | 1.5 | Card front and back content |
-| Heading | 20px (text-xl) | 700 (font-bold) | 1.2 | "오늘의 학습 완료" complete-state heading |
-| Display | 24px (text-2xl) | 700 (font-bold) | 1.2 | Complete/empty state primary heading |
+| Heading / Display | 24px (text-2xl) | 600 (font-semibold) | 1.2 | Complete/empty state heading — all headings use this single size |
 
 Font family: Inter, system-ui, -apple-system, sans-serif (matches --font-body)
+
+Maximum: 4 sizes, 2 weights (400 normal, 600 semibold). No other sizes or weights permitted in study/browse views.
 
 ---
 
@@ -104,7 +105,7 @@ Rating button visual system (4 buttons, full-width row, minimum 44px height each
 | Rating 3 | 보통 | Filled dark (primary) | `bg-gray-900 text-white hover:bg-gray-700` |
 | Rating 4 | 쉬움 | Outlined success | `border border-green-600 text-green-700 hover:bg-green-50` |
 
-All rating buttons: `rounded-lg font-medium py-3 px-4 flex-1 disabled:opacity-50 disabled:cursor-not-allowed`
+All rating buttons: `rounded-lg font-semibold py-3 px-4 flex-1 disabled:opacity-50 disabled:cursor-not-allowed`
 
 ---
 
@@ -132,7 +133,7 @@ All rating buttons: `rounded-lg font-medium py-3 px-4 flex-1 disabled:opacity-50
 | Prev card | Click "이전" button → index--, reset to unflipped state, update counter display |
 | Shuffle toggle | Click "셔플" button → Fisher-Yates shuffle on cards array → reset to index=0, unflipped; button label toggles active state |
 | Counter display | "N / 전체 M" format, updates on card navigation |
-| Empty deck | Browse controller renders "카드가 없습니다" inline if cards array is empty |
+| Empty deck | Browse controller renders "이 덱에 카드가 없습니다. 카드를 추가하면 여기에 표시됩니다." inline if cards array is empty |
 
 ---
 
@@ -142,7 +143,7 @@ All rating buttons: `rounded-lg font-medium py-3 px-4 flex-1 disabled:opacity-50
 
 ```
 [card container: bg-white rounded-xl shadow-md p-8 text-center]
-  [front text: text-lg text-gray-800]
+  [front text: text-base text-gray-800]
   [back text: text-base text-gray-700 mt-4 hidden (data-study-session-target="back")]
   [divider: border-t border-gray-100 mt-6 mb-4 — shown after flip]
 
@@ -163,8 +164,8 @@ All rating buttons: `rounded-lg font-medium py-3 px-4 flex-1 disabled:opacity-50
 
 ```
 [card container: same shell as study card]
-  [front text]
-  [back text: hidden until flip]
+  [front text: text-base text-gray-800]
+  [back text: text-base text-gray-700 hidden until flip]
 
 [answer button row]
   [답 보기 button: same dark fill style as study]
@@ -195,7 +196,7 @@ All rating buttons: `rounded-lg font-medium py-3 px-4 flex-1 disabled:opacity-50
 ```
 [container: max-w-2xl mx-auto px-4 py-16 text-center]
   [icon: text-5xl mb-6]  — 🎉 (complete) or 📚 (empty/no cards)
-  [heading: text-2xl font-bold text-gray-900 mb-3]
+  [heading: text-2xl font-semibold text-gray-900 mb-3]
   [body: text-gray-500 mb-8]
   [CTA link button: bg-blue-600 text-white rounded-lg px-6 py-2 hover:bg-blue-700]
 ```
@@ -225,7 +226,7 @@ All rating buttons: `rounded-lg font-medium py-3 px-4 flex-1 disabled:opacity-50
 | Global study empty CTA | 덱 목록으로 |
 | Error state heading | 저장에 실패했습니다 |
 | Error state body | 평가를 다시 시도해 주세요. |
-| Browse empty deck | 카드가 없습니다 |
+| Browse empty deck | 이 덱에 카드가 없습니다. 카드를 추가하면 여기에 표시됩니다. |
 | Browse counter format | N / 전체 M |
 | Study progress format | 남은 카드 N장 |
 | Keyboard shortcut label format | 1, 2, 3, 4 (rendered as `<kbd>` elements) |
@@ -277,10 +278,12 @@ No shadcn initialization performed. Rails project, not React/Next.js/Vite. Regis
 | Global queue empty state uses /decks link | D-18 (CONTEXT.md) |
 | Rating color semantics (danger/zinc/dark/success) | Claude's Discretion — matches --hcp-* palette tokens |
 | Keyboard hint `<kbd>` row | Deferred in CONTEXT + kbd CSS pattern confirmed in app.css |
-| Card text size (text-lg / text-base) | D-23 starter _card.html.erb (text-lg inherited, back at text-base) |
+| Card text size (text-base for front and back) | Checker fix: text-lg removed to satisfy 4-size maximum; text-base (16px) used for all card content |
 | Complete state heading/body/CTA | complete.html.erb (D-23 locked, exact copy preserved) |
 | Inter font | --font-body token in app.css |
 | #dc2626 danger, #16a34a success | --hcp-danger, --hcp-success tokens in app.css |
+| Typography: 4 sizes, 2 weights only | Checker revision 2026-05-30 — removed 20px heading (merged into 24px), removed font-medium (replaced with font-semibold), removed font-bold (replaced with font-semibold) |
+| Browse empty state copy | Checker revision 2026-05-30 — updated from "카드가 없습니다" to descriptive copy |
 
 ---
 
