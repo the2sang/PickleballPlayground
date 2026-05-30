@@ -205,13 +205,13 @@
 | TEST-04 | Phase 1 | Pending |
 | TEST-05 | Phase 1 | Pending |
 | DECK-01 | Phase 2 | Pending |
-| DECK-02 | Phase 2 | Pending |
-| DECK-03 | Phase 2 | Pending |
+| DECK-02 | Phase 4 | Pending |
+| DECK-03 | Phase 4 | Pending |
 | DECK-04 | Phase 2 | Pending |
 | DECK-05 | Phase 2 | Pending |
 | DECK-06 | Phase 2 | Pending |
 | DECK-07 | Phase 2 | Pending |
-| DECK-08 | Phase 2 | Pending |
+| DECK-08 | Phase 4 | Pending |
 | DECK-09 | Phase 2 | Pending |
 | CARD-01 | Phase 2 | Pending |
 | CARD-02 | Phase 2 | Pending |
@@ -222,12 +222,12 @@
 | HUB-02 | Phase 2 | Pending |
 | HUB-03 | Phase 2 | Pending |
 | NAV-01 | Phase 2 | Pending |
-| NAV-02 | Phase 2 | Pending |
-| NAV-03 | Phase 2 | Pending |
-| NAV-04 | Phase 2 | Pending |
-| SEED-01 | Phase 2 | Pending |
-| SEED-02 | Phase 2 | Pending |
-| TEST-02 | Phase 2 | Pending |
+| NAV-02 | Phase 5 | Pending |
+| NAV-03 | Phase 5 | Pending |
+| NAV-04 | Phase 5 | Pending |
+| SEED-01 | Phase 1 | Pending |
+| SEED-02 | Phase 1 | Pending |
+| TEST-02 | Phase 4 | Pending |
 | STUDY-01 | Phase 3 | Pending |
 | STUDY-02 | Phase 3 | Pending |
 | STUDY-03 | Phase 3 | Pending |
@@ -242,7 +242,7 @@
 | BROWSE-05 | Phase 3 | Pending |
 | TEST-01 | Phase 3 | Pending |
 | TEST-03 | Phase 3 | Pending |
-| CARD-05 | Phase 4 | Pending |
+| CARD-05 | Phase 2 | Pending |
 | FORK-01 | Phase 4 | Pending |
 | FORK-02 | Phase 4 | Pending |
 | FORK-03 | Phase 4 | Pending |
@@ -265,4 +265,4 @@
 
 ---
 *Requirements defined: 2026-05-29*
-*Last updated: 2026-05-29 — initial definition from PROJECT.md + FEATURES.md research*
+*Last updated: 2026-05-30 — Traceability sync after Phase 2 planning revision: DECK-02/03/08 → Phase 4 (CONTEXT scope_guardrail: 3-tier resolver / club·official 생성 / featured toggle 모두 Phase 4); CARD-05 → Phase 2 (paste import 실제 구현); NAV-02/03/04 → Phase 5 (due badge + 캐싱은 Phase 5 hero와 함께); SEED-01/02 → Phase 1 (이미 db/seeds/flashcards.yml + loader 완료); TEST-02 → Phase 4 (policy 3-tier 완성 후 본격 작성)*
