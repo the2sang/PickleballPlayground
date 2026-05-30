@@ -21,7 +21,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 ## Phases
 
 - [x] **Phase 1: Foundations** — Schema, models, SM-2 service, factories, seed structure; data layer works in console *(완료: 2026-05-29)*
-- [ ] **Phase 2: Deck + Card CRUD** — Authoring UX (single form + paste import + inline edit); nav entry; user can build a personal deck
+- [x] **Phase 2: Deck + Card CRUD** — Authoring UX (single form + paste import + inline edit); nav entry; user can build a personal deck (completed 2026-05-30)
 - [ ] **Phase 3: SRS Learning Loop** — CardReview persistence, study controllers, Turbo Stream next-card swap, 4-button rating, flip browse
 - [ ] **Phase 4: Permissions + Club/Official Integration** — Full Pundit coverage, 3-tier scopes, fork, club moderation/featured, official deck rendering, manager onboarding nudge
 - [ ] **Phase 5: Tournament Linkage + Stats + Badge** — TournamentEventDeck join + UI, /decks hub stats (streak, today, mastery, 7-day forecast), nav due-count badge with Solid Cache
@@ -144,7 +144,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 - [x] 02-01-PLAN.md — Wave 0: routes + spec stubs + support helpers (test infrastructure)
 - [x] 02-02-PLAN.md — Wave 1: DecksController + 3섹션 hub + 빈 상태 hero + nav 진입점
 - [x] 02-03-PLAN.md — Wave 2: CardsController + Turbo Frame inline edit + Cmd+Enter Stimulus
-- [ ] 02-04-PLAN.md — Wave 3: PasteImportService + Cards::ImportsController + 구분자 자동 감지
+- [x] 02-04-PLAN.md — Wave 3: PasteImportService + Cards::ImportsController + 구분자 자동 감지
 **UI hint**: yes
 
 ---
@@ -382,7 +382,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations | 1/1 | Complete | 2026-05-29 |
-| 2. Deck + Card CRUD | 3/4 | In Progress|  |
+| 2. Deck + Card CRUD | 4/4 | Complete   | 2026-05-30 |
 | 3. SRS Learning Loop | 0/TBD | Not started | - |
 | 4. Permissions + Club/Official | 0/TBD | Not started | - |
 | 5. Tournament + Stats + Badge | 0/TBD | Not started | - |
