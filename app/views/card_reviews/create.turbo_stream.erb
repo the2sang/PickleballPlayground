@@ -1,8 +1,5 @@
 <%= turbo_stream.update "study-card" do %>
-  <% if @next_card %>
-    <%= render "decks/studies/card", card: @next_card, deck: @deck,
-        options: @options, completed_count: @completed_count, total_count: @total_count %>
-  <% else %>
-    <%= render "decks/studies/complete", deck: @deck %>
-  <% end %>
+  <%= render "decks/studies/card", card: @next_card, deck: @deck,
+      options: @options, completed_count: @completed_count, total_count: @total_count,
+      study_session: @study_session %>
 <% end %>

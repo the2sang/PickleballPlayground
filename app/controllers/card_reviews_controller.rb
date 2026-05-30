@@ -3,26 +3,19 @@
 class CardReviewsController < ApplicationController
   def create
     @card = Card.find(params[:card_review][:card_id])
-
-    # Step 2: Build CardReview with current user — ensures record.user == current_user
-    # for CardReviewPolicy#create? to pass (T-03-01 guard)
     @card_review = CardReview.new(user: Current.user, card: @card)
-
-    # Step 3: Authorize card_review — CardReviewPolicy#create? verifies record.user == user
-    # Raises Pundit::NotAuthorizedError → ApplicationController → root_path redirect
     authorize @card_review
 
-    # CR-01: never trust params[:deck_id] — derive deck from card itself to prevent IDOR.
-    # This unconditional derivation ensures DeckPolicy#show? always gates cross-deck access
-    # regardless of what deck_id (or lack thereof) the request payload contains.
     @deck = @card.deck
     authorize @deck, :show?
 
-    # Step 5: Validate rating range — SubmitReviewService/Sm2Service raises ArgumentError
-    # for ratings outside VALID_RATINGS = [1, 2, 3, 4]
     rating = params[:card_review][:rating].to_i
 
-    # Step 6: Call service
+    @study_session = StudySession.find_by(
+      id:   params[:card_review][:study_session_id],
+      user: Current.user
+    )
+
     begin
       result = Flashcards::SubmitReviewService.call(
         user:    Current.user,
@@ -30,7 +23,6 @@ class CardReviewsController < ApplicationController
         rating:  rating
       )
     rescue ArgumentError
-      # T-03-02: invalid rating value (e.g. 0, 5, "abc".to_i=0)
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.update("study-card", partial: "card_reviews/error"),
@@ -41,19 +33,7 @@ class CardReviewsController < ApplicationController
       return
     end
 
-    if result.success?
-      due_remaining = Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
-      @next_card = due_remaining.first
-      if @next_card
-        @options = @next_card.quiz_options(@deck)
-        @total_count = @deck.cards.count
-        @completed_count = @total_count - due_remaining.size
-      end
-      respond_to do |format|
-        format.turbo_stream  # -> app/views/card_reviews/create.turbo_stream.erb
-        format.html { redirect_back_or_to(root_path) }
-      end
-    else
+    unless result.success?
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.update("study-card", partial: "card_reviews/error"),
@@ -61,6 +41,46 @@ class CardReviewsController < ApplicationController
         end
         format.html { redirect_back_or_to(root_path, alert: result.errors.join(", ")) }
       end
+      return
+    end
+
+    if @study_session
+      StudySessionAnswer.create!(
+        study_session: @study_session,
+        card:          @card,
+        rating:        rating,
+        is_correct:    rating >= 3
+      )
+    end
+
+    due_remaining = if @study_session&.repeat?
+                      answered_ids = @study_session.study_session_answers.pluck(:card_id)
+                      @deck.cards.where.not(id: answered_ids)
+    else
+                      Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
+    end
+
+    @next_card = due_remaining.first
+
+    if @next_card.nil?
+      if @study_session
+        total   = @study_session.study_session_answers.count
+        correct = @study_session.study_session_answers.where(is_correct: true).count
+        @study_session.complete!(total: total, correct: correct)
+        redirect_to deck_study_session_path(@deck, @study_session), status: :see_other
+      else
+        redirect_to deck_path(@deck), status: :see_other
+      end
+      return
+    end
+
+    @options         = @next_card.quiz_options(@deck)
+    @total_count     = @deck.cards.count
+    @completed_count = @study_session ? @study_session.study_session_answers.count : 0
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_back_or_to(root_path) }
     end
   end
 end

@@ -58,8 +58,9 @@
     <%# Options + form %>
     <%= form_with url: card_reviews_path, method: :post,
         data: { turbo: true, "quiz-session-target": "form" } do |f| %>
-      <%= f.hidden_field "card_review[card_id]", value: card.id %>
-      <%= f.hidden_field "card_review[deck_id]", value: deck.id %>
+      <%= f.hidden_field "card_review[card_id]",          value: card.id %>
+      <%= f.hidden_field "card_review[deck_id]",          value: deck.id %>
+      <%= f.hidden_field "card_review[study_session_id]", value: local_assigns[:study_session]&.id %>
       <%= f.hidden_field "card_review[rating]", value: "",
           data: { "quiz-session-target": "rating" } %>
 
