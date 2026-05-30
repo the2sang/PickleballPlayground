@@ -16,10 +16,16 @@ class DecksController < ApplicationController
       @club_decks = @show_club_section ?
         Deck.where(scope: :club, owner_type: "Club", owner_id: approved_club_ids)
             .includes(:cards).order(updated_at: :desc) : []
+
+      all_deck_ids = (@official_decks + @personal_decks + @club_decks).map(&:id)
+      @deck_session_stats = Flashcards::DeckSessionStatsQuery.new(
+        user: Current.user, deck_ids: all_deck_ids
+      ).call
     else
       @personal_decks = []
       @club_decks = []
       @show_club_section = false
+      @deck_session_stats = {}
     end
   end
 

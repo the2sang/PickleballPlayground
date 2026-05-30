@@ -11886,3 +11886,15 @@ lexxy-editor.lexxy-editor-field {
 .study-results__item-sep   { color:#9ca3af; flex-shrink:0; }
 .study-results__item-back  { color:#374151; }
 .study-results__actions { display:flex; gap:12px; justify-content:center; margin-top:32px; }
+
+/* study-complete component */
+.study-complete { max-width:480px; margin:0 auto; padding:64px 16px; text-align:center; }
+.study-complete__emoji   { font-size:3rem; margin:0 0 16px; }
+.study-complete__title   { font-size:1.4rem; font-weight:700; color:#111; margin:0 0 8px; }
+.study-complete__desc    { color:#6b7280; margin:0 0 28px; }
+.study-complete__actions { display:flex; gap:12px; justify-content:center; }
+
+/* deck-card stats badge */
+.deck-card__top-row   { display:flex; align-items:center; justify-content:space-between; }
+.deck-card__stats     { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6b7280; background:#f9fafb; border:1px solid #e5e7eb; border-radius:99px; padding:2px 8px; }
+.deck-card__stats-score { color:#2563eb; }
