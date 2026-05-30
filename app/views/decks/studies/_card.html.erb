@@ -1,3 +1,66 @@
-<div class="bg-white rounded-xl shadow-md p-8 text-center">
-  <p class="text-lg text-gray-800"><%= card.front %></p>
+<div data-controller="study-session" class="space-y-2">
+  <div class="bg-white rounded-xl shadow-md p-8 text-center">
+    <p class="text-base text-gray-800"><%= card.front %></p>
+    <div class="border-t border-gray-100 mt-6 mb-4 hidden" data-study-session-target="divider"></div>
+    <p class="text-base text-gray-700 mt-4 hidden" data-study-session-target="back" aria-live="polite"><%= card.back %></p>
+  </div>
+
+  <%= form_with url: card_reviews_path, method: :post, data: { turbo: true } do |f| %>
+    <%= f.hidden_field "card_review[card_id]", value: card.id %>
+    <%= f.hidden_field "card_review[deck_id]", value: deck.id %>
+
+    <button type="button"
+            data-study-session-target="showButton"
+            data-action="click->study-session#flip"
+            aria-expanded="false"
+            class="mt-4 w-full min-h-[44px] bg-gray-900 text-white rounded-lg font-semibold py-3 hover:bg-gray-700">
+      답 보기
+    </button>
+
+    <div data-study-session-target="ratingRow" class="hidden mt-2 flex gap-2">
+      <button type="submit"
+              name="card_review[rating]"
+              value="1"
+              data-study-session-target="ratingButton"
+              data-action="click->study-session#submitRating"
+              aria-label="다시 (1)"
+              class="flex-1 min-h-[44px] border border-red-600 text-red-600 hover:bg-red-50 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
+        다시
+      </button>
+      <button type="submit"
+              name="card_review[rating]"
+              value="2"
+              data-study-session-target="ratingButton"
+              data-action="click->study-session#submitRating"
+              aria-label="어려움 (2)"
+              class="flex-1 min-h-[44px] border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
+        어려움
+      </button>
+      <button type="submit"
+              name="card_review[rating]"
+              value="3"
+              data-study-session-target="ratingButton"
+              data-action="click->study-session#submitRating"
+              aria-label="보통 (3)"
+              class="flex-1 min-h-[44px] bg-gray-900 text-white hover:bg-gray-700 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
+        보통
+      </button>
+      <button type="submit"
+              name="card_review[rating]"
+              value="4"
+              data-study-session-target="ratingButton"
+              data-action="click->study-session#submitRating"
+              aria-label="쉬움 (4)"
+              class="flex-1 min-h-[44px] border border-green-600 text-green-700 hover:bg-green-50 rounded-lg font-semibold py-3 px-4 disabled:opacity-50 disabled:cursor-not-allowed">
+        쉬움
+      </button>
+    </div>
+
+    <div data-study-session-target="keyHints" class="hidden mt-2 flex gap-2 text-xs text-gray-400 justify-center">
+      <kbd class="flex-1 text-center">1</kbd>
+      <kbd class="flex-1 text-center">2</kbd>
+      <kbd class="flex-1 text-center">3</kbd>
+      <kbd class="flex-1 text-center">4</kbd>
+    </div>
+  <% end %>
 </div>
