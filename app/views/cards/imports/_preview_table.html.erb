@@ -1,0 +1,24 @@
+<table class="import-preview__table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>앞면</th>
+      <th>뒷면</th>
+      <th>힌트</th>
+      <th>태그</th>
+      <th>경고</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% preview_cards.each do |c| %>
+      <tr class="<%= c.warnings.any? ? 'import-preview__row--invalid' : '' %>">
+        <td><%= c.row_index %></td>
+        <td><%= c.front %></td>
+        <td><%= c.back %></td>
+        <td><%= c.hint %></td>
+        <td><%= c.tags %></td>
+        <td><%= c.warnings.join(", ") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,9 @@
+<% if importable_count > 0 %>
+  <%= form_with url: deck_cards_imports_path(deck), data: { turbo_stream: "" } do |f| %>
+    <%= f.hidden_field :text, value: params[:text] %>
+    <%= f.hidden_field :separator, value: params[:separator] %>
+    <%= f.submit "#{importable_count}장 저장", name: "commit", value: "저장", class: "btn btn--primary" %>
+  <% end %>
+<% else %>
+  <p>저장할 수 있는 카드가 없습니다. 경고를 해결해 주세요.</p>
+<% end %>

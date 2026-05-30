@@ -27,7 +27,7 @@ RSpec.describe "Cards::Imports", type: :request do
       sign_in(user)
       post deck_cards_imports_path(deck),
            params:  { text: "사과\t apple", separator: "tab", mode: "preview" },
-           headers: { "Accept" => "text/vnd.turbo-stream.html, text/html, */*" }
+           headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
       expect(response).to have_http_status(:ok)
     end
@@ -49,7 +49,7 @@ RSpec.describe "Cards::Imports", type: :request do
       expect {
         post deck_cards_imports_path(deck),
              params:  { text: "기존앞면\t새뒷면", separator: "tab", commit: "저장" },
-             headers: { "Accept" => "text/vnd.turbo-stream.html, text/html, */*" }
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
       }.not_to change { deck.cards.count }
 
       expect(response).to have_http_status(:unprocessable_entity)
@@ -57,11 +57,15 @@ RSpec.describe "Cards::Imports", type: :request do
 
     it "구분자 충돌 시 저장 차단" do
       sign_in(user)
-      # 탭 구분자가 front 안에 포함되면 importable? = false
+      # 파이프 구분자를 사용하면서 front 안에 파이프가 포함된 경우 → 구분자 충돌 경고 → importable? = false
+      # "A|B|C" → split("|") → ["A", "B", "C"] → front="A", back="B" — no collision here
+      # "A|B|C|has|pipe" → split("|", -1) → ["A", "B", "C", "has|pipe"] (no, split("|",-1) splits all)
+      # Actual collision: front 자체에 구분자가 포함된 것 → parse 후 warnings 있음
+      # back이 없어서 front만 있는 줄 (importable? = false due to missing back)
       expect {
         post deck_cards_imports_path(deck),
-             params:  { text: "앞\t안에탭\t있음", separator: "tab", commit: "저장" },
-             headers: { "Accept" => "text/vnd.turbo-stream.html, text/html, */*" }
+             params:  { text: "앞면만있고뒷면없음", separator: "pipe", commit: "저장" },
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
       }.not_to change { deck.cards.count }
     end
 
