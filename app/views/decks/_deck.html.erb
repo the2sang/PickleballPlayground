@@ -1,9 +1,20 @@
-<%= link_to deck, class: "deck-card" do %>
-  <div class="deck-card__scope-badge deck-card__scope-badge--<%= deck.scope %>">
-    <%= { "official" => "공식", "club" => "클럽", "personal" => "내 덱" }[deck.scope] %>
+<div class="deck-card">
+  <%= link_to deck, class: "deck-card__body" do %>
+    <div class="deck-card__scope-badge deck-card__scope-badge--<%= deck.scope %>">
+      <%= { "official" => "공식", "club" => "클럽", "personal" => "내 덱" }[deck.scope] %>
+    </div>
+    <h3 class="deck-card__title"><%= deck.title %></h3>
+    <p class="deck-card__meta">
+      <%= deck.cards.size %>장 · <%= deck.updated_at.strftime("%Y.%m.%d") %>
+    </p>
+  <% end %>
+  <div class="deck-card__actions">
+    <%= link_to deck_study_path(deck), class: "btn btn--primary btn--sm" do %>
+      <iconify-icon icon="lucide:graduation-cap" width="13"></iconify-icon>
+      학습하기
+    <% end %>
+    <%= link_to deck, class: "btn btn--secondary btn--sm" do %>
+      카드 보기
+    <% end %>
   </div>
-  <h3 class="deck-card__title"><%= deck.title %></h3>
-  <p class="deck-card__meta">
-    <%= deck.cards.size %>장 · <%= deck.updated_at.strftime("%Y.%m.%d") %>
-  </p>
-<% end %>
+</div>

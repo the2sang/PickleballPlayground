@@ -11348,3 +11348,15 @@ lexxy-editor.lexxy-editor-field {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* deck-card component */
+.deck-card { display:flex; flex-direction:column; background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; transition:box-shadow .15s; }
+.deck-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.08); }
+.deck-card__body { display:block; padding:16px 16px 12px; text-decoration:none; color:inherit; flex:1; }
+.deck-card__title { font-size:15px; font-weight:600; margin:8px 0 4px; color:#111; }
+.deck-card__meta  { font-size:12px; color:#6b7280; margin:0; }
+.deck-card__actions { display:flex; gap:8px; padding:10px 16px 14px; border-top:1px solid #f3f4f6; }
+.deck-card__scope-badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; }
+.deck-card__scope-badge--official { background:#eff6ff; color:#1d4ed8; }
+.deck-card__scope-badge--club     { background:#f0fdf4; color:#15803d; }
+.deck-card__scope-badge--personal { background:#f9fafb; color:#374151; }
