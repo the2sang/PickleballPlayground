@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "card_#{@card.id}" do %>
+  <%= render "decks/card_row", card: @card, deck: @deck %>
+<% end %>

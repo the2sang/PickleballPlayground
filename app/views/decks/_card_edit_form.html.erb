@@ -1,0 +1,23 @@
+<%# 이 partial은 turbo_frame_tag "card_#{card.id}", tag: :tr 안에서 렌더링됨 %>
+<td colspan="5" data-controller="card-form"
+                data-action="keydown->card-form#handleKeydown">
+  <%= form_with model: [deck, card], class: "card-edit-form" do |f| %>
+    <% if card.errors.any? %>
+      <div class="cl-form__error">
+        <% card.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+      </div>
+    <% end %>
+    <%= f.text_field :front, class: "cl-form__input", placeholder: "앞면",
+        data: { card_form_target: "front" }, autofocus: true %>
+    <%= f.text_field :back, class: "cl-form__input", placeholder: "뒷면" %>
+    <%= f.text_field :hint, class: "cl-form__input", placeholder: "힌트 (선택)" %>
+    <%= f.text_field :tags, class: "cl-form__input", placeholder: "태그 (쉼표 구분)" %>
+    <%= f.submit "저장", class: "btn btn--primary btn--sm" %>
+    <%= link_to "취소", deck_path(deck),
+        data: { turbo_frame: "_top" },
+        class: "btn btn--ghost btn--sm" %>
+    <%= button_to "삭제", deck_card_path(deck, card), method: :delete,
+        class: "btn btn--danger btn--sm",
+        form: { data: { turbo_confirm: "정말 삭제하시겠습니까?" } } %>
+  <% end %>
+</td>
