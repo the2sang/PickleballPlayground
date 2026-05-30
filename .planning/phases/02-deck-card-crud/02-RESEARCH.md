@@ -433,7 +433,7 @@ class Flashcards::PasteImportService < ApplicationService
       cards.each do |c|
         @deck.cards.create!(
           front: c.front, back: c.back, hint: c.hint,
-          tag_list: c.tags, card_type: :basic
+          tags: c.tags, card_type: :basic
         )
       end
     end
@@ -644,7 +644,8 @@ Phase 2는 신규 기능 추가(greenfield 컨트롤러/뷰/서비스 레이어)
 - [ ] `spec/requests/cards_spec.rb` — 카드 CRUD + image params 차단
 - [ ] `spec/requests/cards/imports_spec.rb` — paste import preview/save
 - [ ] `spec/services/flashcards/paste_import_service_spec.rb` — 서비스 단위 테스트
-- [ ] `spec/support/system_test_helpers.rb` — Capybara 드라이버 설정 (기존 spec/support/ 확인 후)
+- [ ] `spec/support/system_test_helpers.rb` — Capybara 드라이버 설정 (spec/support/ 디렉토리 존재하나 파일 없음 — VERIFIED)
+- [ ] `spec/support/request_helpers.rb` — sign_in 헬퍼 이미 존재하는지 확인 후 없으면 생성 (VERIFIED: spec/support/ 비어 있음)
 
 ---
 
@@ -665,8 +666,8 @@ Phase 2는 신규 기능 추가(greenfield 컨트롤러/뷰/서비스 레이어)
 |---|-------|---------|---------------|
 | A1 | Paste import 최대 500장 | Open Questions §1 | 너무 많으면 성능 이슈, 너무 적으면 UX 불편. 500은 선례 기반 |
 | A2 | `card_form_controller.js` keydown 패턴 | Pattern 3 | 실제 Stimulus 버전 API 변경 시 수정 필요 (현재 프로젝트 Stimulus 버전 확인 권장) |
-| A3 | PasteImportService 구현 스켈레톤 | Pattern 6 | 실제 Card 모델의 `tag_list` 필드명 확인 필요 (Phase 1 스키마에서 `tags` string column) |
-| A4 | `spec/support/system_test_helpers.rb` 미존재 | Wave 0 Gaps | 이미 존재할 경우 중복 생성 금지 — Wave 0에서 ls 확인 선행 |
+| A3 | PasteImportService `tags:` 필드명 | Pattern 6 | VERIFIED: `db/schema.rb` + `app/models/card.rb` 확인 — `tags` string column (acts_as_taggable 없음). 예제 코드 `tags: c.tags`로 수정 완료. |
+| A4 | `spec/support/` 디렉토리 내 파일 없음 | Wave 0 Gaps | VERIFIED: `ls spec/support/` 결과 빈 디렉토리 확인. Wave 0에서 `spec/support/system_test_helpers.rb` 및 `spec/support/request_helpers.rb` 복사/생성 필요. |
 
 ---
 
