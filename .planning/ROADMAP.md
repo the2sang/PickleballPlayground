@@ -140,7 +140,11 @@ Each phase ends in a green test suite and a feature a user can touch.
 - `spec/system/decks_navigation_spec.rb` — 유틸리티 메뉴 → /decks; 빈 상태 vs 일반 목록 분기
 - `spec/requests/cards_spec.rb` 보안 케이스 — image attachment param이 거부되는지
 
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 02-01-PLAN.md — Wave 0: routes + spec stubs + support helpers (test infrastructure)
+- [ ] 02-02-PLAN.md — Wave 1: DecksController + 3섹션 hub + 빈 상태 hero + nav 진입점
+- [ ] 02-03-PLAN.md — Wave 2: CardsController + Turbo Frame inline edit + Cmd+Enter Stimulus
+- [ ] 02-04-PLAN.md — Wave 3: PasteImportService + Cards::ImportsController + 구분자 자동 감지
 **UI hint**: yes
 
 ---
@@ -378,7 +382,7 @@ Each phase ends in a green test suite and a feature a user can touch.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations | 1/1 | Complete | 2026-05-29 |
-| 2. Deck + Card CRUD | 0/TBD | Not started | - |
+| 2. Deck + Card CRUD | 0/4 | Planned | - |
 | 3. SRS Learning Loop | 0/TBD | Not started | - |
 | 4. Permissions + Club/Official | 0/TBD | Not started | - |
 | 5. Tournament + Stats + Badge | 0/TBD | Not started | - |
