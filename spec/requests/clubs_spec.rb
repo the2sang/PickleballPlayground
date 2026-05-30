@@ -107,3 +107,35 @@ RSpec.describe "Clubs", type: :request do
     end
   end
 end
+
+RSpec.describe "GET /clubs/:id/manage (플래시카드 온보딩 넛지)", type: :request do
+  let(:club)    { create(:club, status: :approved) }
+  let(:manager) { create(:user) }
+
+  before do
+    create(:club_membership, club: club, user: manager, role: :manager, status: :approved)
+    sign_in(manager)
+  end
+
+  context "덱이 없을 때" do
+    it "넛지 배너를 표시한다" do
+      get manage_club_path(club)
+      expect(response.body).to include("플래시카드 덱을 만들어보세요!")
+    end
+
+    it "덱 만들기 링크를 포함한다" do
+      get manage_club_path(club)
+      expect(response.body).to include(new_deck_path)
+      expect(response.body).to include("owner_id")
+    end
+  end
+
+  context "클럽 덱이 있을 때" do
+    before { create(:deck, scope: :club, owner: club) }
+
+    it "넛지 배너를 표시하지 않는다" do
+      get manage_club_path(club)
+      expect(response.body).not_to include("플래시카드 덱을 만들어보세요!")
+    end
+  end
+end

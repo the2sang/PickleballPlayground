@@ -18,6 +18,26 @@
     </div>
   </div>
 
+  <%# ── 플래시카드 온보딩 넛지 ─────────────────────── %>
+  <% if @club_deck_count == 0 %>
+    <div data-controller="dismissable-nudge"
+         data-dismissable-nudge-key-value="flashcard_nudge_<%= @club.id %>_dismissed"
+         style="background:#eff6ff; border:1px solid #93c5fd; border-radius:8px; padding:14px 16px; margin-bottom:16px; display:flex; align-items:flex-start; gap:12px;">
+      <iconify-icon icon="lucide:library" style="color:#2563eb; font-size:22px; flex-shrink:0; margin-top:1px;"></iconify-icon>
+      <div style="flex:1;">
+        <p style="margin:0 0 4px; font-weight:600; font-size:14px; color:#1e40af;">플래시카드 덱을 만들어보세요!</p>
+        <p style="margin:0 0 10px; font-size:13px; color:#3b82f6;">회원들이 규칙, 전술, 용어를 카드로 학습할 수 있습니다. 첫 번째 클럽 덱을 만들어보세요.</p>
+        <%= link_to "덱 만들기", new_deck_path(deck: { scope: "club", owner_id: @club.id }),
+            class: "btn btn--primary btn--sm" %>
+      </div>
+      <button data-action="dismissable-nudge#dismiss"
+              style="background:none; border:none; cursor:pointer; padding:2px; color:#93c5fd; line-height:1;"
+              aria-label="닫기">
+        <iconify-icon icon="lucide:x" style="font-size:16px;"></iconify-icon>
+      </button>
+    </div>
+  <% end %>
+
   <%# ── 기본 정보 요약 ───────────────────────────────── %>
   <section class="admin-panel" style="margin-bottom:16px;">
     <div class="admin-panel__header">
