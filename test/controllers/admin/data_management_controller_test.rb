@@ -30,7 +30,9 @@ module Admin
       post admin_data_management_backups_path, params: { include_sql_dump: "1" }
 
       assert_redirected_to admin_data_management_path(anchor: "db-backups")
+      assert flash[:notice], "Backup failed: #{flash[:alert]}"
 
+      assert BACKUP_ROOT.exist?, "BACKUP_ROOT was not created"
       backup_dir = BACKUP_ROOT.children.find(&:directory?)
       assert backup_dir
       assert backup_dir.join("manifest.json").file?
@@ -46,6 +48,7 @@ module Admin
     test "admin downloads zip backup" do
       sign_in_as(users(:admin))
       result = Admin::DatabaseBackups::CreateService.call(user: users(:admin), include_sql_dump: false)
+      assert result.success?, "CreateService failed: #{result.error}"
       zip_file = result.backup.fetch(:files).find { |file| file.fetch(:type) == "zip" }
 
       get admin_data_management_backup_path(id: result.backup.fetch(:id), file: zip_file.fetch(:name))
