@@ -88,7 +88,7 @@ class DeckPolicy < ApplicationPolicy
     private
 
     def admin?
-      user.present? && user.role_admin?
+      user.present? && user.admin?
     end
   end
 

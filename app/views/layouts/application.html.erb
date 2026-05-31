@@ -203,7 +203,7 @@
             <% end %>
           </div>
 
-          <% if current_user&.role_admin? %>
+          <% if current_user&.admin? %>
           <div class="nav__group"
                data-controller="nav-group"
                data-action="mouseenter->nav-group#hover mouseleave->nav-group#hoverOut">

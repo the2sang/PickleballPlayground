@@ -1,9 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
 const LABELS = {
-  role_user:  "회원",
-  role_club:  "클럽관리자",
-  role_admin: "시스템관리자",
+  user:  "회원",
+  club:  "클럽관리자",
+  admin: "시스템관리자",
 }
 
 export default class extends Controller {

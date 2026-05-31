@@ -64,9 +64,9 @@
                 <td><%= link_to user.nickname, admin_user_path(user) %></td>
                 <td class="admin-table__mono"><%= user.email_address %></td>
                 <td>
-                  <% if user.role_admin? %>
+                  <% if user.admin? %>
                     <span class="admin-badge admin-badge--admin">ROLE_ADMIN</span>
-                  <% elsif user.role_club? %>
+                  <% elsif user.club? %>
                     <span class="admin-badge admin-badge--club">ROLE_CLUB</span>
                   <% else %>
                     <span class="admin-badge">ROLE_USER</span>

@@ -29,7 +29,7 @@ module Authentication
       require_authentication
       return if performed?
 
-      unless current_user&.role_admin?
+      unless current_user&.admin?
         flash[:alert] = "관리자 권한이 필요합니다."
         redirect_to root_path
       end

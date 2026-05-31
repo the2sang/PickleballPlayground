@@ -40,7 +40,7 @@ class User < ApplicationRecord
     User.where(id: group_member_ids).where.not(id: id)
   end
 
-  enum :role,        { role_user: 0, role_admin: 1, role_club: 2 },                                                           default: :role_user
+  enum :role,        { user: 0, admin: 1, club: 2 },                                                           default: :user
   enum :sport_level, { beginner: 0, beginner_intermediate: 1, intermediate: 2, intermediate_advanced: 3, advanced: 4 },     default: :beginner
   enum :age_group,   { twenties: 0, thirties: 1, forties: 2, fifties: 3, sixties_plus: 4, teens: 5 },                       default: :twenties
   enum :gender,      { unspecified: 0, male: 1, female: 2, other: 3 },                                                      default: :unspecified

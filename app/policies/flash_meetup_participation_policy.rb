@@ -13,7 +13,7 @@ class FlashMeetupParticipationPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      user&.role_admin? ? scope.all : scope.where(user: user)
+      user&.admin? ? scope.all : scope.where(user: user)
     end
   end
 end
