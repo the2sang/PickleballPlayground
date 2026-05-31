@@ -26,9 +26,18 @@ RSpec.describe "Flashcards seed loader" do
     load Rails.root.join("db/seeds/flashcards.rb")
   end
 
-  it "creates exactly 5 official decks" do
+  it "creates exactly 6 official decks" do
     run_loader
-    expect(Deck.official.count).to eq(5)
+    expect(Deck.official.count).to eq(6)
+  end
+
+  it "creates the AI usage terms subjective official deck with 30 cards" do
+    run_loader
+
+    deck = Deck.official.find_by!(title: "개발자가 알아야 할 AI 활용 용어 30선")
+    expect(deck.description).to include("주관식")
+    expect(deck.cards.count).to eq(30)
+    expect(deck.cards.first.front).to eq("Prompt (프롬프트)")
   end
 
   it "is idempotent — running twice does not create duplicate decks or cards" do
