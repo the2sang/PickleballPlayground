@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_31_154132) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_31_201213) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -148,6 +148,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_154132) do
   end
 
   create_table "decks", force: :cascade do |t|
+    t.integer "category", default: 6, null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.datetime "featured_at"
@@ -157,6 +158,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_154132) do
     t.integer "scope", default: 2, null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_decks_on_category"
     t.index ["forked_from_deck_id"], name: "index_decks_on_forked_from_deck_id"
     t.index ["owner_type", "owner_id"], name: "index_decks_on_owner_type_and_owner_id"
     t.index ["scope", "featured_at"], name: "index_decks_on_scope_and_featured_at"

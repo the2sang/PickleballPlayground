@@ -1,6 +1,14 @@
 class Deck < ApplicationRecord
   PERSONAL_DECK_LIMIT = 10
   PERSONAL_DECK_SIZE_LIMIT_BYTES = 1.megabyte
+  CATEGORY_LABELS = {
+    politics_economy: "정치/경제",
+    society_history: "사회/역사",
+    science_technology: "과학/기술",
+    sports_arts: "스포츠/예술",
+    language: "언어",
+    other: "기타"
+  }.freeze
 
   belongs_to :owner, polymorphic: true, optional: true
 
@@ -20,6 +28,14 @@ class Deck < ApplicationRecord
   has_many :tournament_events, through: :tournament_event_decks
 
   enum :scope, { official: 0, club: 1, personal: 2 }, default: :personal
+  enum :category, {
+    politics_economy: 1,
+    society_history: 2,
+    science_technology: 3,
+    sports_arts: 4,
+    language: 5,
+    other: 6
+  }, default: :other
 
   validates :title, presence: true, length: { maximum: 200 }
   validates :description, length: { maximum: 2000 }, allow_blank: true
@@ -28,6 +44,30 @@ class Deck < ApplicationRecord
   validate  :personal_deck_size_within_limit
 
   scope :featured, -> { where.not(featured_at: nil).order(featured_at: :desc) }
+
+  def self.category_options(include_all: false)
+    options = categories.keys.map { |key| [ "#{categories.fetch(key)}. #{category_label(key)}", categories.fetch(key) ] }
+    include_all ? [ [ "전체", 0 ] ] + options : options
+  end
+
+  def self.category_label(value)
+    key = value.to_s
+    CATEGORY_LABELS.fetch(key.to_sym)
+  end
+
+  def self.category_filter_value(value)
+    code = value.to_i
+    categories.value?(code) ? code : nil
+  end
+
+  def self.category_key_for_code(value)
+    code = category_filter_value(value)
+    categories.key(code) if code
+  end
+
+  def category_label
+    self.class.category_label(category)
+  end
 
   def self.content_size_bytes(title:, description:, cards: [])
     values = [ title, description ]

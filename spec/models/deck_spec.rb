@@ -66,6 +66,17 @@ RSpec.describe Deck, type: :model do
     end
   end
 
+  describe "enum :category" do
+    it "uses 기타 as the default representative category" do
+      expect(Deck.new.category).to eq("other")
+    end
+
+    it "exposes Korean category options with all filter" do
+      expect(Deck.category_options(include_all: true)).to include([ "전체", 0 ])
+      expect(Deck.category_options).to include([ "1. 정치/경제", 1 ], [ "5. 언어", 5 ])
+    end
+  end
+
   describe "owner_matches_scope validation" do
     it "rejects official deck with non-nil owner" do
       deck = Deck.new(scope: :official, owner: user, title: "공식")

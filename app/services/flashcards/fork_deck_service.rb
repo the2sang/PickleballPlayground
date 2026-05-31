@@ -28,7 +28,8 @@ module Flashcards
           owner:       @user,
           forked_from: @source,
           title:       @source.title,
-          description: @source.description
+          description: @source.description,
+          category:    @source.category
         )
 
         @source.cards.ordered.each_with_index do |source_card, idx|

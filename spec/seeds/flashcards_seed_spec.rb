@@ -73,6 +73,27 @@ RSpec.describe "Flashcards seed loader" do
     end
   end
 
+  it "assigns the declared representative category to each official deck" do
+    run_loader
+    yaml = YAML.safe_load_file(Rails.root.join("db/seeds/flashcards.yml"), aliases: false, permitted_classes: [])
+
+    yaml.fetch("official_decks").each do |entry|
+      deck = Deck.official.find_by!(title: entry.fetch("title"))
+      expect(deck.category_before_type_cast).to eq(entry.fetch("category")),
+        "#{entry['title']} expected category #{entry['category']}, got #{deck.category_before_type_cast}"
+    end
+  end
+
+  it "syncs deck category when YAML changes" do
+    run_loader
+    deck = Deck.official.find_by!(title: "피클볼 기본 룰 30선")
+    deck.update_column(:category, Deck.categories[:other])
+
+    run_loader
+
+    expect(deck.reload).to be_sports_arts
+  end
+
   it "loads cards with positions 1..n contiguous per deck (no gaps)" do
     run_loader
     Deck.official.find_each do |deck|

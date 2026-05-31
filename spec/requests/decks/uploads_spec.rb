@@ -9,8 +9,8 @@ RSpec.describe "Deck workbook uploads", type: :request do
   def write_subjective_workbook(path)
     package = Axlsx::Package.new
     package.workbook.add_worksheet(name: "주관식") do |sheet|
-      sheet.add_row [ "덱 제목", "덱 설명", "문제", "정답", "힌트", "태그" ]
-      sheet.add_row [ "업로드 덱", "엑셀 업로드 테스트", "피클볼 서브는 어느 방향?", "대각선", "반대편 서비스 코트", "피클볼,서브" ]
+      sheet.add_row [ "덱 제목", "덱 설명", "분류코드", "문제", "정답", "힌트", "태그" ]
+      sheet.add_row [ "업로드 덱", "엑셀 업로드 테스트", 4, "피클볼 서브는 어느 방향?", "대각선", "반대편 서비스 코트", "피클볼,서브" ]
     end
     package.serialize(path)
   end
@@ -18,9 +18,9 @@ RSpec.describe "Deck workbook uploads", type: :request do
   def write_multi_deck_workbook(path, count)
     package = Axlsx::Package.new
     package.workbook.add_worksheet(name: "주관식") do |sheet|
-      sheet.add_row [ "덱 제목", "덱 설명", "문제", "정답", "힌트", "태그" ]
+      sheet.add_row [ "덱 제목", "덱 설명", "분류코드", "문제", "정답", "힌트", "태그" ]
       count.times do |index|
-        sheet.add_row [ "업로드 덱 #{index}", "설명", "문제 #{index}", "정답 #{index}", nil, nil ]
+        sheet.add_row [ "업로드 덱 #{index}", "설명", 6, "문제 #{index}", "정답 #{index}", nil, nil ]
       end
     end
     package.serialize(path)
@@ -59,6 +59,7 @@ RSpec.describe "Deck workbook uploads", type: :request do
       expect(response).to redirect_to(decks_path)
       expect(deck.owner).to eq(user)
       expect(deck).to be_personal
+      expect(deck).to be_sports_arts
       expect(deck.cards.first.front).to eq("피클볼 서브는 어느 방향?")
       expect(deck.cards.first.back).to eq("대각선")
     end

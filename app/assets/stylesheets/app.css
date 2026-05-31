@@ -11361,6 +11361,41 @@ lexxy-editor.lexxy-editor-field {
 .deck-card__scope-badge--official { background:#eff6ff; color:#1d4ed8; }
 .deck-card__scope-badge--club     { background:#f0fdf4; color:#15803d; }
 .deck-card__scope-badge--personal { background:#f9fafb; color:#374151; }
+.deck-card__category-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.deck-category-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  max-width: 240px;
+}
+.deck-category-filter__label {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.deck-category-filter__select {
+  min-height: 34px;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 9px;
+}
 
 .deck-hub-actions {
   display: flex;

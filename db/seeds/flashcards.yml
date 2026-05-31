@@ -12,6 +12,7 @@
 official_decks:
   - title: "피클볼 기본 룰 30선"
     description: "코트 진입 전 반드시 알아야 할 핵심 룰 30가지"
+    category: 4
     expected_card_count: 30
     cards:
       - front: "자기 코트의 오른쪽 또는 왼쪽 서비스 코트에서 대각선 반대편 상대 서비스 코트로."
@@ -166,6 +167,7 @@ official_decks:
         draft: true
   - title: "영어 콜아웃 & 용어"
     description: "국제 대회나 외국인과 경기 시 자주 듣는 영어 표현 모음"
+    category: 5
     expected_card_count: 25
     cards:
       - front: "dink"
@@ -295,6 +297,7 @@ official_decks:
         draft: true
   - title: "스코어링 시나리오 20"
     description: "전통/Rally 스코어링 상황별 점수 변화 시나리오"
+    category: 4
     expected_card_count: 20
     cards:
       - front: "[전통] 게임 시작 시 첫 콜은?"
@@ -399,6 +402,7 @@ official_decks:
         draft: true
   - title: "주식투자 기초 용어 30선"
     description: "주식시장에서 반드시 알아야 할 기초 투자 용어 30개를 정리한 공식 학습 덱입니다."
+    category: 1
     expected_card_count: 30
     cards:
       - front: "주식 (Stock)"
@@ -493,6 +497,7 @@ official_decks:
         tags: "기초,시장구조"
   - title: "개발자가 알아야 할 AI 기술 용어 30선"
     description: "LLM, RAG, 에이전트 등 현대 AI 개발 생태계를 이해하기 위한 핵심 기술 용어 30개를 정리한 공식 학습 덱입니다."
+    category: 3
     expected_card_count: 30
     cards:
       - front: "수십억~수천억 개의 파라미터를 가진 신경망으로, 대규모 텍스트 데이터를 학습해 언어 이해·생성·추론을 수행한다. GPT-4, Claude, Gemini 등이 대표적이다."
@@ -587,6 +592,7 @@ official_decks:
         tags: "신뢰성,RAG"
   - title: "개발자가 알아야 할 AI 활용 용어 30선"
     description: "개발자가 AI를 실무에 안전하고 효과적으로 활용하기 위해 알아야 할 주관식 학습용 핵심 용어 30개입니다."
+    category: 3
     expected_card_count: 30
     cards:
       - front: "AI 모델에 전달하는 지시문, 질문, 입력 데이터의 묶음. 좋은 프롬프트는 목표, 맥락, 제약, 원하는 출력 형식을 명확히 포함한다."
@@ -682,7 +688,7 @@ official_decks:
 
   - title: "직장인이 알아야 할 경제 시사 상식 20선"
     description: "직장인이 경제 뉴스와 시사 이슈를 읽을 때 자주 만나는 핵심 용어를 단답형 주관식으로 익히는 공식 덱입니다."
-    category: "경제"
+    category: 1
     expected_card_count: 20
     cards:
       - front: "중앙은행이 시중 금리의 기준으로 삼는 정책금리는?"

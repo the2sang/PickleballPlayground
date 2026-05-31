@@ -8,13 +8,13 @@ RSpec.describe Flashcards::ExcelImportService do
     package = Axlsx::Package.new
     workbook = package.workbook
     workbook.add_worksheet(name: "주관식") do |sheet|
-      sheet.add_row [ "덱 제목", "덱 설명", "문제", "정답", "힌트", "태그" ]
-      sheet.add_row [ "경제 상식", "직장인 경제 기본", "중앙은행 기준 정책금리는?", "기준금리", "금리 뉴스 핵심", "경제,금리" ]
-      sheet.add_row [ nil, nil, "물가가 지속적으로 오르는 현상은?", "인플레이션", nil, "경제,물가" ]
+      sheet.add_row [ "덱 제목", "덱 설명", "분류코드", "문제", "정답", "힌트", "태그" ]
+      sheet.add_row [ "경제 상식", "직장인 경제 기본", 1, "중앙은행 기준 정책금리는?", "기준금리", "금리 뉴스 핵심", "경제,금리" ]
+      sheet.add_row [ nil, nil, nil, "물가가 지속적으로 오르는 현상은?", "인플레이션", nil, "경제,물가" ]
     end
     workbook.add_worksheet(name: "객관식") do |sheet|
-      sheet.add_row [ "덱 제목", "덱 설명", "문제", "정답", "오답1", "오답2", "오답3", "해설", "태그" ]
-      sheet.add_row [ "객관식 경제", "경제 객관식", "수출액에서 수입액을 뺀 값은?", "무역수지", "경상수지", "기준금리", "소비자물가지수", "상품 거래 차이", "경제,무역" ]
+      sheet.add_row [ "덱 제목", "덱 설명", "분류코드", "문제", "정답", "오답1", "오답2", "오답3", "해설", "태그" ]
+      sheet.add_row [ "객관식 경제", "경제 객관식", 1, "수출액에서 수입액을 뺀 값은?", "무역수지", "경상수지", "기준금리", "소비자물가지수", "상품 거래 차이", "경제,무역" ]
     end
     package.serialize(path)
   end
@@ -32,6 +32,7 @@ RSpec.describe Flashcards::ExcelImportService do
       subjective = Deck.find_by!(title: "경제 상식")
       objective = Deck.find_by!(title: "객관식 경제")
       expect(subjective.owner).to eq(user)
+      expect(subjective).to be_politics_economy
       expect(subjective.cards.count).to eq(2)
       expect(subjective.cards.first).to be_basic
       expect(objective.cards.first).to be_multiple_choice

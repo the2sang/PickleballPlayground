@@ -22,12 +22,15 @@ ActiveRecord::Base.transaction do
   Array(data["official_decks"]).each do |deck_attrs|
     title          = deck_attrs.fetch("title")
     expected_count = deck_attrs.fetch("expected_card_count")
+    category       = Deck.category_filter_value(deck_attrs["category"]) || Deck.categories[:other]
 
     deck = Deck.find_or_create_by!(scope: :official, title: title) do |d|
       d.description = deck_attrs["description"]
+      d.category    = category
       d.owner       = nil
     end
     deck.update!(description: deck_attrs["description"]) if deck.description != deck_attrs["description"]
+    deck.update!(category: category) if deck.category_before_type_cast != category
 
     Array(deck_attrs["cards"]).each_with_index do |card_attrs, idx|
       card = deck.cards.find_or_initialize_by(front: card_attrs.fetch("front"))

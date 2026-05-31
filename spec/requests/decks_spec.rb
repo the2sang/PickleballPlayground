@@ -39,6 +39,20 @@ RSpec.describe "Decks", type: :request do
         expect(response.body).to include("내 덱")
       end
 
+      it "분류 select로 해당 분류의 덱만 표시한다" do
+        economic = create(:deck, :official, title: "경제 덱", category: :politics_economy)
+        create(:card, deck: economic)
+        sports = create(:deck, :official, title: "스포츠 덱", category: :sports_arts)
+        create(:card, deck: sports)
+
+        get decks_path(category: Deck.categories[:politics_economy])
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("분류")
+        expect(response.body).to include("경제 덱")
+        expect(response.body).not_to include("스포츠 덱")
+      end
+
       it "허브 헤더에 엑셀 양식 다운로드와 카드 덱 업로드 폼을 노출한다" do
         get decks_path
         expect(response).to have_http_status(:ok)
@@ -117,17 +131,22 @@ RSpec.describe "Decks", type: :request do
       sign_in(user)
       get new_deck_path
       expect(response).to have_http_status(:ok)
+      expect(response.body).to include("분류")
+      expect(response.body).to include("1. 정치/경제")
     end
   end
 
   describe "POST /decks (DECK-01)" do
     it "인증된 사용자가 personal 덱 생성 시 redirect" do
       sign_in(user)
-      post decks_path, params: { deck: { title: "새 덱", description: "설명" } }
+      post decks_path, params: {
+        deck: { title: "새 덱", description: "설명", category: Deck.categories[:science_technology] }
+      }
       deck = Deck.last
       expect(response).to redirect_to(deck_path(deck))
       expect(deck.scope).to eq("personal")
       expect(deck.owner).to eq(user)
+      expect(deck).to be_science_technology
     end
 
     it "개인 덱 한도를 넘으면 생성을 막는다" do

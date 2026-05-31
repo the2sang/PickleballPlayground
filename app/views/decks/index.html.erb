@@ -1,7 +1,7 @@
 <% content_for :title, "낱말카드" %>
 
 <div class="cl-page">
-  <% if authenticated? && @personal_decks.empty? %>
+  <% if authenticated? && !@has_personal_decks %>
     <%# 빈 상태 hero — 0개 personal 덱 사용자에게 학습 시작 유도 (DECK-07) %>
     <div class="cl-hero">
       <div class="cl-hero__inner">
@@ -13,6 +13,7 @@
           </div>
           <%= render "decks/upload_tools" %>
         </div>
+        <%= render "decks/category_filter" %>
         <div style="display:flex; gap:12px; margin-top:24px;">
           <%= link_to new_deck_path, class: "btn btn--primary" do %>
             <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
@@ -53,6 +54,7 @@
             <% end %>
           </div>
         </div>
+        <%= render "decks/category_filter" %>
 
         <%# Stats row — streak / today / due remaining %>
         <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;">
@@ -140,6 +142,7 @@
           <% end %>
         </div>
       </div>
+      <%= render "decks/category_filter" %>
     </div>
 
     <% if @official_decks.any? %>

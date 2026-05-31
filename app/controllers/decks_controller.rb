@@ -5,16 +5,23 @@ class DecksController < ApplicationController
   before_action :authorize_deck!, only: %i[edit update destroy]
 
   def index
-    @official_decks = Deck.where(scope: :official).includes(:cards).order(:created_at)
+    @selected_category = Deck.category_filter_value(params[:category])
+    @category_options = Deck.category_options(include_all: true)
+    @official_decks = filter_by_category(Deck.where(scope: :official))
+                      .includes(:cards)
+                      .order(:created_at)
 
     if authenticated?
-      @personal_decks = Deck.where(scope: :personal, owner: Current.user)
+      personal_scope = Deck.where(scope: :personal, owner: Current.user)
+      @has_personal_decks = personal_scope.exists?
+      @personal_decks = personal_scope
+                            .then { |scope| filter_by_category(scope) }
                             .includes(:cards)
                             .order(updated_at: :desc)
       approved_club_ids = Current.user.club_memberships.approved.pluck(:club_id)
       @show_club_section = approved_club_ids.any?
       @club_decks = @show_club_section ?
-        Deck.where(scope: :club, owner_type: "Club", owner_id: approved_club_ids)
+        filter_by_category(Deck.where(scope: :club, owner_type: "Club", owner_id: approved_club_ids))
             .includes(:cards).order(updated_at: :desc) : []
 
       all_deck_ids = (@official_decks + @personal_decks + @club_decks).map(&:id)
@@ -29,6 +36,7 @@ class DecksController < ApplicationController
     else
       @personal_decks    = []
       @club_decks        = []
+      @has_personal_decks = false
       @show_club_section = false
       @deck_session_stats = {}
       @streak         = 0
@@ -91,7 +99,15 @@ class DecksController < ApplicationController
   end
 
   def deck_params
-    params.require(:deck).permit(:title, :description)
+    params.require(:deck).permit(:title, :description, :category).tap do |permitted|
+      permitted[:category] = Deck.category_key_for_code(permitted[:category]) if permitted[:category].present?
+    end
+  end
+
+  def filter_by_category(scope)
+    return scope unless @selected_category
+
+    scope.where(category: @selected_category)
   end
 
   def set_personal_deck_limit_state

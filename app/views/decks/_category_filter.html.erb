@@ -1,0 +1,11 @@
+<%= form_with url: decks_path,
+      method: :get,
+      class: "deck-category-filter",
+      data: { turbo_frame: "_top" } do |f| %>
+  <%= f.label :category, "분류", class: "deck-category-filter__label" %>
+  <%= f.select :category,
+        @category_options,
+        { selected: @selected_category || 0 },
+        class: "deck-category-filter__select",
+        onchange: "this.form.requestSubmit()" %>
+<% end %>

@@ -19,7 +19,8 @@ RSpec.describe Flashcards::ForkDeckService do
       scope:       :official,
       owner:       nil,
       title:       "공식 원본 #{SecureRandom.hex(3)}",
-      description: "공식 덱 설명"
+      description: "공식 덱 설명",
+      category:    :science_technology
     )
   end
 
@@ -49,6 +50,7 @@ RSpec.describe Flashcards::ForkDeckService do
       expect(result.deck.forked_from_deck_id).to eq(source.id)
       expect(result.deck.title).to eq(source.title)
       expect(result.deck.description).to eq(source.description)
+      expect(result.deck.category).to eq(source.category)
     end
 
     it "copies all 5 cards with contiguous positions 1..5" do

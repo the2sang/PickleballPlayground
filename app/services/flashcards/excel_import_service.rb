@@ -16,6 +16,7 @@ module Flashcards
         headers: {
           deck_title: "덱 제목",
           deck_description: "덱 설명",
+          category: "분류코드",
           front: "문제",
           back: "정답",
           hint: "힌트",
@@ -27,6 +28,7 @@ module Flashcards
         headers: {
           deck_title: "덱 제목",
           deck_description: "덱 설명",
+          category: "분류코드",
           front: "문제",
           back: "정답",
           wrong_1: "오답1",
@@ -93,6 +95,7 @@ module Flashcards
         header_map = header_map(workbook.row(1), config.headers)
         current_title = nil
         current_description = nil
+        current_category = nil
 
         (2..workbook.last_row).each do |row_index|
           raw_row = workbook.row(row_index)
@@ -101,12 +104,14 @@ module Flashcards
           row = build_row(raw_row, header_map)
           current_title = row[:deck_title].presence || current_title
           current_description = row[:deck_description].presence || current_description
+          category = category_value(row[:category])
+          current_category = category || current_category || Deck.categories[:other]
           total_cards += 1
 
-          validate_row!(sheet_name, row_index, row, current_title, config.card_type)
+          validate_row!(sheet_name, row_index, row, current_title, current_category, category, config.card_type)
           next if @errors.any?
 
-          groups[current_title] ||= { description: current_description, cards: [] }
+          groups[current_title] ||= { description: current_description, category: current_category, cards: [] }
           groups[current_title][:cards] << card_attributes(row, config.card_type)
         end
       end
@@ -135,9 +140,11 @@ module Flashcards
       end
     end
 
-    def validate_row!(sheet_name, row_index, row, deck_title, card_type)
+    def validate_row!(sheet_name, row_index, row, deck_title, current_category, category, card_type)
       missing = []
       missing << "덱 제목" if deck_title.blank?
+      missing << "분류코드" if current_category.blank?
+      missing << "분류코드(1~6)" if row[:category].present? && category.blank?
       missing << "문제" if row[:front].blank?
       missing << "정답" if row[:back].blank?
 
@@ -171,6 +178,7 @@ module Flashcards
           deck = Deck.create!(
             title: title,
             description: group[:description],
+            category: group[:category],
             scope: :personal,
             owner: @user
           )
@@ -185,6 +193,12 @@ module Flashcards
 
     def normalize_header(value)
       value.to_s.gsub(/\s+/, "")
+    end
+
+    def category_value(value)
+      return if value.blank?
+
+      Deck.category_filter_value(value)
     end
 
     def failure(messages)

@@ -17,5 +17,13 @@
     <%= f.text_area :description, class: "cl-form__input", rows: 3, placeholder: "덱에 대한 간단한 설명 (선택)" %>
   </div>
 
+  <div class="cl-form__field">
+    <%= f.label :category, "분류", class: "cl-form__label" %>
+    <%= f.select :category,
+          Deck.category_options,
+          { selected: Deck.categories.fetch(deck.category) },
+          class: "cl-form__input" %>
+  </div>
+
   <%= f.submit deck.persisted? ? "수정" : "만들기", class: "cl-form__submit" %>
 <% end %>
