@@ -28,7 +28,36 @@
         <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
           <div style="display:flex; gap:8px;">
             <% if @deck.cards.size.positive? %>
-              <%= link_to "학습 시작", deck_study_path(@deck), class: "btn btn--primary btn--sm" %>
+              <details class="study-dropdown">
+                <summary class="btn btn--primary btn--sm">학습 시작</summary>
+                <div class="study-dropdown__menu">
+                  <%= link_to "전체 카드", deck_study_path(@deck), class: "study-dropdown__item" %>
+                  <% if authenticated? && @rated_count > 0 %>
+                    <div class="study-dropdown__divider"></div>
+                    <% (1..5).each do |n| %>
+                      <%= link_to "#{"★" * n}#{"☆" * (5 - n)} 이상",
+                            deck_study_path(@deck, min_stars: n),
+                            class: "study-dropdown__item" %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </details>
+
+              <details class="study-dropdown">
+                <summary class="btn btn--ghost btn--sm">주관식 학습</summary>
+                <div class="study-dropdown__menu">
+                  <%= link_to "전체 카드", deck_flip_path(@deck), class: "study-dropdown__item" %>
+                  <% if authenticated? && @rated_count > 0 %>
+                    <div class="study-dropdown__divider"></div>
+                    <% (1..5).each do |n| %>
+                      <%= link_to "#{"★" * n}#{"☆" * (5 - n)} 이상",
+                            deck_flip_path(@deck, min_stars: n),
+                            class: "study-dropdown__item" %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </details>
+
               <%= link_to "훑어보기", deck_browse_path(@deck), class: "btn btn--ghost btn--sm" %>
             <% else %>
               <button type="button" class="btn btn--primary btn--sm" disabled aria-disabled="true" title="카드를 먼저 추가하세요">학습 시작</button>

@@ -26,9 +26,9 @@ RSpec.describe "Flashcards seed loader" do
     load Rails.root.join("db/seeds/flashcards.rb")
   end
 
-  it "creates exactly 3 official decks" do
+  it "creates exactly 4 official decks" do
     run_loader
-    expect(Deck.official.count).to eq(3)
+    expect(Deck.official.count).to eq(4)
   end
 
   it "is idempotent — running twice does not create duplicate decks or cards" do
