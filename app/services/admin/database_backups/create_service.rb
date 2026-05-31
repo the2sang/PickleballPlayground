@@ -48,8 +48,15 @@ module Admin
       private
 
       def create_sqlite_backup
-        stdout, stderr, status = Open3.capture3("sqlite3", database_path.to_s, ".backup #{sqlite_backup_path}")
-        raise "sqlite3 backup failed: #{stderr.presence || stdout.presence || status.exitstatus}" unless status.success?
+        source = SQLite3::Database.new(database_path.to_s, readonly: true)
+        dest   = SQLite3::Database.new(sqlite_backup_path.to_s)
+        backup = SQLite3::Backup.new(dest, "main", source, "main")
+        result = backup.step(-1)
+        backup.finish
+        raise "sqlite3 backup did not complete (status: #{result})" unless result == SQLite3::Constants::ErrorCode::DONE
+      ensure
+        dest&.close
+        source&.close
       end
 
       def create_sql_dump
