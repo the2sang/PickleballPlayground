@@ -14,7 +14,7 @@ class Card < ApplicationRecord
   has_one_attached :front_image
   has_one_attached :back_image
 
-  enum :card_type, { basic: 0 }, default: :basic
+  enum :card_type, { basic: 0, multiple_choice: 1 }, default: :basic
 
   validates :front, presence: true, length: { maximum: 2000 }
   validates :back,  presence: true, length: { maximum: 2000 }
@@ -24,10 +24,26 @@ class Card < ApplicationRecord
 
   validate :front_image_format
   validate :back_image_format
+  validate :multiple_choice_answer_choices
+  validate :personal_deck_size_limit
 
   scope :ordered, -> { order(:position, :id) }
 
+  def answer_choices
+    JSON.parse(self[:answer_choices].presence || "[]")
+  rescue JSON::ParserError
+    []
+  end
+
+  def answer_choices=(values)
+    self[:answer_choices] = Array(values).compact_blank.map(&:to_s).map(&:strip).uniq.to_json
+  end
+
   def quiz_options(deck, size: 3)
+    if multiple_choice? && answer_choices.present?
+      return ([ back ] + answer_choices.first(size)).shuffle
+    end
+
     distractors = deck.cards.where.not(id: id).order("RANDOM()").limit(size)
     ([ back ] + distractors.map(&:back)).shuffle
   end
@@ -43,5 +59,17 @@ class Card < ApplicationRecord
 
     errors.add(field, "허용되지 않은 이미지 형식") unless ALLOWED_IMAGE_TYPES.include?(attached.blob.content_type)
     errors.add(field, "이미지가 너무 큽니다 (최대 5MB)")     if attached.blob.byte_size > MAX_IMAGE_BYTES
+  end
+
+  def multiple_choice_answer_choices
+    return unless multiple_choice?
+
+    errors.add(:answer_choices, "객관식 카드는 오답 선택지 3개가 필요합니다") if answer_choices.size < 3
+  end
+
+  def personal_deck_size_limit
+    return unless deck&.personal_deck_size_limit_exceeded?(additional_cards: [ self ], excluded_card: self)
+
+    errors.add(:base, "사용자 정의 덱 1개당 최대 크기는 #{Deck::PERSONAL_DECK_SIZE_LIMIT_BYTES / 1.megabyte}MB입니다.")
   end
 end

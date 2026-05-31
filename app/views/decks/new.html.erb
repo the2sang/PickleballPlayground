@@ -10,6 +10,19 @@
       <h1 class="cl-hero__title">새 덱 만들기</h1>
     </div>
     <div class="cl-form-card">
+      <% if @personal_deck_count >= @personal_deck_limit %>
+        <div class="cl-form__error">
+          <p>사용자 정의 덱은 최대 <%= @personal_deck_limit %>개까지 추가할 수 있습니다.</p>
+          <% if @pending_deck_addition_request.present? %>
+            <p>덱 추가 승인요청이 관리자에게 접수되었습니다.</p>
+          <% else %>
+            <%= button_to "덱 추가 승인요청",
+                  deck_addition_requests_path,
+                  method: :post,
+                  class: "btn btn--secondary btn--sm" %>
+          <% end %>
+        </div>
+      <% end %>
       <%= render "form", deck: @deck %>
     </div>
   </div>

@@ -11,6 +11,7 @@
             <h1 class="cl-hero__title">낱말카드로 학습을 시작해 보세요</h1>
             <p class="cl-hero__subtitle">직접 덱을 만들거나 텍스트를 붙여넣어 카드를 빠르게 추가하세요.</p>
           </div>
+          <%= render "decks/upload_tools" %>
         </div>
         <div style="display:flex; gap:12px; margin-top:24px;">
           <%= link_to new_deck_path, class: "btn btn--primary" do %>
@@ -44,10 +45,13 @@
             <p class="cl-hero__eyebrow">낱말카드</p>
             <h1 class="cl-hero__title">낱말카드 허브</h1>
           </div>
-          <%= link_to new_deck_path, class: "btn btn--primary btn--sm" do %>
-            <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
-            새 덱 만들기
-          <% end %>
+          <div class="deck-hub-actions">
+            <%= render "decks/upload_tools" %>
+            <%= link_to new_deck_path, class: "btn btn--primary btn--sm" do %>
+              <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
+              새 덱 만들기
+            <% end %>
+          </div>
         </div>
 
         <%# Stats row — streak / today / due remaining %>

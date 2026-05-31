@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe CardPolicy do
-  def create_user(role: :role_user, nick_prefix: "u")
+  def create_user(role: :user, nick_prefix: "u")
     User.create!(
       email_address: "#{nick_prefix}#{SecureRandom.hex(3)}@example.com",
       nickname:      "#{nick_prefix}#{SecureRandom.hex(3)}",

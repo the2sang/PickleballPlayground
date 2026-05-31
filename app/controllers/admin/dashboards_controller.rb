@@ -9,6 +9,7 @@ module Admin
       @sessions_today      = Session.where(created_at: 1.day.ago..).count
       @recent_users        = User.order(created_at: :desc).limit(5)
       @recent_sessions     = Session.includes(:user).order(created_at: :desc).limit(10)
+      @pending_deck_addition_requests = DeckAdditionRequest.pending.includes(:user).recent_first
     end
   end
 end

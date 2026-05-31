@@ -6,7 +6,7 @@ RSpec.describe Card, type: :model do
       email_address: "card_user#{SecureRandom.hex(3)}@example.com",
       nickname:      "carduser#{SecureRandom.hex(3)}",
       password:      "password",
-      role:          :role_user,
+      role:          :user,
       sport_level:   :beginner,
       age_group:     :twenties,
       gender:        :unspecified
@@ -38,6 +38,50 @@ RSpec.describe Card, type: :model do
 
     it "exposes class scope" do
       expect(Card).to respond_to(:basic)
+    end
+
+    it "supports uploaded multiple choice cards" do
+      card = Card.new(
+        deck: deck,
+        front: "문제",
+        back: "정답",
+        card_type: :multiple_choice,
+        answer_choices: [ "오답1", "오답2", "오답3" ],
+        position: 1
+      )
+
+      expect(card).to be_valid
+      expect(card).to be_multiple_choice
+      expect(Card.card_types["multiple_choice"]).to eq(1)
+    end
+  end
+
+  describe "#quiz_options" do
+    it "uses stored answer choices for multiple choice cards" do
+      card = Card.create!(
+        deck: deck,
+        front: "문제",
+        back: "정답",
+        card_type: :multiple_choice,
+        answer_choices: [ "오답1", "오답2", "오답3" ],
+        position: 1
+      )
+
+      expect(card.quiz_options(deck)).to contain_exactly("정답", "오답1", "오답2", "오답3")
+    end
+
+    it "requires three wrong choices for multiple choice cards" do
+      card = Card.new(
+        deck: deck,
+        front: "문제",
+        back: "정답",
+        card_type: :multiple_choice,
+        answer_choices: [ "오답1" ],
+        position: 1
+      )
+
+      expect(card).not_to be_valid
+      expect(card.errors[:answer_choices].join).to include("오답 선택지 3개")
     end
   end
 
@@ -90,7 +134,7 @@ RSpec.describe Card, type: :model do
         email_address: "cr_user#{SecureRandom.hex(3)}@example.com",
         nickname:      "cruser#{SecureRandom.hex(3)}",
         password:      "password",
-        role:          :role_user,
+        role:          :user,
         sport_level:   :beginner,
         age_group:     :twenties,
         gender:        :unspecified

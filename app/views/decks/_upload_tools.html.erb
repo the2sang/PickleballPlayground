@@ -1,0 +1,37 @@
+<div class="deck-upload-tools">
+  <div class="deck-upload-tools__templates" aria-label="엑셀 양식 다운로드">
+    <%= link_to "주관식 양식",
+          deck_upload_template_path(kind: "subjective"),
+          class: "deck-upload-tools__link" %>
+    <%= link_to "객관식 양식",
+          deck_upload_template_path(kind: "objective"),
+          class: "deck-upload-tools__link" %>
+  </div>
+
+  <%= form_with url: deck_uploads_path,
+        multipart: true,
+        class: "deck-upload-tools__form",
+        data: { turbo: false } do |f| %>
+    <%= f.file_field :file,
+          accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          class: "deck-upload-tools__file",
+          aria: { label: "카드 덱 엑셀 파일" } %>
+    <%= f.submit "카드 덱 업로드", class: "btn btn--secondary btn--sm" %>
+  <% end %>
+
+  <% if @personal_deck_count && @personal_deck_limit %>
+    <div class="deck-upload-tools__quota">
+      내 덱 <%= @personal_deck_count %>/<%= @personal_deck_limit %>
+      <% if @personal_deck_count >= @personal_deck_limit %>
+        <% if @pending_deck_addition_request.present? %>
+          <span>승인요청 접수됨</span>
+        <% else %>
+          <%= button_to "덱 추가 승인요청",
+                deck_addition_requests_path,
+                method: :post,
+                class: "btn btn--ghost btn--sm" %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

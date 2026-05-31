@@ -6,7 +6,7 @@ RSpec.describe Deck, type: :model do
       email_address: "deck_user#{SecureRandom.hex(3)}@example.com",
       nickname:      "deckuser#{SecureRandom.hex(3)}",
       password:      "password",
-      role:          :role_user,
+      role:          :user,
       sport_level:   :beginner,
       age_group:     :twenties,
       gender:        :unspecified
@@ -18,7 +18,7 @@ RSpec.describe Deck, type: :model do
       email_address: "club_owner#{SecureRandom.hex(3)}@example.com",
       nickname:      "clubowner#{SecureRandom.hex(3)}",
       password:      "password",
-      role:          :role_user,
+      role:          :user,
       sport_level:   :beginner,
       age_group:     :twenties,
       gender:        :unspecified
@@ -119,6 +119,33 @@ RSpec.describe Deck, type: :model do
       Card.create!(deck: deck, front: "F2", back: "B2", position: 2)
 
       expect { deck.destroy! }.to change { Card.count }.by(-2)
+    end
+  end
+
+  describe "personal deck limits" do
+    it "rejects the eleventh personal deck until an addition request is approved" do
+      Deck::PERSONAL_DECK_LIMIT.times do |index|
+        Deck.create!(scope: :personal, owner: user, title: "개인 #{index}")
+      end
+
+      extra = Deck.new(scope: :personal, owner: user, title: "추가 덱")
+      expect(extra).not_to be_valid
+      expect(extra.errors[:base].join).to include("덱 추가 승인요청")
+
+      create(:deck_addition_request, :approved, user: user)
+      expect(extra).to be_valid
+    end
+
+    it "rejects a personal deck larger than 1MB" do
+      deck = Deck.new(
+        scope: :personal,
+        owner: user,
+        title: "큰 덱",
+        description: "x" * (Deck::PERSONAL_DECK_SIZE_LIMIT_BYTES + 1)
+      )
+
+      expect(deck).not_to be_valid
+      expect(deck.errors[:base].join).to include("1MB")
     end
   end
 end

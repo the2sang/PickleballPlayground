@@ -37,7 +37,7 @@ RSpec.describe "Flashcards seed loader" do
     deck = Deck.official.find_by!(title: "개발자가 알아야 할 AI 활용 용어 30선")
     expect(deck.description).to include("주관식")
     expect(deck.cards.count).to eq(30)
-    expect(deck.cards.first.front).to eq("Prompt (프롬프트)")
+    expect(deck.cards.first.back).to eq("Prompt (프롬프트)")
   end
 
   it "creates the economy current affairs short-answer official deck with 20 cards" do

@@ -15,6 +15,7 @@ class CardsController < ApplicationController
         format.html { redirect_to deck_path(@deck), notice: "카드가 추가되었습니다." }
       end
     else
+      prepare_deck_show_state
       respond_to do |format|
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
@@ -71,6 +72,12 @@ class CardsController < ApplicationController
 
   def set_card
     @card = @deck.cards.find(params[:id])
+  end
+
+  def prepare_deck_show_state
+    @cards = @deck.cards.order(:position, :id)
+    @rated_count = authenticated? ?
+      UserCardRating.where(user: Current.user, card: @cards).count : 0
   end
 
   def card_params

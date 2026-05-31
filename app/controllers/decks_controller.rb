@@ -25,6 +25,7 @@ class DecksController < ApplicationController
       @streak         = Flashcards::StreakQuery.call(user: Current.user)
       @today_progress = Flashcards::TodayProgressQuery.call(user: Current.user)
       @due_forecast   = Flashcards::DueForecastQuery.call(user: Current.user)
+      set_personal_deck_limit_state
     else
       @personal_decks    = []
       @club_decks        = []
@@ -33,6 +34,9 @@ class DecksController < ApplicationController
       @streak         = 0
       @today_progress = { reviewed_today: 0, due_remaining: 0 }
       @due_forecast   = []
+      @personal_deck_count = 0
+      @personal_deck_limit = Deck::PERSONAL_DECK_LIMIT
+      @pending_deck_addition_request = nil
     end
   end
 
@@ -45,6 +49,7 @@ class DecksController < ApplicationController
 
   def new
     @deck = Deck.new(scope: :personal, owner: Current.user)
+    set_personal_deck_limit_state
     authorize @deck
   end
 
@@ -54,6 +59,7 @@ class DecksController < ApplicationController
     if @deck.save
       redirect_to @deck, notice: "덱이 생성되었습니다."
     else
+      set_personal_deck_limit_state
       render :new, status: :unprocessable_entity
     end
   end
@@ -86,6 +92,12 @@ class DecksController < ApplicationController
 
   def deck_params
     params.require(:deck).permit(:title, :description)
+  end
+
+  def set_personal_deck_limit_state
+    @personal_deck_count = Current.user.personal_deck_count
+    @personal_deck_limit = Current.user.personal_deck_limit
+    @pending_deck_addition_request = Current.user.pending_deck_addition_request
   end
 
   # Determines scope and owner explicitly — never trust raw params for these.

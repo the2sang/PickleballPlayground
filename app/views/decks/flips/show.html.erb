@@ -33,6 +33,23 @@
                       data-star="<%= i + 1 %>"
                       aria-label="별 <%= i + 1 %>개">★</button>
             <% end %>
+            <details class="flip-difficulty-menu">
+              <summary class="flip-difficulty-menu__trigger">
+                <iconify-icon icon="lucide:list-filter" width="13"></iconify-icon>
+                난이도별 학습
+              </summary>
+              <div class="flip-difficulty-menu__items">
+                <% (1..5).each do |n| %>
+                  <%= link_to "별 #{n}개 이상",
+                        deck_flip_path(@deck, min_stars: n),
+                        class: [
+                          "flip-difficulty-menu__item",
+                          ("flip-difficulty-menu__item--active" if @min_stars == n)
+                        ].compact.join(" "),
+                        aria: (@min_stars == n ? { current: "page" } : {}) %>
+                <% end %>
+              </div>
+            </details>
             <button type="button"
                     class="flip-swap-btn"
                     data-flip-card-target="swapBtn"

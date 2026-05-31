@@ -75,7 +75,7 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
     post work_journals_url, params: { work_journal: {
       title: "첫 항목", content_format: "markdown",
       category: "task", status: "in_progress", progress: 0,
-      work_date: "2026-06-01", entry_type: "result"
+      work_date: "2099-01-01", entry_type: "result"
     } }
     j = WorkJournal.order(:id).last
     assert_equal 1, j.sequence_number
@@ -85,12 +85,12 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
     @user.work_journals.create!(
       title: "첫 항목", content_format: "markdown",
       category: :task, status: :in_progress, progress: 0,
-      work_date: "2026-06-01", entry_type: :result, sequence_number: 1
+      work_date: "2099-01-01", entry_type: :result, sequence_number: 1
     )
     post work_journals_url, params: { work_journal: {
       title: "두 번째 항목", content_format: "markdown",
       category: "task", status: "in_progress", progress: 0,
-      work_date: "2026-06-01", entry_type: "result"
+      work_date: "2099-01-01", entry_type: "result"
     } }
     j = WorkJournal.order(:id).last
     assert_equal 2, j.sequence_number
@@ -100,15 +100,15 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
     post work_journals_url, params: { work_journal: {
       title: "실적 1", content_format: "markdown",
       category: "task", status: "in_progress", progress: 0,
-      work_date: "2026-06-01", entry_type: "result"
+      work_date: "2099-01-01", entry_type: "result"
     } }
     post work_journals_url, params: { work_journal: {
       title: "계획 1", content_format: "markdown",
       category: "task", status: "in_progress", progress: 0,
-      work_date: "2026-06-01", entry_type: "plan"
+      work_date: "2099-01-01", entry_type: "plan"
     } }
-    result_j = WorkJournal.result.where(work_date: "2026-06-01").last
-    plan_j   = WorkJournal.plan.where(work_date: "2026-06-01").last
+    result_j = WorkJournal.result.where(work_date: "2099-01-01").last
+    plan_j   = WorkJournal.plan.where(work_date: "2099-01-01").last
     assert_equal 1, result_j.sequence_number
     assert_equal 1, plan_j.sequence_number
   end

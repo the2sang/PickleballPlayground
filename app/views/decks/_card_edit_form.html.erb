@@ -55,6 +55,7 @@
             <div class="card-choice">
               <span class="card-choice__badge card-choice__badge--correct">정답</span>
               <%= f.text_field :back, class: "cl-form__input", placeholder: "정답 입력...",
+                  disabled: true,
                   data: { card_form_target: "backMultiple" } %>
             </div>
             <div class="card-choice">

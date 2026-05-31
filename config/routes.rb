@@ -47,6 +47,9 @@ Rails.application.routes.draw do
     resource  :fork,           only: %i[create], module: :decks
     resource  :feature,        only: %i[create destroy], module: :decks
   end
+  get  "deck_uploads/templates/:kind", to: "decks/uploads#template", as: :deck_upload_template
+  post "deck_uploads",                 to: "decks/uploads#create",   as: :deck_uploads
+  resources :deck_addition_requests, only: %i[create]
 
   resources :card_reviews, only: %i[create]
   get "/study", to: "study#show", as: :study
@@ -96,6 +99,7 @@ Rails.application.routes.draw do
     resources :sessions, only: %i[index]
     resources :groups
     resources :clubs, only: %i[index show update]
+    resources :deck_addition_requests, only: %i[update]
     get  "data_management",                         to: "data_management#show",            as: :data_management
     post "data_management/execute",                 to: "data_management#execute",         as: :data_management_execute
     post "data_management/backups",                 to: "data_management#create_backup",   as: :data_management_backups

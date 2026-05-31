@@ -30,6 +30,7 @@ class User < ApplicationRecord
   has_many :card_reviews, dependent: :destroy
   has_many :study_sessions, dependent: :destroy
   has_many :user_card_ratings, dependent: :destroy
+  has_many :deck_addition_requests, dependent: :destroy
 
   def group_member_ids
     group_ids = group_memberships.select(:group_id)
@@ -67,6 +68,22 @@ class User < ApplicationRecord
 
   def profile_complete?
     profile_completed_at.present?
+  end
+
+  def personal_deck_limit
+    Deck::PERSONAL_DECK_LIMIT + deck_addition_requests.approved.count
+  end
+
+  def personal_deck_count
+    decks.personal.count
+  end
+
+  def can_create_personal_decks?(count = 1)
+    personal_deck_count + count <= personal_deck_limit
+  end
+
+  def pending_deck_addition_request
+    deck_addition_requests.pending.recent_first.first
   end
 
   def regenerate_code_dash_key!

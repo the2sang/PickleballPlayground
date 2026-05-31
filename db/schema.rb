@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_31_024949) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_31_154132) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -57,6 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_024949) do
   end
 
   create_table "cards", force: :cascade do |t|
+    t.text "answer_choices"
     t.text "back", null: false
     t.integer "card_type", default: 0, null: false
     t.datetime "created_at", null: false
@@ -131,6 +132,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_024949) do
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "deck_addition_requests", force: :cascade do |t|
+    t.datetime "approved_at"
+    t.integer "approved_by_id"
+    t.datetime "created_at", null: false
+    t.integer "requested_limit", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["approved_by_id"], name: "index_deck_addition_requests_on_approved_by_id"
+    t.index ["status"], name: "index_deck_addition_requests_on_status"
+    t.index ["user_id"], name: "index_deck_addition_requests_on_user_id"
   end
 
   create_table "decks", force: :cascade do |t|
@@ -574,6 +588,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_024949) do
   add_foreign_key "club_notices", "clubs"
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "comments", "users"
+  add_foreign_key "deck_addition_requests", "users"
   add_foreign_key "decks", "decks", column: "forked_from_deck_id", on_delete: :nullify
   add_foreign_key "flash_meetup_participations", "flash_meetups"
   add_foreign_key "flash_meetup_participations", "users"

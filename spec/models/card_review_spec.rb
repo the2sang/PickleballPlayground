@@ -6,7 +6,7 @@ RSpec.describe CardReview, type: :model do
       email_address: "cr_user#{SecureRandom.hex(3)}@example.com",
       nickname:      "cruser#{SecureRandom.hex(3)}",
       password:      "password",
-      role:          :role_user,
+      role:          :user,
       sport_level:   :beginner,
       age_group:     :twenties,
       gender:        :unspecified

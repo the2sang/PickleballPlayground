@@ -40,9 +40,53 @@
       <div class="admin-stats__value text-yellow-600"><%= Club.pending.count %></div>
       <%= link_to "관리하기 →", admin_clubs_path, class: "text-sm text-yellow-700 hover:underline" %>
     </div>
+    <div class="admin-stats__card bg-yellow-50 border border-yellow-200">
+      <div class="admin-stats__label text-yellow-800">덱 추가 승인요청</div>
+      <div class="admin-stats__value text-yellow-600"><%= @pending_deck_addition_requests.size %></div>
+    </div>
   </div>
 
   <div class="admin-grid">
+    <section class="admin-panel">
+      <div class="admin-panel__header">
+        <h2 class="admin-panel__title">덱 추가 승인요청</h2>
+      </div>
+      <% if @pending_deck_addition_requests.any? %>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>사용자</th>
+              <th>현재 덱</th>
+              <th>요청 한도</th>
+              <th>요청일</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @pending_deck_addition_requests.each do |request| %>
+              <tr>
+                <td>
+                  <%= link_to request.user.nickname, admin_user_path(request.user) %><br>
+                  <span class="admin-table__mono"><%= request.user.email_address %></span>
+                </td>
+                <td><%= request.user.personal_deck_count %>개</td>
+                <td><%= request.requested_limit %>개</td>
+                <td><%= request.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+                <td>
+                  <%= button_to "허용",
+                        admin_deck_addition_request_path(request),
+                        method: :patch,
+                        class: "btn btn--primary btn--sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="empty-state">대기 중인 덱 추가 승인요청이 없습니다.</p>
+      <% end %>
+    </section>
+
     <section class="admin-panel">
       <div class="admin-panel__header">
         <h2 class="admin-panel__title">최근 가입</h2>

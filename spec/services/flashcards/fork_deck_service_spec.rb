@@ -6,7 +6,7 @@ RSpec.describe Flashcards::ForkDeckService do
       email_address: "#{prefix}#{SecureRandom.hex(3)}@example.com",
       nickname:      "#{prefix}#{SecureRandom.hex(3)}",
       password:      "password",
-      role:          :role_user,
+      role:          :user,
       sport_level:   :beginner,
       age_group:     :twenties,
       gender:        :unspecified

@@ -32,7 +32,7 @@
                 <summary class="btn btn--primary btn--sm">학습 시작</summary>
                 <div class="study-dropdown__menu">
                   <%= link_to "전체 카드", deck_study_path(@deck), class: "study-dropdown__item" %>
-                  <% if authenticated? && @rated_count > 0 %>
+                  <% if authenticated? && @rated_count.to_i > 0 %>
                     <div class="study-dropdown__divider"></div>
                     <% (1..5).each do |n| %>
                       <%= link_to "#{"★" * n}#{"☆" * (5 - n)} 이상",
@@ -47,9 +47,12 @@
                 <summary class="btn btn--ghost btn--sm">주관식 학습</summary>
                 <div class="study-dropdown__menu">
                   <%= link_to "전체 카드", deck_flip_path(@deck), class: "study-dropdown__item" %>
-                  <% if authenticated? && @rated_count > 0 %>
+                  <%= link_to "별3개 이상만",
+                        deck_flip_path(@deck, min_stars: 3),
+                        class: "study-dropdown__item" %>
+                  <% if authenticated? && @rated_count.to_i > 0 %>
                     <div class="study-dropdown__divider"></div>
-                    <% (1..5).each do |n| %>
+                    <% ([1, 2, 4, 5]).each do |n| %>
                       <%= link_to "#{"★" * n}#{"☆" * (5 - n)} 이상",
                             deck_flip_path(@deck, min_stars: n),
                             class: "study-dropdown__item" %>

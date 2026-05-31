@@ -30,7 +30,11 @@
       학습하기
     <% end %>
     <%= link_to deck, class: "btn btn--secondary btn--sm" do %>
-      카드 보기
+      카드보기
+    <% end %>
+    <%= link_to deck_flip_path(deck), class: "btn btn--secondary btn--sm" do %>
+      <iconify-icon icon="lucide:pen-line" width="13"></iconify-icon>
+      주관식
     <% end %>
   </div>
 </div>
