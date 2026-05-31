@@ -6,7 +6,7 @@ puts "== Users =="
 user_one = User.find_or_create_by!(email_address: "one@example.com") do |u|
   u.nickname    = "one_user"
   u.password    = "password"
-  u.role        = :role_user
+  u.role        = :user
   u.sport_level = :beginner
   u.age_group   = :twenties
   u.gender      = :unspecified
@@ -15,7 +15,7 @@ end
 user_two = User.find_or_create_by!(email_address: "two@example.com") do |u|
   u.nickname    = "two_user"
   u.password    = "password"
-  u.role        = :role_user
+  u.role        = :user
   u.sport_level = :beginner
   u.age_group   = :twenties
   u.gender      = :unspecified
@@ -24,7 +24,7 @@ end
 user_admin = User.find_or_create_by!(email_address: "admin@example.com") do |u|
   u.nickname    = "admin_user"
   u.password    = "password"
-  u.role        = :role_admin
+  u.role        = :admin
   u.sport_level = :beginner
   u.age_group   = :twenties
   u.gender      = :unspecified
@@ -33,7 +33,7 @@ end
 User.find_or_create_by!(email_address: "three@example.com") do |u|
   u.nickname    = "three_user"
   u.password    = "password"
-  u.role        = :role_user
+  u.role        = :user
   u.sport_level = :beginner
   u.age_group   = :twenties
   u.gender      = :unspecified
@@ -209,7 +209,7 @@ if site_admin_email.present? && site_admin_password.present?
   admin = User.find_or_initialize_by(email_address: site_admin_email)
   admin.nickname    = site_admin_nickname unless admin.persisted?
   admin.password    = site_admin_password unless admin.persisted?
-  admin.role        = :role_admin
+  admin.role        = :admin
   admin.sport_level ||= :beginner
   admin.age_group   ||= :twenties
   admin.gender      ||= :unspecified
