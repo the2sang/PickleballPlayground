@@ -17,12 +17,12 @@ class ApplicationPolicy
   private
 
   def site_admin?
-    user.present? && user.role_admin?
+    user.present? && user.admin?
   end
 
   def club_manager?(club)
     return false unless user.present?
-    return true if user.role_admin?
+    return true if user.admin?
     return true if club&.owner_id == user.id
     membership = user.club_memberships.find_by(club: club)
     membership.present? && membership.manager? && membership.approved?

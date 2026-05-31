@@ -55,7 +55,7 @@ class ClubsController < ApplicationController
     authorize @club
     if @club.save
       @club.club_memberships.create!(user: Current.user, role: :manager, status: :approved)
-      Current.user.update!(role: :role_club) unless Current.user.role_admin?
+      Current.user.update!(role: :club) unless Current.user.admin?
       Clubs::AssignManagerByEmailService.call(club: @club)
       redirect_to @club, notice: "클럽가 개설되었습니다."
     else

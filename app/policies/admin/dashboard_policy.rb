@@ -1,5 +1,5 @@
 module Admin
   class DashboardPolicy < ApplicationPolicy
-    def index? = user&.role_admin?
+    def index? = user&.admin?
   end
 end

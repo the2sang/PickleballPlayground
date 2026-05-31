@@ -15,7 +15,7 @@ class GameSessionPolicy < ApplicationPolicy
     def resolve
       if user.nil?
         scope.where(visibility: :public_visibility).open
-      elsif user.role_admin?
+      elsif user.admin?
         scope.all
       else
         approved_club_ids = user.club_memberships.approved.select(:club_id)
