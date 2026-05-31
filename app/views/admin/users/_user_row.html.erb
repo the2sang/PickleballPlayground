@@ -3,8 +3,8 @@
   <td class="admin-table__mono"><%= user.email_address %></td>
   <td>
     <div class="admin-role-cell">
-      <% badge_class = user.role_admin? ? "admin-badge--admin" : (user.role_club? ? "admin-badge--club" : "") %>
-      <% badge_label = user.role_admin? ? "시스템관리자" : (user.role_club? ? "클럽관리자" : "회원") %>
+      <% badge_class = user.admin? ? "admin-badge--admin" : (user.club? ? "admin-badge--club" : "") %>
+      <% badge_label = user.admin? ? "시스템관리자" : (user.club? ? "클럽관리자" : "회원") %>
       <span class="admin-badge <%= badge_class %>"><%= badge_label %></span>
 
       <div data-controller="role-select"
@@ -12,7 +12,7 @@
         <%= form_with url: admin_user_path(user), scope: :user, method: :patch,
                       data: { role_select_target: "form" } do |f| %>
           <%= f.select :role,
-                [["회원", "role_user"], ["클럽관리자", "role_club"], ["시스템관리자", "role_admin"]],
+                [["회원", "user"], ["클럽관리자", "club"], ["시스템관리자", "admin"]],
                 { selected: user.role },
                 { class: "sr-only", data: { role_select_target: "select" } } %>
         <% end %>

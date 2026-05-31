@@ -7,10 +7,10 @@ namespace :admin do
     user = User.find_by(email_address: email)
     abort "User not found: #{email}" unless user
 
-    if user.role_admin?
+    if user.admin?
       puts "Already admin: #{user.email_address}"
     else
-      user.role_admin!
+      user.admin!
       puts "Granted admin to #{user.email_address}"
     end
   end
@@ -23,10 +23,10 @@ namespace :admin do
     user = User.find_by(email_address: email)
     abort "User not found: #{email}" unless user
 
-    if user.role_user?
+    if user.user?
       puts "Already user: #{user.email_address}"
     else
-      user.role_user!
+      user.user!
       puts "Revoked admin from #{user.email_address}"
     end
   end
