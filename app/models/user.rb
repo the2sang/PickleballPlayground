@@ -29,6 +29,7 @@ class User < ApplicationRecord
   has_many :decks, as: :owner, dependent: :destroy
   has_many :card_reviews, dependent: :destroy
   has_many :study_sessions, dependent: :destroy
+  has_many :user_card_ratings, dependent: :destroy
 
   def group_member_ids
     group_ids = group_memberships.select(:group_id)
