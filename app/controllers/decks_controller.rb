@@ -21,11 +21,18 @@ class DecksController < ApplicationController
       @deck_session_stats = Flashcards::DeckSessionStatsQuery.new(
         user: Current.user, deck_ids: all_deck_ids
       ).call
+
+      @streak         = Flashcards::StreakQuery.call(user: Current.user)
+      @today_progress = Flashcards::TodayProgressQuery.call(user: Current.user)
+      @due_forecast   = Flashcards::DueForecastQuery.call(user: Current.user)
     else
-      @personal_decks = []
-      @club_decks = []
+      @personal_decks    = []
+      @club_decks        = []
       @show_club_section = false
       @deck_session_stats = {}
+      @streak         = 0
+      @today_progress = { reviewed_today: 0, due_remaining: 0 }
+      @due_forecast   = []
     end
   end
 

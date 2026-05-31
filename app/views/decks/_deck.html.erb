@@ -16,8 +16,12 @@
       <% end %>
     </div>
     <h3 class="deck-card__title"><%= deck.title %></h3>
+    <% mastery = authenticated? ? Flashcards::MasteryQuery.call(user: Current.user, deck: deck) : 0.0 %>
     <p class="deck-card__meta">
       <%= deck.cards.size %>장 · <%= deck.updated_at.strftime("%Y.%m.%d") %>
+      <% if mastery > 0 %>
+        · 마스터리 <%= (mastery * 100).round %>%
+      <% end %>
     </p>
   <% end %>
   <div class="deck-card__actions">

@@ -49,6 +49,44 @@
             새 덱 만들기
           <% end %>
         </div>
+
+        <%# Stats row — streak / today / due remaining %>
+        <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span style="font-size:1.5rem;font-weight:700;"><%= @streak > 0 ? "🔥 #{@streak}일" : "—" %></span>
+            <span style="font-size:11px;color:var(--hcp-cool-gray);">연속 학습</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span style="font-size:1.5rem;font-weight:700;"><%= @today_progress[:reviewed_today] %> / <%= @today_progress[:reviewed_today] + @today_progress[:due_remaining] %></span>
+            <span style="font-size:11px;color:var(--hcp-cool-gray);">오늘 완료</span>
+          </div>
+          <% if @today_progress[:due_remaining] > 0 %>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span style="font-size:1.5rem;font-weight:700;"><%= @today_progress[:due_remaining] %></span>
+            <span style="font-size:11px;color:var(--hcp-cool-gray);">남은 복습</span>
+          </div>
+          <% end %>
+        </div>
+
+        <%# 7일 막대 차트 %>
+        <% if @due_forecast.any? && @due_forecast.map { |r| r[:count] }.max.to_i > 0 %>
+          <% max_count = @due_forecast.map { |r| r[:count] }.max.to_f %>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;height:48px;margin-top:16px;align-items:flex-end;">
+            <% @due_forecast.each do |row| %>
+              <% pct = max_count > 0 ? (row[:count] / max_count * 100).round : 0 %>
+              <div style="display:flex;flex-direction:column;align-items:center;height:100%;">
+                <div style="width:100%;background:var(--hcp-accent,#3b82f6);border-radius:2px;height:<%= pct %>%;min-height:<%= row[:count] > 0 ? 4 : 0 %>px;"></div>
+              </div>
+            <% end %>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px;">
+            <% @due_forecast.each do |row| %>
+              <div style="text-align:center;font-size:10px;color:var(--hcp-cool-gray);">
+                <%= row[:date] == Date.current ? "오늘" : I18n.l(row[:date], format: "%m/%d") %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
 
