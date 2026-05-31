@@ -10,12 +10,12 @@ class AdminGrantTaskTest < ActiveSupport::TestCase
 
   test "promotes existing user idempotently" do
     user = users(:one)
-    assert_not user.admin?
+    assert_not user.role_admin?
 
     ENV["EMAIL"] = user.email_address
     capture_io { Rake::Task["admin:grant"].invoke }
 
-    assert user.reload.admin?
+    assert user.reload.role_admin?
 
     Rake::Task["admin:grant"].reenable
     out, _err = capture_io { Rake::Task["admin:grant"].invoke }
@@ -36,7 +36,7 @@ class AdminGrantTaskTest < ActiveSupport::TestCase
     admin = users(:admin)
     ENV["EMAIL"] = admin.email_address
     capture_io { Rake::Task["admin:revoke"].invoke }
-    assert admin.reload.user?
+    assert admin.reload.role_user?
   ensure
     ENV.delete("EMAIL")
   end

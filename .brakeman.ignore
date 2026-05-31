@@ -3,8 +3,16 @@
     {
       "fingerprint": "01a88a0a17848e70999c17f6438a636b00e01da39a2c0aa0c46f20f0685c7202",
       "note": "Admin-only endpoint. Role is explicitly set via @user.update!(role: user_params[:role]), not mass-assigned."
+    },
+    {
+      "fingerprint": "c01cbee423229350d3efc7491337b7cf883afe526737c9ee573d20731035b71c",
+      "note": "False positive. sqlite_backup_path is fully application-generated: SecureRandom.hex + strftime + Rails.env. No user input involved."
+    },
+    {
+      "fingerprint": "261847656c8f28b35d6b40fb6c32043d37fcbabcde5599004a5004d0c90c2d3b",
+      "note": "False positive. DownloadPathService validates params[:id] and params[:file] with SAFE_ID regex, File.basename, expand_path containment check, and manifest allowlist before send_file."
     }
   ],
-  "updated": "2026-05-18",
+  "updated": "2026-05-31",
   "brakeman_version": "8.0.4"
 }
