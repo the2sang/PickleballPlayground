@@ -1,0 +1,93 @@
+<%# app/views/decks/flips/show.html.erb %>
+<% content_for :title, "#{@deck.title} — 주관식 학습" %>
+
+<div class="study-page">
+  <header class="study-page__bar">
+    <%= link_to deck_path(@deck), class: "study-page__back", aria: { label: "덱으로 돌아가기" } do %>
+      <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+      <span class="study-page__back-label"><%= @deck.title %></span>
+    <% end %>
+
+    <span class="study-page__mode-chip">
+      <iconify-icon icon="lucide:book-open" width="13"></iconify-icon>
+      주관식 학습
+    </span>
+  </header>
+
+  <div class="study-page__body">
+    <div class="study-page__card-wrap">
+      <% if @cards.any? %>
+        <div data-controller="flip-card"
+             data-flip-card-cards-value="<%= @cards_json.to_json %>"
+             data-flip-card-ratings-value="<%= @ratings.to_json %>"
+             data-flip-card-deck-id-value="<%= @deck.id %>">
+
+          <%# 별점 %>
+          <div class="flip-rating" aria-label="난이도 별점">
+            <span class="flip-rating__label">난이도</span>
+            <% 5.times do |i| %>
+              <button type="button"
+                      class="flip-star"
+                      data-flip-card-target="star"
+                      data-action="click->flip-card#rate"
+                      data-star="<%= i + 1 %>"
+                      aria-label="별 <%= i + 1 %>개">★</button>
+            <% end %>
+          </div>
+
+          <%# 플립 카드 %>
+          <div class="flip-card"
+               data-action="click->flip-card#flip"
+               role="button"
+               tabindex="0"
+               aria-label="카드 뒤집기">
+            <div class="flip-card__inner" data-flip-card-target="inner">
+              <div class="flip-card__front">
+                <p class="flip-card__text" data-flip-card-target="front"></p>
+                <p class="flip-card__hint">클릭해서 정답 확인</p>
+              </div>
+              <div class="flip-card__back">
+                <p class="flip-card__text" data-flip-card-target="back"></p>
+                <div class="flip-countdown hidden" data-flip-card-target="countdown"></div>
+              </div>
+            </div>
+          </div>
+
+          <%# 네비게이션 %>
+          <div class="flip-nav">
+            <button type="button"
+                    class="flip-nav__btn"
+                    data-flip-card-target="prevBtn"
+                    data-action="click->flip-card#navigate"
+                    data-direction="prev"
+                    aria-label="이전 카드">
+              <iconify-icon icon="lucide:arrow-left" width="14"></iconify-icon>
+              이전
+            </button>
+            <span class="flip-nav__counter" data-flip-card-target="counter">
+              1 / <%= @cards.size %>
+            </span>
+            <button type="button"
+                    class="flip-nav__btn"
+                    data-flip-card-target="nextBtn"
+                    data-action="click->flip-card#navigate"
+                    data-direction="next"
+                    aria-label="다음 카드">
+              다음
+              <iconify-icon icon="lucide:arrow-right" width="14"></iconify-icon>
+            </button>
+          </div>
+
+          <p class="flip-hint-text">
+            키보드 <kbd>Space</kbd> 뒤집기 &middot; <kbd>←</kbd><kbd>→</kbd> 이동 &middot; <kbd>1</kbd>–<kbd>5</kbd> 별점
+          </p>
+        </div>
+      <% else %>
+        <div class="flip-empty">
+          <p>해당 조건의 카드가 없습니다.</p>
+          <%= link_to "전체 카드로 학습하기", deck_flip_path(@deck), class: "btn btn--primary btn--sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
