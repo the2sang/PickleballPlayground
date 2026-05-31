@@ -75,7 +75,7 @@ module Admin
 
       def create_zip
         Zip::File.open(zip_path, create: true) do |zip|
-          (backup_files + [manifest_path]).each do |file|
+          (backup_files + [ manifest_path ]).each do |file|
             zip.add(file.basename.to_s, file.to_s)
           end
         end
@@ -83,7 +83,7 @@ module Admin
 
       def manifest
         manifest_without_zip.merge(
-          files: manifest_without_zip.fetch(:files) + [file_entry(zip_path, "zip")]
+          files: manifest_without_zip.fetch(:files) + [ file_entry(zip_path, "zip") ]
         )
       end
 
@@ -103,7 +103,7 @@ module Admin
       end
 
       def backup_files
-        files = [sqlite_backup_path]
+        files = [ sqlite_backup_path ]
         files << sql_dump_path if @include_sql_dump
         files
       end
