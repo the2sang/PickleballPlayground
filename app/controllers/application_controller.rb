@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   before_action :set_no_store_for_authenticated_pages
+  before_action :set_flashcard_due_count
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -14,6 +15,10 @@ class ApplicationController < ActionController::Base
 
   def set_no_store_for_authenticated_pages
     response.headers["Cache-Control"] = "no-store" if authenticated?
+  end
+
+  def set_flashcard_due_count
+    @due_count = authenticated? ? Flashcards::DueCountCacheService.fetch(Current.user) : 0
   end
 
   def user_not_authorized

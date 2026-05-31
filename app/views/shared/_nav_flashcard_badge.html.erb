@@ -1,0 +1,12 @@
+<%= link_to decks_path, class: "nav__dropdown-item" do %>
+  <iconify-icon icon="lucide:layers"></iconify-icon>
+  <span>낱말카드</span>
+  <% if @due_count.to_i > 0 %>
+    <span style="
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:18px;height:18px;padding:0 4px;
+      background:var(--hcp-accent,#3b82f6);color:#fff;
+      border-radius:9px;font-size:11px;font-weight:600;margin-left:6px;
+    "><%= @due_count %></span>
+  <% end %>
+<% end %>
