@@ -1,8 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["front", "counter", "cancel"]
-  static values = { savedCount: { type: Number, default: 0 } }
+  static targets = ["front", "counter", "cancel", "typeTab", "basicSection", "multipleSection", "backMultiple"]
+  static values = {
+    savedCount: { type: Number, default: 0 },
+    cardType: { type: String, default: "basic" }
+  }
 
   handleKeydown(event) {
     // Cmd/Ctrl+Enter: 저장하고 다음 (Decision #1)
@@ -25,11 +28,32 @@ export default class extends Controller {
     }
   }
 
+  selectType(event) {
+    this.cardTypeValue = event.currentTarget.dataset.type
+  }
+
+  cardTypeValueChanged(newValue) {
+    const isBasic = newValue === "basic"
+
+    if (this.hasBasicSectionTarget) {
+      this.basicSectionTarget.hidden = !isBasic
+    }
+    if (this.hasMultipleSectionTarget) {
+      this.multipleSectionTarget.hidden = isBasic
+    }
+
+    this.typeTabTargets.forEach(tab => {
+      const active = tab.dataset.type === newValue
+      tab.classList.toggle("card-type-tab--active", active)
+      tab.setAttribute("aria-selected", active ? "true" : "false")
+    })
+  }
+
   // Decision #1: 서버가 카운터를 렌더하므로 클라이언트는 value 변경 시 시각적 강조만
   savedCountValueChanged(newValue, oldValue) {
     if (this.hasCounterTarget && oldValue !== undefined && newValue > oldValue) {
-      this.counterTarget.classList.add("card-form__counter--pulse")
-      setTimeout(() => this.counterTarget.classList.remove("card-form__counter--pulse"), 300)
+      this.counterTarget.classList.add("card-add-form__counter--pulse")
+      setTimeout(() => this.counterTarget.classList.remove("card-add-form__counter--pulse"), 300)
     }
   }
 }
