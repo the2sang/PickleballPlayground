@@ -85,12 +85,13 @@ RSpec.describe "TournamentEvents::Decks", type: :request do
         expect(TournamentEventDeck.where(tournament_event: event, deck: official_deck)).to exist
       end
 
-      it "다른 클럽 덱으로 저장 불가 (후보에 없음 — 뷰 단 방어)" do
+      it "다른 클럽 덱으로 저장 시 edit으로 리다이렉트 (서버 단 허용 목록 검증)" do
         other_club = create(:club)
         other_deck = create(:deck, :club, owner: other_club)
         put tournament_event_decks_path(event),
             params: { deck_ids: [ other_deck.id ] }
-        expect(response).to redirect_to(tournament_event_path(event))
+        expect(response).to redirect_to(edit_tournament_event_decks_path(event))
+        expect(TournamentEventDeck.where(tournament_event: event)).not_to exist
       end
     end
 

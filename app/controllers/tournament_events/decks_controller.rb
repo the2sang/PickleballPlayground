@@ -12,7 +12,12 @@ module TournamentEvents
 
     def update
       authorize @event, :manage_decks?
+      allowed_ids = candidate_decks.map(&:id).to_set
       deck_ids = Array(params[:deck_ids]).map(&:to_i).uniq
+
+      unless deck_ids.all? { |id| allowed_ids.include?(id) }
+        return redirect_to edit_tournament_event_decks_path(@event), alert: "허용되지 않은 덱입니다."
+      end
 
       ActiveRecord::Base.transaction do
         TournamentEventDeck.where(tournament_event: @event).destroy_all
