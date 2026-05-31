@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   end
 
   resources :tournament_events, only: %i[show edit update destroy] do
+    resource :decks, only: %i[edit update], module: :tournament_events
     member do
       post :generate_groups
       post :generate_bracket
