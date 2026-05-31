@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     resource  :flip,           only: %i[show], module: :decks
     resources :card_ratings,   only: %i[create], module: :decks
     resources :study_sessions, only: %i[show], module: :decks
+    resource  :bookmark,       only: %i[create destroy], module: :decks
     resource  :fork,           only: %i[create], module: :decks
     resource  :feature,        only: %i[create destroy], module: :decks
   end

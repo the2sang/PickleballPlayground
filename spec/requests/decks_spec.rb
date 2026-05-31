@@ -87,6 +87,22 @@ RSpec.describe "Decks", type: :request do
       end
     end
 
+    context "인증된 사용자 — 북마크 보유" do
+      before { sign_in(user) }
+
+      it "덱 카드에 북마크 버튼을 노출하고 북마크된 덱을 먼저 표시한다" do
+        normal_deck = create(:deck, :official, title: "일반 공식 덱", created_at: 1.day.ago)
+        bookmarked_deck = create(:deck, :official, title: "북마크 공식 덱", created_at: 2.days.ago)
+        create(:deck_bookmark, user: user, deck: bookmarked_deck)
+
+        get decks_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("북마크 해제")
+        expect(response.body.index("북마크 공식 덱")).to be < response.body.index("일반 공식 덱")
+      end
+    end
+
     it "유틸리티 nav dropdown에 '낱말카드' 링크 노출 (DECK-09)" do
       get decks_path
       expect(response).to have_http_status(:ok)

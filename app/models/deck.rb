@@ -24,6 +24,7 @@ class Deck < ApplicationRecord
            inverse_of:  :forked_from
 
   has_many :cards, -> { order(:position) }, dependent: :destroy
+  has_many :deck_bookmarks, dependent: :destroy
   has_many :tournament_event_decks, dependent: :destroy
   has_many :tournament_events, through: :tournament_event_decks
 

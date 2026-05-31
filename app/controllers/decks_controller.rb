@@ -7,9 +7,10 @@ class DecksController < ApplicationController
   def index
     @selected_category = Deck.category_filter_value(params[:category])
     @category_options = Deck.category_options(include_all: true)
+    @bookmarked_deck_ids = authenticated? ? Current.user.deck_bookmarks.pluck(:deck_id) : []
     @official_decks = filter_by_category(Deck.where(scope: :official))
                       .includes(:cards)
-                      .order(:created_at)
+                      .then { |scope| order_for_index(scope, :created_at) }
 
     if authenticated?
       personal_scope = Deck.where(scope: :personal, owner: Current.user)
@@ -17,12 +18,12 @@ class DecksController < ApplicationController
       @personal_decks = personal_scope
                             .then { |scope| filter_by_category(scope) }
                             .includes(:cards)
-                            .order(updated_at: :desc)
+                            .then { |scope| order_for_index(scope, updated_at: :desc) }
       approved_club_ids = Current.user.club_memberships.approved.pluck(:club_id)
       @show_club_section = approved_club_ids.any?
       @club_decks = @show_club_section ?
         filter_by_category(Deck.where(scope: :club, owner_type: "Club", owner_id: approved_club_ids))
-            .includes(:cards).order(updated_at: :desc) : []
+            .includes(:cards).then { |scope| order_for_index(scope, updated_at: :desc) } : []
 
       all_deck_ids = (@official_decks + @personal_decks + @club_decks).map(&:id)
       @deck_session_stats = Flashcards::DeckSessionStatsQuery.new(
@@ -108,6 +109,23 @@ class DecksController < ApplicationController
     return scope unless @selected_category
 
     scope.where(category: @selected_category)
+  end
+
+  def order_for_index(scope, fallback_order)
+    return scope.order(fallback_order) unless authenticated?
+
+    join_sql = ActiveRecord::Base.sanitize_sql_array(
+      [
+        "LEFT OUTER JOIN deck_bookmarks deck_bookmarks_for_order ON " \
+        "deck_bookmarks_for_order.deck_id = decks.id AND deck_bookmarks_for_order.user_id = ?",
+        Current.user.id
+      ]
+    )
+
+    scope
+      .joins(join_sql)
+      .order(Arel.sql("CASE WHEN deck_bookmarks_for_order.id IS NULL THEN 1 ELSE 0 END"))
+      .order(fallback_order)
   end
 
   def set_personal_deck_limit_state

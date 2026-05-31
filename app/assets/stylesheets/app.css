@@ -11350,13 +11350,30 @@ lexxy-editor.lexxy-editor-field {
 }
 
 /* deck-card component */
-.deck-card { display:flex; flex-direction:column; background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; transition:box-shadow .15s; }
+.deck-card { position:relative; display:flex; flex-direction:column; background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; transition:box-shadow .15s; }
 .deck-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.08); }
-.deck-card__body { display:block; padding:16px 16px 12px; text-decoration:none; color:inherit; flex:1; }
+.deck-card__body { display:block; padding:16px 52px 12px 16px; text-decoration:none; color:inherit; flex:1; }
 .deck-card__title { font-size:15px; font-weight:600; margin:8px 0 4px; color:#111; }
 .deck-card__meta  { font-size:12px; color:#6b7280; margin:0; }
 .deck-card__actions { display:flex; flex-wrap:nowrap; gap:6px; padding:10px 12px 14px; border-top:1px solid #f3f4f6; }
 .deck-card__actions .btn { flex:1 1 0; min-width:0; gap:4px; padding-left:6px; padding-right:6px; }
+.deck-card__bookmark { position:absolute; top:10px; right:10px; z-index:2; }
+.deck-card__bookmark-form { margin:0; }
+.deck-card__bookmark-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: rgba(255,255,255,.95);
+  color: #6b7280;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s, transform .15s;
+}
+.deck-card__bookmark-button:hover { border-color:#f59e0b; color:#b45309; transform:translateY(-1px); }
+.deck-card__bookmark-button--active { background:#fef3c7; border-color:#f59e0b; color:#b45309; }
 .deck-card__scope-badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; }
 .deck-card__scope-badge--official { background:#eff6ff; color:#1d4ed8; }
 .deck-card__scope-badge--club     { background:#f0fdf4; color:#15803d; }

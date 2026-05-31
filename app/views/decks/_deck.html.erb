@@ -1,6 +1,31 @@
 <% stats = @deck_session_stats&.dig(deck.id) %>
+<% bookmarked = @bookmarked_deck_ids&.include?(deck.id) %>
 
 <div class="deck-card">
+  <% if authenticated? %>
+    <div class="deck-card__bookmark">
+      <% if bookmarked %>
+        <%= button_to deck_bookmark_path(deck),
+                      method: :delete,
+                      class: "deck-card__bookmark-button deck-card__bookmark-button--active",
+                      form_class: "deck-card__bookmark-form",
+                      aria: { label: "북마크 해제" },
+                      title: "북마크 해제" do %>
+          <iconify-icon icon="lucide:bookmark-check" width="18"></iconify-icon>
+        <% end %>
+      <% else %>
+        <%= button_to deck_bookmark_path(deck),
+                      method: :post,
+                      class: "deck-card__bookmark-button",
+                      form_class: "deck-card__bookmark-form",
+                      aria: { label: "북마크" },
+                      title: "북마크" do %>
+          <iconify-icon icon="lucide:bookmark" width="18"></iconify-icon>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
   <%= link_to deck, class: "deck-card__body" do %>
     <div class="deck-card__top-row">
       <div class="deck-card__scope-badge deck-card__scope-badge--<%= deck.scope %>">

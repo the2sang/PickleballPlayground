@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_31_201213) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_31_215135) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -145,6 +145,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_201213) do
     t.index ["approved_by_id"], name: "index_deck_addition_requests_on_approved_by_id"
     t.index ["status"], name: "index_deck_addition_requests_on_status"
     t.index ["user_id"], name: "index_deck_addition_requests_on_user_id"
+  end
+
+  create_table "deck_bookmarks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "deck_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["deck_id"], name: "index_deck_bookmarks_on_deck_id"
+    t.index ["user_id", "deck_id"], name: "index_deck_bookmarks_on_user_id_and_deck_id", unique: true
+    t.index ["user_id"], name: "index_deck_bookmarks_on_user_id"
   end
 
   create_table "decks", force: :cascade do |t|
@@ -591,6 +601,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_201213) do
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "comments", "users"
   add_foreign_key "deck_addition_requests", "users"
+  add_foreign_key "deck_bookmarks", "decks"
+  add_foreign_key "deck_bookmarks", "users"
   add_foreign_key "decks", "decks", column: "forked_from_deck_id", on_delete: :nullify
   add_foreign_key "flash_meetup_participations", "flash_meetups"
   add_foreign_key "flash_meetup_participations", "users"
