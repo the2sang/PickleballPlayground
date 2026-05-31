@@ -22,7 +22,7 @@
              data-flip-card-ratings-value="<%= @ratings.to_json %>"
              data-flip-card-deck-id-value="<%= @deck.id %>">
 
-          <%# 별점 %>
+          <%# 별점 + 덱스왑 %>
           <div class="flip-rating" aria-label="난이도 별점">
             <span class="flip-rating__label">난이도</span>
             <% 5.times do |i| %>
@@ -33,6 +33,14 @@
                       data-star="<%= i + 1 %>"
                       aria-label="별 <%= i + 1 %>개">★</button>
             <% end %>
+            <button type="button"
+                    class="flip-swap-btn"
+                    data-flip-card-target="swapBtn"
+                    data-action="click->flip-card#swap"
+                    aria-label="앞면/뒷면 교체">
+              <iconify-icon icon="lucide:arrow-left-right" width="13"></iconify-icon>
+              덱스왑
+            </button>
           </div>
 
           <%# 플립 카드 %>

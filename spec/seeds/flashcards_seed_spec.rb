@@ -13,7 +13,7 @@ RSpec.describe "Flashcards seed loader" do
     User.find_or_create_by!(email_address: "admin@example.com") do |u|
       u.nickname    = "seed_admin_#{SecureRandom.hex(3)}"
       u.password    = "password"
-      u.role        = :role_admin
+      u.role        = :admin
       u.sport_level = :beginner
       u.age_group   = :twenties
       u.gender      = :unspecified
@@ -26,9 +26,9 @@ RSpec.describe "Flashcards seed loader" do
     load Rails.root.join("db/seeds/flashcards.rb")
   end
 
-  it "creates exactly 6 official decks" do
+  it "creates exactly 7 official decks" do
     run_loader
-    expect(Deck.official.count).to eq(6)
+    expect(Deck.official.count).to eq(7)
   end
 
   it "creates the AI usage terms subjective official deck with 30 cards" do
@@ -38,6 +38,15 @@ RSpec.describe "Flashcards seed loader" do
     expect(deck.description).to include("주관식")
     expect(deck.cards.count).to eq(30)
     expect(deck.cards.first.front).to eq("Prompt (프롬프트)")
+  end
+
+  it "creates the economy current affairs short-answer official deck with 20 cards" do
+    run_loader
+
+    deck = Deck.official.find_by!(title: "직장인이 알아야 할 경제 시사 상식 20선")
+    expect(deck.description).to include("단답형 주관식")
+    expect(deck.cards.count).to eq(20)
+    expect(deck.cards.first.back).to eq("기준금리")
   end
 
   it "is idempotent — running twice does not create duplicate decks or cards" do

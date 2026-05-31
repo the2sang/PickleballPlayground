@@ -4,11 +4,12 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values  = { cards: Array, ratings: Object, deckId: Number }
   static targets = ["front", "back", "inner", "counter",
-                    "prevBtn", "nextBtn", "star", "countdown"]
+                    "prevBtn", "nextBtn", "star", "countdown", "swapBtn"]
 
   connect() {
     this.index          = 0
     this.flipped        = false
+    this.swapped        = false
     this.countdownTimer = null
     this.handleKeydown  = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
@@ -54,6 +55,19 @@ export default class extends Controller {
       clearInterval(this.countdownTimer)
       this.countdownTimer = null
     }
+  }
+
+  // ── Swap ────────────────────────────────────────────────────────
+  swap() {
+    this.swapped = !this.swapped
+    this.swapBtnTarget.classList.toggle("flip-swap-btn--active", this.swapped)
+    if (this.flipped) {
+      this.flipped = false
+      this.innerTarget.classList.remove("flip-card__inner--flipped")
+      this.clearTimers()
+      this.countdownTarget.classList.add("hidden")
+    }
+    this.render()
   }
 
   // ── Navigation ──────────────────────────────────────────────────
@@ -121,8 +135,8 @@ export default class extends Controller {
   // ── Render ──────────────────────────────────────────────────────
   render() {
     const card = this.cardsValue[this.index]
-    this.frontTarget.textContent   = card.front
-    this.backTarget.textContent    = card.back
+    this.frontTarget.textContent   = this.swapped ? card.back  : card.front
+    this.backTarget.textContent    = this.swapped ? card.front : card.back
     this.counterTarget.textContent = `${this.index + 1} / ${this.cardsValue.length}`
     this.prevBtnTarget.disabled    = this.index === 0
     this.nextBtnTarget.disabled    = this.index === this.cardsValue.length - 1
