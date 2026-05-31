@@ -3,14 +3,12 @@ require "json"
 module Admin
   module DatabaseBackups
     class ListService
-      BACKUP_ROOT = Rails.root.join("storage", "db_backups")
-
       def self.call = new.call
 
       def call
-        return [] unless BACKUP_ROOT.directory?
+        return [] unless Admin::DatabaseBackups.backup_root.directory?
 
-        BACKUP_ROOT.children.select(&:directory?).filter_map do |dir|
+        Admin::DatabaseBackups.backup_root.children.select(&:directory?).filter_map do |dir|
           manifest_path = dir.join("manifest.json")
           next unless manifest_path.file?
 

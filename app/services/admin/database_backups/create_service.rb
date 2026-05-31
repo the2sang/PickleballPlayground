@@ -12,8 +12,6 @@ module Admin
         def success? = success
       end
 
-      BACKUP_ROOT = Rails.root.join("storage", "db_backups")
-
       def self.call(user:, include_sql_dump: false)
         new(user:, include_sql_dump:).call
       end
@@ -24,7 +22,7 @@ module Admin
       end
 
       def call
-        FileUtils.mkdir_p(BACKUP_ROOT)
+        FileUtils.mkdir_p(Admin::DatabaseBackups.backup_root)
         FileUtils.mkdir_p(backup_dir)
 
         create_sqlite_backup
@@ -143,7 +141,7 @@ module Admin
       end
 
       def backup_dir
-        @backup_dir ||= BACKUP_ROOT.join(backup_id)
+        @backup_dir ||= Admin::DatabaseBackups.backup_root.join(backup_id)
       end
 
       def sqlite_backup_path

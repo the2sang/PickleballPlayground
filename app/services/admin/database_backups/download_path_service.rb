@@ -7,7 +7,6 @@ module Admin
         def success? = success
       end
 
-      BACKUP_ROOT = Rails.root.join("storage", "db_backups")
       SAFE_ID = /\A[a-zA-Z0-9._-]+\z/
 
       def self.call(backup_id:, filename:)
@@ -22,7 +21,7 @@ module Admin
       def call
         return failure("잘못된 백업 요청입니다.") unless safe_segment?(@backup_id) && safe_segment?(@filename)
 
-        backup_dir = BACKUP_ROOT.join(@backup_id).expand_path
+        backup_dir = Admin::DatabaseBackups.backup_root.join(@backup_id).expand_path
         path = backup_dir.join(@filename).expand_path
         return failure("백업 파일을 찾을 수 없습니다.") unless path.file?
         return failure("백업 파일을 찾을 수 없습니다.") unless path.to_s.start_with?("#{backup_dir}/")

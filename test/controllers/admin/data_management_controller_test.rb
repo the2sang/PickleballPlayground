@@ -4,14 +4,17 @@ require "json"
 
 module Admin
   class DataManagementControllerTest < ActionDispatch::IntegrationTest
-    BACKUP_ROOT = Rails.root.join("storage", "db_backups")
+    # Each parallel test process gets its own backup root to prevent race conditions.
+    TEST_BACKUP_ROOT = Rails.root.join("storage", "db_backups_test_#{Process.pid}")
 
     setup do
-      FileUtils.rm_rf(BACKUP_ROOT)
+      Admin::DatabaseBackups.backup_root = TEST_BACKUP_ROOT
+      FileUtils.rm_rf(TEST_BACKUP_ROOT)
     end
 
     teardown do
-      FileUtils.rm_rf(BACKUP_ROOT)
+      FileUtils.rm_rf(TEST_BACKUP_ROOT)
+      Admin::DatabaseBackups.backup_root = nil
     end
 
     test "admin sees database backup panel" do
@@ -32,8 +35,8 @@ module Admin
       assert_redirected_to admin_data_management_path(anchor: "db-backups")
       assert flash[:notice], "Backup failed: #{flash[:alert]}"
 
-      assert BACKUP_ROOT.exist?, "BACKUP_ROOT was not created"
-      backup_dir = BACKUP_ROOT.children.find(&:directory?)
+      assert TEST_BACKUP_ROOT.exist?, "BACKUP_ROOT was not created"
+      backup_dir = TEST_BACKUP_ROOT.children.find(&:directory?)
       assert backup_dir
       assert backup_dir.join("manifest.json").file?
 
@@ -65,7 +68,7 @@ module Admin
       post admin_data_management_backups_path
 
       assert_redirected_to root_path
-      assert_not BACKUP_ROOT.directory?
+      assert_not TEST_BACKUP_ROOT.directory?
     end
   end
 end
