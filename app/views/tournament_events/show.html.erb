@@ -16,6 +16,9 @@
   </div></div>
 
   <div class="cl-content" style="max-width:900px;">
+    <%# 추천 덱 카드 (Wave 4) %>
+    <%= render "tournament_events/recommended_decks" %>
+
     <%# 관리 버튼 %>
     <% if is_manager %>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
