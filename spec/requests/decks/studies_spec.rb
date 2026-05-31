@@ -59,6 +59,26 @@ RSpec.describe "Decks::Studies", type: :request do
         expect(response).to redirect_to(new_session_path)
       end
     end
+
+    context "min_stars 필터" do
+      let!(:rated_card)   { create(:card, deck: deck) }
+      let!(:unrated_card) { create(:card, deck: deck) }
+
+      before do
+        create(:user_card_rating, user: user, card: rated_card, difficulty: 4)
+      end
+
+      it "별점 4이상 카드만 학습 대상으로 포함" do
+        get deck_study_path(deck, min_stars: 4)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "별점 미해당 카드는 학습 대상 제외 (완료 화면 표시)" do
+        get deck_study_path(deck, min_stars: 5)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("오늘의 학습 완료")
+      end
+    end
   end
 
   describe "GET /decks/:deck_id (entry points)" do

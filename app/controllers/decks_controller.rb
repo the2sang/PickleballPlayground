@@ -38,7 +38,9 @@ class DecksController < ApplicationController
 
   def show
     authorize @deck
-    @cards = @deck.cards.order(:position, :id)
+    @cards       = @deck.cards.order(:position, :id)
+    @rated_count = authenticated? ?
+      UserCardRating.where(user: Current.user, card: @cards).count : 0
   end
 
   def new

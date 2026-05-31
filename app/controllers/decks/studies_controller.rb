@@ -12,6 +12,15 @@ class Decks::StudiesController < ApplicationController
                    Flashcards::StudyQueueQuery.new(user: Current.user, deck: @deck).call
     end
 
+    # min_stars 필터 — 별점 등록 카드로 학습 범위 제한
+    min_stars = params[:min_stars].to_i
+    if min_stars.between?(1, 5)
+      rated_ids = UserCardRating.where(user: Current.user, difficulty: min_stars..)
+                                 .where(card: @deck.cards)
+                                 .pluck(:card_id)
+      @due_cards = @due_cards.where(id: rated_ids)
+    end
+
     if @due_cards.empty?
       render :complete
       return
