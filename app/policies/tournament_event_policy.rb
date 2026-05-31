@@ -7,9 +7,10 @@ class TournamentEventPolicy < ApplicationPolicy
     tournament_manager?
   end
 
-  def update? = create?
-  def edit?   = update?
-  def destroy? = create?
+  def update?       = create?
+  def edit?         = update?
+  def destroy?      = create?
+  def manage_decks? = create?
 
   class Scope < ApplicationPolicy::Scope
     def resolve = scope.all

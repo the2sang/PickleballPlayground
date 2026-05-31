@@ -1,11 +1,10 @@
+# frozen_string_literal: true
+
 class TournamentEventDeckPolicy < ApplicationPolicy
-  # Phase 1 stub: all actions default-deny via ApplicationPolicy.
-  # Phase 5 wires real rules.
+  def index?  = true
+  def show?   = true
 
   class Scope < ApplicationPolicy::Scope
-    def resolve
-      # TODO(phase-5): allow event organizers / admins to view event's decks
-      scope.none
-    end
+    def resolve = scope.all
   end
 end
