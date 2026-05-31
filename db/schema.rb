@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_30_220429) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_31_024949) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -488,6 +488,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_220429) do
     t.index ["status"], name: "index_tournaments_on_status"
   end
 
+  create_table "user_card_ratings", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "difficulty", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["card_id"], name: "index_user_card_ratings_on_card_id"
+    t.index ["user_id", "card_id"], name: "index_user_card_ratings_on_user_id_and_card_id", unique: true
+    t.index ["user_id"], name: "index_user_card_ratings_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.integer "age_group", default: 0, null: false
     t.string "code_dash_key", null: false
@@ -587,6 +598,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_220429) do
   add_foreign_key "study_sessions", "users", on_delete: :cascade
   add_foreign_key "tournament_event_decks", "decks", on_delete: :cascade
   add_foreign_key "tournament_event_decks", "tournament_events", on_delete: :cascade
+  add_foreign_key "user_card_ratings", "cards"
+  add_foreign_key "user_card_ratings", "users"
   add_foreign_key "work_journals", "users"
   add_foreign_key "work_plans", "users"
 end
