@@ -53,6 +53,8 @@ class CardReviewsController < ApplicationController
       )
     end
 
+    Flashcards::DueCountCacheService.invalidate(Current.user)
+
     due_remaining = if @study_session&.repeat?
                       answered_ids = @study_session.study_session_answers.pluck(:card_id)
                       @deck.cards.where.not(id: answered_ids)

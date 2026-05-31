@@ -68,6 +68,7 @@ class DecksController < ApplicationController
 
   def destroy
     @deck.destroy!
+    Flashcards::DueCountCacheService.invalidate(Current.user)
     redirect_to decks_path, notice: "덱이 삭제되었습니다."
   end
 

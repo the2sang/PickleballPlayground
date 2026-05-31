@@ -8,6 +8,7 @@ class CardsController < ApplicationController
     @card = @deck.cards.build(card_params.merge(card_type: :basic))
     authorize @card
     if @card.save
+      Flashcards::DueCountCacheService.invalidate(Current.user)
       @cards = @deck.cards.order(:position, :id)
       respond_to do |format|
         format.turbo_stream
@@ -34,6 +35,7 @@ class CardsController < ApplicationController
   def update
     authorize @card
     if @card.update(card_params)
+      Flashcards::DueCountCacheService.invalidate(Current.user)
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to deck_path(@deck) }
@@ -50,6 +52,7 @@ class CardsController < ApplicationController
   def destroy
     authorize @card
     @card.destroy!
+    Flashcards::DueCountCacheService.invalidate(Current.user)
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to deck_path(@deck) }
