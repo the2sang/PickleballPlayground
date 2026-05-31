@@ -1,5 +1,5 @@
 namespace :stock_infos do
-  KOREAN_DAYS = %w[일 월 화 수 목 금 토].freeze
+  KOREAN_DAYS = %w[일 월 화 수 목 금 토].freeze unless defined?(KOREAN_DAYS)
 
   desc "Fetch today's stock market outlook via Claude CLI and save to DB"
   task fetch: :environment do

@@ -1,7 +1,6 @@
 require "digest"
 require "fileutils"
 require "json"
-require "open3"
 require "securerandom"
 require "zip"
 
@@ -53,16 +52,19 @@ module Admin
       end
 
       def create_sql_dump
-        File.open(sql_dump_path, "wb") do |file|
-          Open3.popen3("sqlite3", sqlite_backup_path.to_s, ".dump") do |stdin, stdout, stderr, wait_thread|
-            stdin.close
-            IO.copy_stream(stdout, file)
+        db = SQLite3::Database.new(sqlite_backup_path.to_s)
 
-            error = stderr.read
-            status = wait_thread.value
-            raise "sqlite3 dump failed: #{error.presence || status.exitstatus}" unless status.success?
-          end
+        File.open(sql_dump_path, "wb") do |file|
+          file.puts "PRAGMA foreign_keys=OFF;"
+          file.puts "BEGIN TRANSACTION;"
+
+          dump_tables(db, file)
+          dump_schema_objects(db, file)
+
+          file.puts "COMMIT;"
         end
+      ensure
+        db&.close
       end
 
       def create_manifest
@@ -106,6 +108,57 @@ module Admin
         files = [ sqlite_backup_path ]
         files << sql_dump_path if @include_sql_dump
         files
+      end
+
+      def dump_tables(db, file)
+        schema_rows(db, "table").each do |row|
+          table_name = row.fetch("name")
+          file.puts "#{row.fetch("sql")};"
+          dump_table_rows(db, file, table_name)
+        end
+      end
+
+      def dump_schema_objects(db, file)
+        %w[index trigger view].each do |type|
+          schema_rows(db, type).each { |row| file.puts "#{row.fetch("sql")};" }
+        end
+      end
+
+      def schema_rows(db, type)
+        db.execute(
+          <<~SQL,
+            SELECT name, sql
+            FROM sqlite_schema
+            WHERE type = ?
+              AND sql IS NOT NULL
+              AND name NOT LIKE 'sqlite_%'
+            ORDER BY name
+          SQL
+          type
+        ).map { |name, sql| { "name" => name, "sql" => sql } }
+      end
+
+      def dump_table_rows(db, file, table_name)
+        db.execute("SELECT * FROM #{quote_identifier(table_name)}") do |row|
+          values = row.map { |value| quote_sql_value(value) }.join(",")
+          file.puts "INSERT INTO #{quote_identifier(table_name)} VALUES(#{values});"
+        end
+      end
+
+      def quote_identifier(value)
+        %("#{value.to_s.gsub('"', '""')}")
+      end
+
+      def quote_sql_value(value)
+        case value
+        when nil
+          "NULL"
+        when Numeric
+          value.to_s
+        else
+          string = value.to_s
+          string.valid_encoding? ? "'#{string.gsub("'", "''")}'" : "X'#{string.unpack1("H*")}'"
+        end
       end
 
       def file_entry(path, type)
