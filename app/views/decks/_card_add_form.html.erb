@@ -1,8 +1,31 @@
-<div data-controller="card-form"
-     data-card-form-saved-count-value="<%= deck.cards.size %>">
-  <header class="card-form__counter">
-    <span data-card-form-target="counter"><%= deck.cards.size %></span>장 저장됨
+<div class="card-add-form"
+     data-controller="card-form"
+     data-card-form-saved-count-value="<%= deck.cards.size %>"
+     data-card-form-card-type-value="basic">
+
+  <header class="card-add-form__header">
+    <div class="card-add-form__counter">
+      <span data-card-form-target="counter"><%= deck.cards.size %></span>장 저장됨
+    </div>
+
+    <div class="card-type-tabs" role="tablist" aria-label="카드 유형">
+      <button class="card-type-tab card-type-tab--active"
+              data-card-form-target="typeTab"
+              data-type="basic"
+              data-action="click->card-form#selectType"
+              role="tab" aria-selected="true" type="button">
+        주관식
+      </button>
+      <button class="card-type-tab"
+              data-card-form-target="typeTab"
+              data-type="multiple_choice"
+              data-action="click->card-form#selectType"
+              role="tab" aria-selected="false" type="button">
+        객관식
+      </button>
+    </div>
   </header>
+
   <%= form_with model: [deck, card],
         data: { action: "keydown->card-form#handleKeydown" } do |f| %>
     <% if card.errors.any? %>
@@ -10,13 +33,68 @@
         <% card.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
       </div>
     <% end %>
-    <%= f.text_field :front, placeholder: "앞면",
-        class: "cl-form__input",
-        data: { card_form_target: "front" }, autofocus: true %>
-    <%= f.text_field :back, placeholder: "뒷면", class: "cl-form__input" %>
-    <%= f.text_field :hint, placeholder: "힌트 (선택)", class: "cl-form__input" %>
-    <%= f.text_field :tags, placeholder: "태그 (쉼표 구분)", class: "cl-form__input" %>
-    <%= f.submit "저장하고 다음 (Cmd+Enter)", class: "btn btn--primary btn--sm" %>
+
+    <div class="cl-form">
+      <%# 앞면 / 문제 (공통) %>
+      <div class="cl-form__field">
+        <%= f.text_area :front,
+            placeholder: "앞면 / 문제",
+            class: "cl-form__textarea cl-form__textarea--front",
+            rows: 3,
+            data: { card_form_target: "front" },
+            autofocus: true %>
+      </div>
+
+      <%# 주관식 섹션 %>
+      <div data-card-form-target="basicSection">
+        <div class="cl-form">
+          <div class="cl-form__field">
+            <%= f.text_field :back, placeholder: "뒷면 / 정답", class: "cl-form__input" %>
+          </div>
+          <div class="cl-form__field">
+            <%= f.text_field :hint, placeholder: "힌트 (선택)", class: "cl-form__input" %>
+          </div>
+        </div>
+      </div>
+
+      <%# 객관식 섹션 %>
+      <div data-card-form-target="multipleSection" hidden>
+        <div class="cl-form">
+          <div class="card-choices">
+            <div class="card-choice">
+              <span class="card-choice__badge card-choice__badge--correct">정답</span>
+              <%= f.text_field :back,
+                  placeholder: "정답 입력...",
+                  class: "cl-form__input",
+                  data: { card_form_target: "backMultiple" } %>
+            </div>
+            <div class="card-choice">
+              <span class="card-choice__badge">오답 1</span>
+              <input type="text" placeholder="오답 1 입력..." class="cl-form__input" aria-label="오답 1">
+            </div>
+            <div class="card-choice">
+              <span class="card-choice__badge">오답 2</span>
+              <input type="text" placeholder="오답 2 입력..." class="cl-form__input" aria-label="오답 2">
+            </div>
+            <div class="card-choice">
+              <span class="card-choice__badge">오답 3</span>
+              <input type="text" placeholder="오답 3 입력..." class="cl-form__input" aria-label="오답 3">
+            </div>
+          </div>
+          <p class="card-choices__note">오답 선택지 저장은 다음 업데이트에서 지원됩니다</p>
+        </div>
+      </div>
+
+      <%# 태그 (공통) %>
+      <div class="cl-form__field">
+        <%= f.text_field :tags, placeholder: "태그 (쉼표 구분)", class: "cl-form__input" %>
+      </div>
+
+      <div>
+        <%= f.submit "저장하고 다음 (Cmd+Enter)", class: "btn btn--primary btn--sm" %>
+      </div>
+    </div>
   <% end %>
-  <p class="card-form__hint">Cmd+Enter로 저장하고 다음 카드 입력 · Esc로 취소</p>
+
+  <p class="card-add-form__hint">Cmd+Enter로 저장하고 다음 카드 입력 · Esc로 취소</p>
 </div>
