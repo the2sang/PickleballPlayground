@@ -11440,6 +11440,138 @@ lexxy-editor.lexxy-editor-field {
 }
 
 /* deck-card component */
+.deck-collection {
+  margin-bottom: 40px;
+}
+
+.deck-collection:last-child {
+  margin-bottom: 0;
+}
+
+.deck-collection__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.deck-collection__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #111827;
+}
+
+.deck-collection__range {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.deck-collection__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(280px, 100%);
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #6b7280;
+}
+
+.deck-collection__search:focus-within {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.10);
+}
+
+.deck-collection__search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.deck-collection__search input::placeholder {
+  color: #9ca3af;
+}
+
+.deck-collection__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.deck-collection__item {
+  min-width: 0;
+}
+
+.deck-collection__item .deck-card {
+  height: 100%;
+}
+
+.deck-collection__empty {
+  margin: 18px 0 0;
+  padding: 22px;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  background: #f9fafb;
+}
+
+.deck-collection__pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.deck-collection__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 76px;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .12s, background .12s, color .12s;
+}
+
+.deck-collection__button:hover:not(:disabled) {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.deck-collection__button:disabled {
+  cursor: default;
+  opacity: .42;
+}
+
+.deck-collection__page {
+  min-width: 46px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
 .deck-card { position:relative; display:flex; flex-direction:column; background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; transition:box-shadow .15s; }
 .deck-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.08); }
 .deck-card__body { display:block; padding:16px 52px 12px 16px; text-decoration:none; color:inherit; flex:1; }
@@ -12129,6 +12261,35 @@ lexxy-editor.lexxy-editor-field {
   }
   .quiz-nav__button { flex: 1; }
   .study-page__body { padding: 20px 12px 40px; }
+}
+
+@media (max-width: 900px) {
+  .deck-collection__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .deck-collection__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .deck-collection__search {
+    width: 100%;
+  }
+
+  .deck-collection__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-collection__pager {
+    justify-content: space-between;
+  }
+
+  .deck-collection__button {
+    flex: 1;
+  }
 }
 
 /* ── Deck Show — card list ──────────────────────────────── */
