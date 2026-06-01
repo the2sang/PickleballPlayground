@@ -5,6 +5,7 @@ class DecksController < ApplicationController
   before_action :authorize_deck!, only: %i[edit update destroy]
 
   def index
+    @site_setting = SiteSetting.current
     @selected_category = Deck.category_filter_value(params[:category])
     @category_options = Deck.category_options(include_all: true)
     @bookmarked_deck_ids = authenticated? ? Current.user.deck_bookmarks.pluck(:deck_id) : []

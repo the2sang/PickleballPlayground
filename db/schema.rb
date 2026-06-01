@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_31_215135) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -384,6 +384,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_215135) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "site_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "deck_community_open_chat_url"
+    t.string "key", default: "default", null: false
+    t.datetime "updated_at", null: false
+    t.integer "updated_by_id"
+    t.index ["key"], name: "index_site_settings_on_key", unique: true
+    t.index ["updated_by_id"], name: "index_site_settings_on_updated_by_id"
+  end
+
   create_table "stock_infos", force: :cascade do |t|
     t.text "content", null: false
     t.datetime "created_at", null: false
@@ -620,6 +630,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_215135) do
   add_foreign_key "pomodoro_settings", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "site_settings", "users", column: "updated_by_id"
   add_foreign_key "stock_infos", "users"
   add_foreign_key "study_session_answers", "cards", on_delete: :cascade
   add_foreign_key "study_session_answers", "study_sessions", on_delete: :cascade

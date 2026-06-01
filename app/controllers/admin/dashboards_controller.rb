@@ -10,6 +10,7 @@ module Admin
       @recent_users        = User.order(created_at: :desc).limit(5)
       @recent_sessions     = Session.includes(:user).order(created_at: :desc).limit(10)
       @pending_deck_addition_requests = DeckAdditionRequest.pending.includes(:user).recent_first
+      @site_setting = SiteSetting.current
     end
   end
 end

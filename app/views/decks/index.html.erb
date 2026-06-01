@@ -11,7 +11,9 @@
             <h1 class="cl-hero__title">낱말카드로 학습을 시작해 보세요</h1>
             <p class="cl-hero__subtitle">직접 덱을 만들거나 텍스트를 붙여넣어 카드를 빠르게 추가하세요.</p>
           </div>
-          <%= render "decks/upload_tools" %>
+          <div class="deck-header-actions">
+            <%= render "decks/upload_tools" %>
+          </div>
         </div>
         <%= render "decks/category_filter" %>
         <div style="display:flex; gap:12px; margin-top:24px;">
@@ -19,10 +21,7 @@
             <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
             내 덱 만들기
           <% end %>
-          <%= link_to new_deck_path, class: "btn btn--secondary" do %>
-            <iconify-icon icon="lucide:clipboard-paste" width="14"></iconify-icon>
-            붙여넣기 가져오기
-          <% end %>
+          <%= render "decks/community_open_chat" %>
         </div>
       </div>
     </div>
@@ -47,6 +46,7 @@
             <h1 class="cl-hero__title">낱말카드 허브</h1>
           </div>
           <div class="deck-hub-actions">
+            <%= render "decks/community_open_chat" %>
             <%= render "decks/upload_tools" %>
             <%= link_to new_deck_path, class: "btn btn--primary btn--sm" do %>
               <iconify-icon icon="lucide:plus" width="13"></iconify-icon>
@@ -136,10 +136,13 @@
             <h1 class="cl-hero__title">피클볼 낱말카드</h1>
             <p class="cl-hero__subtitle">규칙·용어·전술을 카드로 학습하세요.</p>
           </div>
-          <%= link_to new_session_path, class: "btn btn--primary btn--sm" do %>
-            <iconify-icon icon="lucide:log-in" width="13"></iconify-icon>
-            로그인하고 시작하기
-          <% end %>
+          <div class="deck-header-actions">
+            <%= render "decks/community_open_chat" %>
+            <%= link_to new_session_path, class: "btn btn--primary btn--sm" do %>
+              <iconify-icon icon="lucide:log-in" width="13"></iconify-icon>
+              로그인하고 시작하기
+            <% end %>
+          </div>
         </div>
       </div>
       <%= render "decks/category_filter" %>

@@ -4,12 +4,15 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values  = { cards: Array, ratings: Object, deckId: Number }
   static targets = ["front", "back", "inner", "counter",
-                    "prevBtn", "nextBtn", "star", "countdown", "swapBtn"]
+                    "prevBtn", "nextBtn", "star", "countdown", "swapBtn",
+                    "pauseBtn", "pauseIcon"]
 
   connect() {
     this.index          = 0
     this.flipped        = false
     this.swapped        = false
+    this.paused         = false
+    this.countdownRemaining = 0
     this.countdownTimer = null
     this.handleKeydown  = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
@@ -26,28 +29,42 @@ export default class extends Controller {
     if (!this.flipped) {
       this.flipped = true
       this.innerTarget.classList.add("flip-card__inner--flipped")
+      this.paused = false
       this.startCountdown()
     } else {
-      this.flipped = false
-      this.innerTarget.classList.remove("flip-card__inner--flipped")
-      this.clearTimers()
-      this.countdownTarget.classList.add("hidden")
+      this.showFront()
     }
   }
 
-  startCountdown() {
-    let remaining = 3
-    this.countdownTarget.textContent = remaining
+  startCountdown(remaining = 3) {
+    this.clearTimers()
+    this.countdownRemaining = remaining
+    this.updatePauseButton()
+    this.countdownTarget.textContent = this.countdownRemaining
     this.countdownTarget.classList.remove("hidden")
     this.countdownTimer = setInterval(() => {
-      remaining -= 1
-      if (remaining > 0) {
-        this.countdownTarget.textContent = remaining
+      this.countdownRemaining -= 1
+      if (this.countdownRemaining > 0) {
+        this.countdownTarget.textContent = this.countdownRemaining
       } else {
         this.clearTimers()
         this.flip()
       }
     }, 1000)
+  }
+
+  togglePause(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    if (!this.flipped) return
+
+    this.paused = !this.paused
+    if (this.paused) {
+      this.clearTimers()
+    } else {
+      this.startCountdown(this.countdownRemaining || 3)
+    }
+    this.updatePauseButton()
   }
 
   clearTimers() {
@@ -57,15 +74,33 @@ export default class extends Controller {
     }
   }
 
+  showFront() {
+    this.flipped = false
+    this.paused = false
+    this.countdownRemaining = 0
+    this.innerTarget.classList.remove("flip-card__inner--flipped")
+    this.clearTimers()
+    this.countdownTarget.classList.add("hidden")
+    this.updatePauseButton()
+  }
+
+  updatePauseButton() {
+    if (!this.hasPauseBtnTarget) return
+
+    this.pauseBtnTarget.classList.toggle("flip-pause-btn--paused", this.paused)
+    this.pauseBtnTarget.setAttribute("aria-pressed", String(this.paused))
+    this.pauseBtnTarget.setAttribute("aria-label", this.paused ? "자동 뒤집기 다시 시작" : "자동 뒤집기 일시정지")
+    if (this.hasPauseIconTarget) {
+      this.pauseIconTarget.setAttribute("icon", this.paused ? "lucide:play" : "lucide:pause")
+    }
+  }
+
   // ── Swap ────────────────────────────────────────────────────────
   swap() {
     this.swapped = !this.swapped
     this.swapBtnTarget.classList.toggle("flip-swap-btn--active", this.swapped)
     if (this.flipped) {
-      this.flipped = false
-      this.innerTarget.classList.remove("flip-card__inner--flipped")
-      this.clearTimers()
-      this.countdownTarget.classList.add("hidden")
+      this.showFront()
     }
     this.render()
   }
@@ -75,9 +110,7 @@ export default class extends Controller {
     const dir = event.currentTarget.dataset.direction
     this.clearTimers()
     if (this.flipped) {
-      this.flipped = false
-      this.innerTarget.classList.remove("flip-card__inner--flipped")
-      this.countdownTarget.classList.add("hidden")
+      this.showFront()
     }
     if (dir === "prev") {
       this.index = Math.max(0, this.index - 1)

@@ -96,6 +96,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboards#index"
+    resource :site_setting, only: :update
     resources :users, only: %i[index show update]
     resources :sessions, only: %i[index]
     resources :groups

@@ -73,7 +73,20 @@
               </div>
               <div class="flip-card__back">
                 <p class="flip-card__text" data-flip-card-target="back"></p>
-                <div class="flip-countdown hidden" data-flip-card-target="countdown"></div>
+                <div class="flip-card__answer-controls" aria-label="자동 뒤집기 제어">
+                  <button type="button"
+                          class="flip-pause-btn"
+                          data-flip-card-target="pauseBtn"
+                          data-action="click->flip-card#togglePause"
+                          aria-label="자동 뒤집기 일시정지"
+                          aria-pressed="false">
+                    <iconify-icon data-flip-card-target="pauseIcon"
+                                  icon="lucide:pause"
+                                  width="13"
+                                  aria-hidden="true"></iconify-icon>
+                  </button>
+                  <div class="flip-countdown hidden" data-flip-card-target="countdown"></div>
+                </div>
               </div>
             </div>
           </div>
