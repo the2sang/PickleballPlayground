@@ -11926,10 +11926,10 @@ lexxy-editor.lexxy-editor-field {
 /* ── Quiz Timer ─────────────────────────────────────────── */
 .quiz-timer {
   position: absolute;
-  top: 18px;
+  top: 15px;
   right: 20px;
-  width: 52px;
-  height: 52px;
+  width: 31px;
+  height: 31px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11949,8 +11949,8 @@ lexxy-editor.lexxy-editor-field {
 .quiz-timer__svg {
   position: absolute;
   inset: 0;
-  width: 52px;
-  height: 52px;
+  width: 31px;
+  height: 31px;
   transform: rotate(-90deg);
   pointer-events: none;
 }
@@ -11973,7 +11973,7 @@ lexxy-editor.lexxy-editor-field {
 
 .quiz-timer__num {
   position: relative;
-  font-size: 14px;
+  font-size: 9px;
   font-weight: 700;
   color: #3f3f46;
   line-height: 1;
