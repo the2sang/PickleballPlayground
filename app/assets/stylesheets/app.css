@@ -12000,8 +12000,24 @@ lexxy-editor.lexxy-editor-field {
 /* Footer (skip button) */
 .quiz-card__footer {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 14px 24px 22px;
+}
+
+.quiz-card__secondary-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.quiz-card__position {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a1a1aa;
+  white-space: nowrap;
 }
 
 .quiz-skip {
@@ -12018,6 +12034,65 @@ lexxy-editor.lexxy-editor-field {
   transition: color 0.12s;
 }
 .quiz-skip:hover { color: #71717a; }
+.quiz-skip:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.quiz-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.quiz-nav__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 84px;
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #3f3f46;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s, transform 0.08s;
+}
+
+.quiz-nav__button:hover:not(:disabled):not(.quiz-nav__button--disabled) {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.quiz-nav__button:active:not(:disabled):not(.quiz-nav__button--disabled) {
+  transform: scale(0.98);
+}
+
+.quiz-nav__button--primary {
+  border-color: #84cc16;
+  background: #84cc16;
+  color: #ffffff;
+}
+
+.quiz-nav__button--primary:hover:not(:disabled) {
+  border-color: #65a30d;
+  background: #65a30d;
+  color: #ffffff;
+}
+
+.quiz-nav__button:disabled,
+.quiz-nav__button--disabled {
+  cursor: default;
+  opacity: 0.42;
+  pointer-events: none;
+}
 
 /* Keyboard hint */
 .quiz-hint {
@@ -12043,6 +12118,16 @@ lexxy-editor.lexxy-editor-field {
   .quiz-options { grid-template-columns: 1fr; }
   .quiz-card__question { padding: 20px 20px 16px; }
   .quiz-card__text { font-size: 18px; }
+  .quiz-card__footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .quiz-card__secondary-actions,
+  .quiz-nav {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .quiz-nav__button { flex: 1; }
   .study-page__body { padding: 20px 12px 40px; }
 }
 

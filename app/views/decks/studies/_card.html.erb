@@ -3,11 +3,20 @@
   completed = local_assigns.fetch(:completed_count, 0)
   opts      = local_assigns.fetch(:options, [card.back])
   pct       = total > 0 ? (completed.to_f / total * 100).round : 0
+  current_index = local_assigns.fetch(:current_index, completed)
+  answered_rating = local_assigns[:answered_rating]
+  selected_answer = local_assigns[:selected_answer].to_s
+  answered = answered_rating.present?
+  previous_card_path = local_assigns[:previous_card_path]
+  next_card_path = local_assigns[:next_card_path]
+  next_disabled = answered ? next_card_path.blank? : true
 %>
 
 <div data-controller="quiz-session"
      data-quiz-session-correct-value="<%= card.back %>"
-     data-quiz-session-duration-value="60">
+     data-quiz-session-duration-value="60"
+     data-quiz-session-answered-value="<%= answered %>"
+     data-quiz-session-next-url-value="<%= next_card_path %>">
 
   <%# ── Progress ─────────────────────────────────────────── %>
   <div class="quiz-progress" aria-label="학습 진행률 <%= completed %>/<%= total %>">
@@ -61,16 +70,32 @@
       <%= f.hidden_field "card_review[card_id]",          value: card.id %>
       <%= f.hidden_field "card_review[deck_id]",          value: deck.id %>
       <%= f.hidden_field "card_review[study_session_id]", value: local_assigns[:study_session]&.id %>
-      <%= f.hidden_field "card_review[rating]", value: "",
+      <%= f.hidden_field "card_review[rating]", value: answered_rating || "",
           data: { "quiz-session-target": "rating" } %>
+      <%= f.hidden_field "card_review[selected_answer]", value: selected_answer,
+          data: { "quiz-session-target": "selectedAnswer" } %>
 
       <div class="quiz-options">
         <% opts.each_with_index do |option, idx| %>
+          <%
+            result = nil
+            if answered
+              result = if option == card.back
+                         "correct"
+              elsif option == selected_answer
+                         "wrong"
+              else
+                         "inactive"
+              end
+            end
+          %>
           <button type="button"
                   class="quiz-option"
                   data-quiz-session-target="option"
                   data-value="<%= option %>"
+                  <%= %(data-result="#{result}").html_safe if result %>
                   data-action="click->quiz-session#selectOption"
+                  <%= "disabled" if answered %>
                   aria-label="선택지 <%= idx + 1 %>: <%= option %>">
             <span class="quiz-option__key"><%= idx + 1 %></span>
             <span class="quiz-option__text"><%= option %></span>
@@ -78,14 +103,43 @@
         <% end %>
       </div>
 
-      <%# Don't know %>
       <div class="quiz-card__footer">
-        <button type="button"
-                class="quiz-skip"
-                data-action="click->quiz-session#skipCard">
-          <iconify-icon icon="lucide:flag" width="13"></iconify-icon>
-          모르겠어요?
-        </button>
+        <div class="quiz-card__secondary-actions">
+          <button type="button"
+                  class="quiz-skip"
+                  data-action="click->quiz-session#skipCard"
+                  <%= "disabled" if answered %>>
+            <iconify-icon icon="lucide:flag" width="13"></iconify-icon>
+            모르겠어요?
+          </button>
+          <span class="quiz-card__position"><%= current_index + 1 %> / <%= total %></span>
+        </div>
+
+        <div class="quiz-nav">
+          <% if previous_card_path.present? %>
+            <%= link_to previous_card_path,
+                class: "quiz-nav__button",
+                data: { turbo_stream: true },
+                aria: { label: "이전 문제" } do %>
+              <iconify-icon icon="lucide:arrow-left" width="15"></iconify-icon>
+              이전
+            <% end %>
+          <% else %>
+            <span class="quiz-nav__button quiz-nav__button--disabled" aria-disabled="true">
+              <iconify-icon icon="lucide:arrow-left" width="15"></iconify-icon>
+              이전
+            </span>
+          <% end %>
+
+          <button type="button"
+                  class="quiz-nav__button quiz-nav__button--primary"
+                  data-quiz-session-target="nextButton"
+                  data-action="click->quiz-session#nextCard"
+                  <%= "disabled" if next_disabled %>>
+            다음
+            <iconify-icon icon="lucide:arrow-right" width="15"></iconify-icon>
+          </button>
+        </div>
       </div>
     <% end %>
 

@@ -13,9 +13,10 @@
 
   <div class="study-page__body">
     <div id="study-card" class="study-page__card-wrap">
-      <%= render "card", card: @current_card, deck: @deck,
+      <%= render "decks/studies/card", card: @current_card, deck: @deck,
           options: @options, completed_count: @completed_count, total_count: @total_count,
-          study_session: @study_session %>
+          study_session: @study_session, current_index: @current_index,
+          previous_card_path: @previous_card_path, next_card_path: @next_card_path %>
     </div>
   </div>
 </div>

@@ -1,4 +1,6 @@
 class Decks::StudiesController < ApplicationController
+  include Flashcards::StudyNavigation
+
   before_action :set_deck
 
   def show
@@ -35,10 +37,14 @@ class Decks::StudiesController < ApplicationController
       repeat: repeat
     )
 
-    @current_card    = @due_cards.first
-    @total_count     = @deck.cards.count
+    study_card_ids = @due_cards.pluck(:id)
+    store_study_card_ids(@study_session, study_card_ids)
+
+    @current_card    = Card.find(study_card_ids.first)
+    @total_count     = study_card_ids.size
     @completed_count = 0
-    @options         = @current_card.quiz_options(@deck)
+    @current_index   = 0
+    @options         = study_options_for(@study_session, @deck, @current_card)
   end
 
   private

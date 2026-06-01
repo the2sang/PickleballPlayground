@@ -1,18 +1,28 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["option", "form", "rating", "timer", "timerDisplay", "timerRing", "pauseIcon"]
-  static values  = { correct: String, duration: { type: Number, default: 60 } }
+  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "timerRing", "pauseIcon"]
+  static values  = {
+    correct: String,
+    duration: { type: Number, default: 60 },
+    answered: { type: Boolean, default: false },
+    nextUrl: String
+  }
 
   connect() {
-    this.answered      = false
+    this.answered      = this.answeredValue
     this.paused        = false
     this.remaining     = this.durationValue
     this._circumference = 2 * Math.PI * 16  // r=16 → C≈100.53
     this.handleKeydown = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
     this._updateRing()
-    this._startTimer()
+    if (this.answered) {
+      this._clearTimer()
+      if (this.hasTimerTarget) this.timerTarget.disabled = true
+    } else {
+      this._startTimer()
+    }
   }
 
   disconnect() {
@@ -29,8 +39,9 @@ export default class extends Controller {
     const correct = chosen.dataset.value === this.correctValue
 
     this.ratingTarget.value = correct ? 4 : 1
+    if (this.hasSelectedAnswerTarget) this.selectedAnswerTarget.value = chosen.dataset.value
     this._reveal(chosen, correct)
-    setTimeout(() => this.formTarget.requestSubmit(), 1000)
+    this._enableNext()
   }
 
   skipCard(event) {
@@ -39,7 +50,20 @@ export default class extends Controller {
     this.answered = true
     this._clearTimer()
     this.ratingTarget.value = 1
-    this.optionTargets.forEach(btn => { btn.disabled = true })
+    if (this.hasSelectedAnswerTarget) this.selectedAnswerTarget.value = ""
+    this._reveal(null, false)
+    this._enableNext()
+  }
+
+  nextCard(event) {
+    event.preventDefault()
+
+    if (this.answeredValue && this.nextUrlValue) {
+      window.Turbo.visit(this.nextUrlValue, { action: "replace" })
+      return
+    }
+
+    if (!this.ratingTarget.value) return
     this.formTarget.requestSubmit()
   }
 
@@ -94,8 +118,9 @@ export default class extends Controller {
     if (this.answered) return
     this.answered = true
     this.ratingTarget.value = 1
-    this.optionTargets.forEach(btn => { btn.disabled = true })
-    this.formTarget.requestSubmit()
+    if (this.hasSelectedAnswerTarget) this.selectedAnswerTarget.value = ""
+    this._reveal(null, false)
+    this._enableNext()
   }
 
   _updateDisplay() {
@@ -128,5 +153,9 @@ export default class extends Controller {
         btn.dataset.result = "inactive"
       }
     })
+  }
+
+  _enableNext() {
+    if (this.hasNextButtonTarget) this.nextButtonTarget.disabled = false
   }
 }

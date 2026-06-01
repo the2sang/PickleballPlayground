@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_01_145124) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -409,6 +409,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
     t.datetime "created_at", null: false
     t.boolean "is_correct", null: false
     t.integer "rating", null: false
+    t.text "selected_answer"
     t.integer "study_session_id", null: false
     t.datetime "updated_at", null: false
     t.index ["card_id"], name: "index_study_session_answers_on_card_id"

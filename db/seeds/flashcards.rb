@@ -37,6 +37,8 @@ ActiveRecord::Base.transaction do
       card.back     = card_attrs.fetch("back")
       card.hint     = card_attrs["hint"]
       card.tags     = card_attrs["tags"]
+      card.card_type = card_attrs["card_type"].presence || "basic"
+      card.answer_choices = card_attrs["answer_choices"] || []
       card.position = idx + 1
       card.save!
 

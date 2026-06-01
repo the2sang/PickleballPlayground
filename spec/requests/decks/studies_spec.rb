@@ -49,6 +49,61 @@ RSpec.describe "Decks::Studies", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).not_to include("오늘의 학습 완료")
       end
+
+      it "이전/다음 문제 이동 컨트롤을 렌더한다" do
+        get deck_study_path(deck)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("quiz-nav")
+        expect(response.body).to include("이전")
+        expect(response.body).to include("다음")
+      end
+    end
+
+    context "객관식 카드 학습 세션" do
+      let!(:first_card) { create(:card, :multiple_choice, deck: deck, position: 1, front: "첫 문제", back: "정답 1") }
+      let!(:second_card) { create(:card, :multiple_choice, deck: deck, position: 2, front: "둘째 문제", back: "정답 2") }
+
+      it "다음 액션으로 이동한 뒤 이전 문제를 Turbo Stream으로 다시 열 수 있다" do
+        get deck_study_path(deck)
+        study_session = StudySession.find_by!(user: user, deck: deck, completed_at: nil)
+
+        post card_reviews_path,
+          params: {
+            card_review: {
+              card_id: first_card.id,
+              deck_id: deck.id,
+              study_session_id: study_session.id,
+              rating: 4,
+              selected_answer: first_card.back
+            }
+          },
+          headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("둘째 문제")
+        expect(response.body).to include(deck_study_session_card_path(deck, study_session, first_card))
+        expect(study_session.study_session_answers.find_by!(card: first_card).selected_answer).to eq(first_card.back)
+
+        get deck_study_session_card_path(deck, study_session, first_card),
+          headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+        expect(response.body).to include("첫 문제")
+        expect(response.body).to match(/data-result=(&quot;|")correct/)
+      end
+
+      it "보기 텍스트를 쿠키 세션에 저장하지 않는다" do
+        session[:study_session_options] = { "legacy" => { "1" => [ "긴 보기 텍스트" * 100 ] } }
+        session[:study_session_selected_answers] = { "legacy" => { "1" => "이전 선택" } }
+
+        get deck_study_path(deck)
+
+        expect(response).to have_http_status(:ok)
+        expect(request.session[:study_session_card_ids]).to be_present
+        expect(request.session[:study_session_options]).to be_nil
+        expect(request.session[:study_session_selected_answers]).to be_nil
+      end
     end
 
     context "비인증 사용자" do
