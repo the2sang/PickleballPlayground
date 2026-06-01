@@ -27,6 +27,15 @@ RUN bundle install
 
 COPY . .
 
+RUN sed -i 's/\r$//' \
+      bin/docker-dev-entrypoint \
+      bin/rails \
+      bin/rake && \
+    chmod +x \
+      bin/docker-dev-entrypoint \
+      bin/rails \
+      bin/rake
+
 ENTRYPOINT ["/rails/bin/docker-dev-entrypoint"]
 EXPOSE 3000
 CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]

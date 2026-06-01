@@ -47,6 +47,31 @@
   </div>
 
   <div class="admin-grid">
+    <section class="admin-panel" id="deck-community">
+      <div class="admin-panel__header">
+        <h2 class="admin-panel__title">덱 커뮤니티 오픈 카톡방</h2>
+      </div>
+      <%= form_with model: @site_setting,
+            url: admin_site_setting_path,
+            method: :patch,
+            class: "admin-setting-form" do |f| %>
+        <div class="admin-setting-form__field">
+          <%= f.label :deck_community_open_chat_url, "접속 URL", class: "form__label" %>
+          <%= f.url_field :deck_community_open_chat_url,
+                class: "form__input",
+                placeholder: "https://open.kakao.com/o/..." %>
+        </div>
+        <div class="admin-setting-form__footer">
+          <% if @site_setting.updated_by.present? %>
+            <span class="admin-setting-form__meta">
+              마지막 수정: <%= @site_setting.updated_by.nickname %> · <%= @site_setting.updated_at.strftime("%Y-%m-%d %H:%M") %>
+            </span>
+          <% end %>
+          <%= f.submit "저장", class: "btn btn--primary btn--sm" %>
+        </div>
+      <% end %>
+    </section>
+
     <section class="admin-panel">
       <div class="admin-panel__header">
         <h2 class="admin-panel__title">덱 추가 승인요청</h2>

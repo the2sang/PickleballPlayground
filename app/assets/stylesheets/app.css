@@ -4789,6 +4789,44 @@ lexxy-editor.lexxy-editor-field {
   background-color: #ffffff;
   border-bottom: 1px solid var(--hcp-border-light);
 }
+.cl-hero--main-banner {
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.18)),
+    url("club_main_banner.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-bottom: none;
+}
+.cl-hero--main-banner .cl-hero__eyebrow,
+.cl-hero--main-banner .cl-hero__subtitle {
+  color: rgba(255, 255, 255, 0.88);
+}
+.cl-hero--main-banner .cl-hero__title {
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.32);
+}
+.cl-hero--club-banner {
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.26)),
+    url("club_banner1.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-bottom: none;
+}
+.cl-hero--club-banner .cl-hero__eyebrow,
+.cl-hero--club-banner .cl-hero__eyebrow a,
+.cl-hero--club-banner .cl-hero__subtitle {
+  color: rgba(255, 255, 255, 0.86);
+}
+.cl-hero--club-banner .cl-hero__eyebrow a:hover {
+  color: #ffffff;
+}
+.cl-hero--club-banner .cl-hero__title {
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.32);
+}
 .cl-hero__inner {
   max-width: 960px;
   margin: 0 auto;
@@ -11469,6 +11507,83 @@ lexxy-editor.lexxy-editor-field {
   font-weight: 600;
 }
 
+.deck-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.deck-community-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 8px;
+  background: #FEE500;
+  color: #3C1E1E;
+  text-decoration: none;
+  box-shadow: 0 1px 0 rgba(60, 30, 30, 0.12);
+  transition: background 0.12s, transform 0.12s, box-shadow 0.12s;
+}
+
+.deck-community-link:hover {
+  background: #F4DC00;
+  color: #3C1E1E;
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(60, 30, 30, 0.12);
+}
+
+.deck-community-link__image {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+}
+
+.deck-community-link__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.05;
+}
+
+.deck-community-link__label {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.72;
+}
+
+.deck-community-link__title {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-setting-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-setting-form__field {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-setting-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-setting-form__meta {
+  color: var(--hcp-cool-gray);
+  font-size: 12px;
+}
+
 .cl-ad-card {
   min-height: 168px;
   border-radius: 12px;
@@ -12094,10 +12209,40 @@ lexxy-editor.lexxy-editor-field {
 }
 
 /* ── Countdown ────────────────────────────────────────────────── */
-.flip-countdown {
+.flip-card__answer-controls {
   position: absolute;
   bottom: 12px;
   right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.flip-pause-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d9f99d;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #4d7c0f;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.12s;
+}
+.flip-pause-btn:hover {
+  background: #ffffff;
+  border-color: #bef264;
+  color: #3f6212;
+  transform: translateY(-1px);
+}
+.flip-pause-btn--paused {
+  background: #ecfccb;
+  border-color: #84cc16;
+  color: #365314;
+}
+.flip-countdown {
   font-size: 22px;
   font-weight: 700;
   color: #65a30d;

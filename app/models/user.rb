@@ -32,6 +32,7 @@ class User < ApplicationRecord
   has_many :user_card_ratings, dependent: :destroy
   has_many :deck_addition_requests, dependent: :destroy
   has_many :deck_bookmarks, dependent: :destroy
+  has_many :updated_site_settings, class_name: "SiteSetting", foreign_key: :updated_by_id, dependent: :nullify, inverse_of: :updated_by
 
   def group_member_ids
     group_ids = group_memberships.select(:group_id)

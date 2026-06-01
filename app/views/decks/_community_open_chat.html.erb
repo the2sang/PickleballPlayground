@@ -1,0 +1,13 @@
+<% if @site_setting&.deck_community_open_chat_url.present? %>
+  <%= link_to @site_setting.deck_community_open_chat_url,
+        class: "deck-community-link",
+        target: "_blank",
+        rel: "noopener",
+        aria: { label: "덱 커뮤니티 오픈 카톡방 열기" } do %>
+    <%= image_tag "kakao-open-chat.svg", alt: "", class: "deck-community-link__image" %>
+    <span class="deck-community-link__body">
+      <span class="deck-community-link__label">오픈 카톡방</span>
+      <span class="deck-community-link__title">덱 커뮤니티</span>
+    </span>
+  <% end %>
+<% end %>
