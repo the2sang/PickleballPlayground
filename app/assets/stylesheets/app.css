@@ -5341,6 +5341,22 @@ lexxy-editor.lexxy-editor-field {
   grid-template-columns: 1fr 1fr 1fr;
 }
 .cl-form__field { display: flex; flex-direction: column; }
+.cl-form__field--inline {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.cl-form__field--inline .cl-form__label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+.cl-form__field--top {
+  align-items: start;
+}
+.cl-form__field--top .cl-form__label {
+  padding-top: 10px;
+}
 .cl-form__label {
   font-size: 13px;
   font-weight: 500;
@@ -5516,6 +5532,16 @@ lexxy-editor.lexxy-editor-field {
   .cl-grid { grid-template-columns: 1fr; }
   .cl-form__grid { grid-template-columns: 1fr; }
   .cl-form__grid--3 { grid-template-columns: 1fr 1fr; }
+  .cl-form__field--inline {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .cl-form__field--inline .cl-form__label {
+    margin-bottom: 0;
+  }
+  .cl-form__field--top .cl-form__label {
+    padding-top: 0;
+  }
   .cl-content { padding: 24px 16px; }
   .cl-content--narrow, .cl-content--form { padding: 32px 16px; }
 }
@@ -10929,6 +10955,22 @@ lexxy-editor.lexxy-editor-field {
   grid-template-columns: 1fr 1fr 1fr;
 }
 .cl-form__field { display: flex; flex-direction: column; }
+.cl-form__field--inline {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.cl-form__field--inline .cl-form__label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+.cl-form__field--top {
+  align-items: start;
+}
+.cl-form__field--top .cl-form__label {
+  padding-top: 10px;
+}
 .cl-form__label {
   font-size: 13px;
   font-weight: 500;
@@ -11104,6 +11146,16 @@ lexxy-editor.lexxy-editor-field {
   .cl-grid { grid-template-columns: 1fr; }
   .cl-form__grid { grid-template-columns: 1fr; }
   .cl-form__grid--3 { grid-template-columns: 1fr 1fr; }
+  .cl-form__field--inline {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .cl-form__field--inline .cl-form__label {
+    margin-bottom: 0;
+  }
+  .cl-form__field--top .cl-form__label {
+    padding-top: 0;
+  }
   .cl-content { padding: 24px 16px; }
   .cl-content--narrow, .cl-content--form { padding: 32px 16px; }
 }
@@ -12065,10 +12117,11 @@ lexxy-editor.lexxy-editor-field {
 
 .deck-row__actions {
   flex-shrink: 0;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.12s;
 }
 .deck-row:hover .deck-row__actions { opacity: 1; }
+.deck-row__edit-link { white-space: nowrap; }
 
 .deck-row__edit-form {
   padding: 16px 18px;

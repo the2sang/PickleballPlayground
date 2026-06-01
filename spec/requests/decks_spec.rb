@@ -135,6 +135,31 @@ RSpec.describe "Decks", type: :request do
       expect(response.body).to include("별3개 이상만")
       expect(response.body).to include(deck_flip_path(deck, min_stars: 3))
     end
+
+    it "관리자에게 공식 덱 문제 수정 링크를 노출한다" do
+      admin = create(:user, :admin)
+      deck = create(:deck, :official)
+      card = create(:card, deck: deck, front: "기존 문제", back: "기존 정답")
+      sign_in(admin)
+
+      get deck_path(deck)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("기존 문제")
+      expect(response.body).to include("문제 수정")
+      expect(response.body).to include(edit_deck_card_path(deck, card))
+    end
+
+    it "일반 사용자에게 공식 덱 문제 수정 링크를 숨긴다" do
+      deck = create(:deck, :official)
+      create(:card, deck: deck, front: "기존 문제", back: "기존 정답")
+      sign_in(user)
+
+      get deck_path(deck)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("문제 수정")
+    end
   end
 
   describe "GET /decks/new" do
