@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "timerRing", "pauseIcon"]
+  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "pauseIcon"]
   static values  = {
     correct: String,
     duration: { type: Number, default: 60 },
@@ -13,10 +13,9 @@ export default class extends Controller {
     this.answered      = this.answeredValue
     this.paused        = false
     this.remaining     = this.durationValue
-    this._circumference = 2 * Math.PI * 16  // r=16 → C≈100.53
     this.handleKeydown = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
-    this._updateRing()
+    this._updateProgress()
     if (this.answered) {
       this._clearTimer()
       if (this.hasTimerTarget) this.timerTarget.disabled = true
@@ -127,16 +126,17 @@ export default class extends Controller {
     if (this.hasTimerDisplayTarget) {
       this.timerDisplayTarget.textContent = this.remaining
     }
-    this._updateRing()
+    this._updateProgress()
     if (this.hasTimerTarget && this.remaining <= 10) {
       this.timerTarget.classList.add("quiz-timer--urgent")
     }
   }
 
-  _updateRing() {
-    if (!this.hasTimerRingTarget) return
-    const offset = this._circumference * (1 - this.remaining / this.durationValue)
-    this.timerRingTarget.style.strokeDashoffset = offset
+  _updateProgress() {
+    if (!this.hasTimerTarget) return
+    const progress = Math.max(0, Math.min(1, 1 - this.remaining / this.durationValue))
+    this.timerTarget.style.setProperty("--quiz-timer-top", `${(1 - progress) * 100}%`)
+    this.timerTarget.style.setProperty("--quiz-timer-bottom", `${progress * 100}%`)
   }
 
   _reveal(chosen, correct) {

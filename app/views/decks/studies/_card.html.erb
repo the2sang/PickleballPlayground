@@ -37,11 +37,15 @@
             data-quiz-session-target="timer"
             data-action="click->quiz-session#pauseToggle"
             aria-label="타이머 일시정지/재생">
-      <svg class="quiz-timer__svg" viewBox="0 0 40 40" aria-hidden="true">
-        <circle class="quiz-timer__track" cx="20" cy="20" r="16"/>
-        <circle class="quiz-timer__ring" cx="20" cy="20" r="16"
-                data-quiz-session-target="timerRing"/>
-      </svg>
+      <span class="quiz-hourglass" aria-hidden="true">
+        <span class="quiz-hourglass__bulb quiz-hourglass__bulb--top">
+          <span class="quiz-hourglass__sand quiz-hourglass__sand--top"></span>
+        </span>
+        <span class="quiz-hourglass__stream"></span>
+        <span class="quiz-hourglass__bulb quiz-hourglass__bulb--bottom">
+          <span class="quiz-hourglass__sand quiz-hourglass__sand--bottom"></span>
+        </span>
+      </span>
       <span class="quiz-timer__num" data-quiz-session-target="timerDisplay">60</span>
       <iconify-icon class="quiz-timer__icon"
                     data-quiz-session-target="pauseIcon"
