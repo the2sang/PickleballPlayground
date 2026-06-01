@@ -4888,6 +4888,31 @@ lexxy-editor.lexxy-editor-field {
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.34);
 }
 
+.cl-hero.cl-hero--game-sessions-banner {
+  background-image:
+    linear-gradient(90deg, rgba(6, 12, 18, 0.76), rgba(6, 12, 18, 0.38) 52%, rgba(6, 12, 18, 0.1)),
+    url("game_sessions_banner.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-bottom: none;
+}
+
+.cl-hero--game-sessions-banner .cl-hero__eyebrow,
+.cl-hero--game-sessions-banner .cl-hero__subtitle {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.cl-hero--game-sessions-banner .cl-hero__title {
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.34);
+}
+
+.cl-hero--game-sessions-banner .cl-shortcut-link {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.92);
+}
+
 /* ── Content Area ──────────────────────────────────────────── */
 .cl-content {
   max-width: 960px;
