@@ -18,6 +18,21 @@ class Decks::StudiesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".quiz-difficulty button[data-action='click->quiz-session#rateDifficulty']", 5
   end
 
+  test "show renders study card edit controls for deck editors" do
+    sign_in_as(users(:admin))
+
+    get deck_study_path(@deck)
+
+    assert_response :success
+    assert_select "button[data-action='click->quiz-session#startEdit']", text: "문제 수정"
+    assert_select "form[action='#{deck_study_card_edit_path(@deck, @easy_card)}']" do
+      assert_select "textarea[name='card[front]']", text: "Serve"
+      assert_select "input[readonly][value='A legal start']", 1
+      assert_select "input[name='card[answer_choices][]']", 3
+      assert_select "input[name='card[back]']", 0
+    end
+  end
+
   test "show filters study cards to bookmarked cards" do
     CardBookmark.create!(user: @user, card: @hard_card)
 

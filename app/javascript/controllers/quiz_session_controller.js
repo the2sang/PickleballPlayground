@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "pauseIcon",
-                    "bookmarkButton", "bookmarkIcon", "difficultyStar"]
+                    "bookmarkButton", "bookmarkIcon", "difficultyStar", "displayPanel", "editPanel", "editFront"]
   static values  = {
     correct: String,
     duration: { type: Number, default: 60 },
@@ -17,6 +17,7 @@ export default class extends Controller {
   connect() {
     this.answered      = this.answeredValue
     this.paused        = false
+    this.editing       = false
     this.remaining     = this.durationValue
     this.handleKeydown = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
@@ -123,8 +124,38 @@ export default class extends Controller {
     })
   }
 
+  startEdit(event) {
+    event.preventDefault()
+
+    this.editing = true
+    this.timerPausedForEdit = false
+
+    if (!this.answered && !this.paused) {
+      this._clearTimer()
+      this.timerPausedForEdit = true
+    }
+
+    if (this.hasDisplayPanelTarget) this.displayPanelTarget.hidden = true
+    if (this.hasEditPanelTarget) this.editPanelTarget.hidden = false
+    if (this.hasEditFrontTarget) this.editFrontTarget.focus()
+  }
+
+  cancelEdit(event) {
+    event.preventDefault()
+
+    this.editing = false
+    if (this.hasEditPanelTarget) this.editPanelTarget.hidden = true
+    if (this.hasDisplayPanelTarget) this.displayPanelTarget.hidden = false
+
+    if (this.timerPausedForEdit && !this.answered) {
+      this._startTimer()
+    }
+    this.timerPausedForEdit = false
+  }
+
   handleKeydown(event) {
     if (this.answered) return
+    if (this.editing || this._isFormField(event.target)) return
     if (event.metaKey || event.ctrlKey || event.altKey) return
     const idx = { "1": 0, "2": 1, "3": 2, "4": 3 }[event.key]
     if (idx !== undefined && this.optionTargets[idx]) {
@@ -231,5 +262,9 @@ export default class extends Controller {
       "Content-Type": "application/json",
       "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
     }
+  }
+
+  _isFormField(target) {
+    return ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target?.tagName)
   }
 }

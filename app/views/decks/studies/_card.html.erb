@@ -12,6 +12,9 @@
   next_disabled = answered ? next_card_path.blank? : true
   card_difficulty = local_assigns[:card_difficulty].to_i
   card_bookmarked = ActiveModel::Type::Boolean.new.cast(local_assigns[:card_bookmarked])
+  can_edit_card = card.multiple_choice? && policy(card).update?
+  edit_mode = ActiveModel::Type::Boolean.new.cast(local_assigns[:edit_mode])
+  wrong_choices = (card.answer_choices + Array.new(3)).first(3)
 %>
 
 <div data-controller="quiz-session"
@@ -94,6 +97,84 @@
       </div>
       <p class="quiz-card__text"><%= card.front %></p>
     </div>
+
+    <% if can_edit_card %>
+      <div class="quiz-card__edit-actions"
+           data-quiz-session-target="displayPanel"
+           <%= "hidden" if edit_mode %>>
+        <button type="button"
+                class="quiz-edit-button"
+                data-action="click->quiz-session#startEdit">
+          <iconify-icon icon="lucide:pencil" width="13" aria-hidden="true"></iconify-icon>
+          문제 수정
+        </button>
+      </div>
+
+      <div class="quiz-card-edit"
+           data-quiz-session-target="editPanel"
+           <%= "hidden" unless edit_mode %>>
+        <%= form_with url: deck_study_card_edit_path(deck, card),
+              method: :patch,
+              scope: :card,
+              class: "quiz-card-edit__form",
+              data: { turbo: true } do |f| %>
+          <%= hidden_field_tag :study_session_id, local_assigns[:study_session]&.id %>
+          <%= hidden_field_tag :total_count, total %>
+          <%= hidden_field_tag :completed_count, completed %>
+          <%= hidden_field_tag :current_index, current_index %>
+
+          <% if card.errors.any? %>
+            <div class="quiz-card-edit__error">
+              <% card.errors.full_messages.each do |message| %>
+                <p><%= message %></p>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="quiz-card-edit__field">
+            <%= f.label :front, "문제", class: "quiz-card-edit__label" %>
+            <%= f.text_area :front,
+                  value: card.front,
+                  rows: 3,
+                  class: "quiz-card-edit__textarea",
+                  data: { "quiz-session-target": "editFront" } %>
+          </div>
+
+          <div class="quiz-card-edit__field">
+            <label class="quiz-card-edit__label" for="study-card-correct-<%= card.id %>">정답</label>
+            <%= text_field_tag :correct_answer,
+                  card.back,
+                  id: "study-card-correct-#{card.id}",
+                  class: "quiz-card-edit__input quiz-card-edit__input--locked",
+                  readonly: true,
+                  aria: { describedby: "study-card-correct-note-#{card.id}" } %>
+            <p id="study-card-correct-note-<%= card.id %>" class="quiz-card-edit__note">정답은 학습 중 수정할 수 없습니다.</p>
+          </div>
+
+          <div class="quiz-card-edit__choices">
+            <p class="quiz-card-edit__label">정답 이외의 보기</p>
+            <% wrong_choices.each_with_index do |choice, idx| %>
+              <label class="quiz-card-edit__choice">
+                <span>보기 <%= idx + 1 %></span>
+                <%= text_field_tag "card[answer_choices][]",
+                      choice,
+                      class: "quiz-card-edit__input",
+                      placeholder: "오답 보기 #{idx + 1}" %>
+              </label>
+            <% end %>
+          </div>
+
+          <div class="quiz-card-edit__actions">
+            <%= f.submit "저장", class: "quiz-edit-button quiz-edit-button--primary" %>
+            <button type="button"
+                    class="quiz-edit-button quiz-edit-button--ghost"
+                    data-action="click->quiz-session#cancelEdit">
+              취소
+            </button>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
 
     <%# Divider + section label %>
     <div class="quiz-card__divider">

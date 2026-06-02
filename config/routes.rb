@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     resource  :flip,           only: %i[show], module: :decks
     resources :card_ratings,   only: %i[create], module: :decks
     resources :card_bookmarks, only: %i[create destroy], module: :decks, param: :card_id
+    resources :study_card_edits, only: %i[update], module: :decks, param: :card_id
     resources :study_sessions, only: %i[show], module: :decks do
       get "cards/:card_id", to: "study_cards#show", as: :card
     end
