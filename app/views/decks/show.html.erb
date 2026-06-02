@@ -32,7 +32,18 @@
                 <summary class="btn btn--primary btn--sm">학습 시작</summary>
                 <div class="study-dropdown__menu">
                   <%= link_to "전체 카드", deck_study_path(@deck), class: "study-dropdown__item" %>
+                  <% if authenticated? && @bookmarked_count.to_i > 0 %>
+                    <%= link_to "북마크한 문제만",
+                          deck_study_path(@deck, card_filter: "bookmarked"),
+                          class: "study-dropdown__item" %>
+                  <% end %>
                   <% if authenticated? && @rated_count.to_i > 0 %>
+                    <div class="study-dropdown__divider"></div>
+                    <% (1..5).each do |n| %>
+                      <%= link_to "난이도 #{n}점",
+                            deck_study_path(@deck, difficulty: n),
+                            class: "study-dropdown__item" %>
+                    <% end %>
                     <div class="study-dropdown__divider"></div>
                     <% (1..5).each do |n| %>
                       <%= link_to "#{"★" * n}#{"☆" * (5 - n)} 이상",

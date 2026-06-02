@@ -1,0 +1,40 @@
+<section class="deck-carousel"
+         data-controller="deck-carousel"
+         aria-label="<%= title %>">
+  <div class="deck-carousel__header">
+    <div>
+      <h2 class="deck-carousel__title"><%= title %></h2>
+      <p class="deck-carousel__range" data-deck-carousel-target="status"></p>
+    </div>
+  </div>
+
+  <div class="deck-carousel__shell">
+    <button type="button"
+            class="deck-carousel__nav deck-carousel__nav--prev"
+            data-deck-carousel-target="prevButton"
+            data-action="click->deck-carousel#prev"
+            aria-label="이전 북마크 덱">
+      <iconify-icon icon="lucide:chevron-left" width="18" aria-hidden="true"></iconify-icon>
+    </button>
+
+    <div class="deck-carousel__viewport"
+         data-deck-carousel-target="viewport">
+      <div class="deck-carousel__track">
+        <% decks.each do |deck| %>
+          <div class="deck-carousel__item"
+               data-deck-carousel-target="item">
+            <%= render "decks/deck", deck: deck %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <button type="button"
+            class="deck-carousel__nav deck-carousel__nav--next"
+            data-deck-carousel-target="nextButton"
+            data-action="click->deck-carousel#next"
+            aria-label="다음 북마크 덱">
+      <iconify-icon icon="lucide:chevron-right" width="18" aria-hidden="true"></iconify-icon>
+    </button>
+  </div>
+</section>

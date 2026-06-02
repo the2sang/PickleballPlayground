@@ -13,6 +13,7 @@ class DecksController < ApplicationController
     @official_decks = filter_by_category(Deck.where(scope: :official))
                       .includes(:cards)
                       .then { |scope| order_for_index(scope, :created_at) }
+    @bookmarked_decks = authenticated? ? bookmarked_decks_for_index : []
 
     if authenticated?
       personal_scope = Deck.where(scope: :personal, owner: Current.user)
@@ -27,7 +28,7 @@ class DecksController < ApplicationController
         filter_by_category(Deck.where(scope: :club, owner_type: "Club", owner_id: approved_club_ids))
             .includes(:cards).then { |scope| order_for_index(scope, updated_at: :desc) } : []
 
-      all_deck_ids = (@official_decks + @personal_decks + @club_decks).map(&:id)
+      all_deck_ids = (@official_decks + @personal_decks + @club_decks + @bookmarked_decks).map(&:id)
       @deck_session_stats = Flashcards::DeckSessionStatsQuery.new(
         user: Current.user, deck_ids: all_deck_ids
       ).call
@@ -38,6 +39,7 @@ class DecksController < ApplicationController
       set_personal_deck_limit_state
     else
       @personal_decks    = []
+      @bookmarked_decks  = []
       @club_decks        = []
       @has_personal_decks = false
       @show_club_section = false
@@ -56,6 +58,8 @@ class DecksController < ApplicationController
     @cards       = @deck.cards.order(:position, :id)
     @rated_count = authenticated? ?
       UserCardRating.where(user: Current.user, card: @cards).count : 0
+    @bookmarked_count = authenticated? ?
+      CardBookmark.where(user: Current.user, card: @cards).count : 0
   end
 
   def new
@@ -131,7 +135,28 @@ class DecksController < ApplicationController
   end
 
   def deck_tab_value(value)
-    value == "personal" ? "personal" : "official"
+    return "personal" if value == "personal"
+    return "bookmarked" if value == "bookmarked"
+
+    "official"
+  end
+
+  def bookmarked_decks_for_index
+    scope = Deck
+      .joins(:deck_bookmarks)
+      .where(deck_bookmarks: { user_id: Current.user.id })
+      .where(
+        "decks.scope = :official OR " \
+        "(decks.scope = :personal AND decks.owner_type = :owner_type AND decks.owner_id = :owner_id)",
+        official: Deck.scopes[:official],
+        personal: Deck.scopes[:personal],
+        owner_type: "User",
+        owner_id: Current.user.id
+      )
+
+    filter_by_category(scope)
+      .includes(:cards)
+      .order(Arel.sql("deck_bookmarks.created_at DESC"))
   end
 
   def set_personal_deck_limit_state

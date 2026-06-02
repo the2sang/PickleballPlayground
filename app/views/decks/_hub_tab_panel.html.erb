@@ -1,4 +1,28 @@
-<% if @selected_deck_tab == "personal" %>
+<% if @selected_deck_tab == "bookmarked" %>
+  <div id="deck-panel-bookmarked" class="deck-hub-panel" role="tabpanel" aria-labelledby="deck-tab-bookmarked">
+    <% if @bookmarked_decks.any? %>
+      <%= render "decks/deck_carousel", title: "북마크 덱", decks: @bookmarked_decks %>
+    <% elsif !authenticated? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:log-in" width="20" aria-hidden="true"></iconify-icon>
+        </div>
+        <p class="cl-empty__text">북마크 덱은 로그인 후 사용할 수 있습니다.</p>
+        <%= link_to new_session_path, class: "btn btn--primary btn--sm", style: "margin-top:12px;" do %>
+          <iconify-icon icon="lucide:log-in" width="13" aria-hidden="true"></iconify-icon>
+          로그인하고 확인하기
+        <% end %>
+      </div>
+    <% else %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:bookmark" width="20" aria-hidden="true"></iconify-icon>
+        </div>
+        <p class="cl-empty__text">아직 북마크한 덱이 없습니다.</p>
+      </div>
+    <% end %>
+  </div>
+<% elsif @selected_deck_tab == "personal" %>
   <div id="deck-panel-personal" class="deck-hub-panel" role="tabpanel" aria-labelledby="deck-tab-personal">
     <% if @personal_decks.any? %>
       <%= render "decks/deck_collection", title: "내 덱", decks: @personal_decks %>

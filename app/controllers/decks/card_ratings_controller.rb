@@ -2,7 +2,7 @@ class Decks::CardRatingsController < ApplicationController
   before_action :set_deck
 
   def create
-    card = Card.find(params[:card_id])
+    card = @deck.cards.find(params[:card_id])
     authorize @deck, :show?
 
     rating = UserCardRating.find_or_initialize_by(user: Current.user, card: card)
