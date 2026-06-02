@@ -27,14 +27,10 @@
     </div>
 
     <%# 공식 덱 미리보기 %>
-    <% if @official_decks.any? %>
     <div class="cl-content" style="margin-top:32px;">
-      <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">공식 덱</h2>
-      <div class="cl-grid">
-        <%= render partial: "deck", collection: @official_decks, as: :deck %>
-      </div>
+      <%= render "decks/hub_tabs" %>
+      <%= render "decks/hub_tab_panel" %>
     </div>
-    <% end %>
 
   <% elsif authenticated? %>
     <%# 3섹션 허브 — personal 덱 보유 사용자 %>
@@ -97,33 +93,8 @@
     </div>
 
     <div class="cl-content">
-      <%# 공식 덱 섹션 %>
-      <% if @official_decks.any? %>
-      <section style="margin-bottom:40px;">
-        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">공식 덱</h2>
-        <div class="cl-grid">
-          <%= render partial: "deck", collection: @official_decks, as: :deck %>
-        </div>
-      </section>
-      <% end %>
-
-      <%# 클럽 덱 섹션 (approved 멤버십 보유 시에만) %>
-      <% if @show_club_section && @club_decks.any? %>
-      <section style="margin-bottom:40px;">
-        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">클럽 덱</h2>
-        <div class="cl-grid">
-          <%= render partial: "deck", collection: @club_decks, as: :deck %>
-        </div>
-      </section>
-      <% end %>
-
-      <%# 내 덱 섹션 %>
-      <section>
-        <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">내 덱</h2>
-        <div class="cl-grid">
-          <%= render partial: "deck", collection: @personal_decks, as: :deck %>
-        </div>
-      </section>
+      <%= render "decks/hub_tabs" %>
+      <%= render "decks/hub_tab_panel" %>
     </div>
 
   <% else %>
@@ -148,13 +119,9 @@
       <%= render "decks/category_filter" %>
     </div>
 
-    <% if @official_decks.any? %>
     <div class="cl-content">
-      <h2 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">공식 덱</h2>
-      <div class="cl-grid">
-        <%= render partial: "deck", collection: @official_decks, as: :deck %>
-      </div>
+      <%= render "decks/hub_tabs" %>
+      <%= render "decks/hub_tab_panel" %>
     </div>
-    <% end %>
   <% end %>
 </div>

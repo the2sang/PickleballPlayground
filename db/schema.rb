@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_014924) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "card_bookmarks", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["card_id"], name: "index_card_bookmarks_on_card_id"
+    t.index ["user_id", "card_id"], name: "index_card_bookmarks_on_user_id_and_card_id", unique: true
+    t.index ["user_id"], name: "index_card_bookmarks_on_user_id"
   end
 
   create_table "card_reviews", force: :cascade do |t|
@@ -409,6 +419,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
     t.datetime "created_at", null: false
     t.boolean "is_correct", null: false
     t.integer "rating", null: false
+    t.text "selected_answer"
     t.integer "study_session_id", null: false
     t.datetime "updated_at", null: false
     t.index ["card_id"], name: "index_study_session_answers_on_card_id"
@@ -600,6 +611,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_000100) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "card_bookmarks", "cards", on_delete: :cascade
+  add_foreign_key "card_bookmarks", "users", on_delete: :cascade
   add_foreign_key "card_reviews", "cards", on_delete: :cascade
   add_foreign_key "card_reviews", "users", on_delete: :cascade
   add_foreign_key "cards", "decks", on_delete: :cascade

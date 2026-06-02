@@ -22,11 +22,11 @@ RSpec.describe "Deck authoring", type: :system do
       sign_in_as(user)
       visit deck_path(deck)
 
-      # 카드 행에 편집 링크가 있음
-      expect(page).to have_link("편집")
+      # 카드 행에 문제 수정 링크가 있음
+      expect(page).to have_link("문제 수정")
 
-      # 편집 링크 클릭 (rack_test에서는 Turbo Frame 동작 없음 — 전체 페이지 이동)
-      click_link "편집"
+      # 문제 수정 링크 클릭 (rack_test에서는 Turbo Frame 동작 없음 — 전체 페이지 이동)
+      click_link "문제 수정"
 
       # 편집 폼 렌더링 확인
       expect(page).to have_field("card[front]")

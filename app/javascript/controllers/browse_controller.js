@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static values  = { cards: Array }
-  static targets = ["front", "back", "showButton", "counter", "prevButton", "nextButton", "shuffleButton"]
+  static targets = ["front", "back", "backText", "showButton", "counter", "prevButton", "nextButton", "shuffleButton"]
 
   connect() {
     this.currentIndex = 0
@@ -37,14 +37,12 @@ export default class extends Controller {
     this.shuffled = !this.shuffled
     if (this.shuffled) {
       this.displayCards = this.fisherYates([...this.orderedCards])
-      this.shuffleButtonTarget.textContent = "셔플 중"
-      this.shuffleButtonTarget.classList.add("text-blue-600")
-      this.shuffleButtonTarget.classList.remove("text-gray-500")
+      this.shuffleButtonTarget.innerHTML = '<iconify-icon icon="lucide:shuffle" width="14" aria-hidden="true"></iconify-icon>셔플 중'
+      this.shuffleButtonTarget.classList.add("browse-shuffle--active")
     } else {
       this.displayCards = [...this.orderedCards]
-      this.shuffleButtonTarget.textContent = "셔플"
-      this.shuffleButtonTarget.classList.remove("text-blue-600")
-      this.shuffleButtonTarget.classList.add("text-gray-500")
+      this.shuffleButtonTarget.innerHTML = '<iconify-icon icon="lucide:shuffle" width="14" aria-hidden="true"></iconify-icon>셔플'
+      this.shuffleButtonTarget.classList.remove("browse-shuffle--active")
     }
     this.currentIndex = 0
     this.render()
@@ -54,7 +52,7 @@ export default class extends Controller {
     const card = this.displayCards[this.currentIndex]
     if (!card) return
     this.frontTarget.textContent = card.front
-    this.backTarget.textContent  = card.back
+    this.backTextTarget.textContent  = card.back
     // 새 카드는 항상 unflipped 초기 상태 (back hidden, showButton 표시)
     this.backTarget.classList.add("hidden")
     this.showButtonTarget.classList.remove("hidden")

@@ -26,9 +26,9 @@ RSpec.describe "Flashcards seed loader" do
     load Rails.root.join("db/seeds/flashcards.rb")
   end
 
-  it "creates exactly 7 official decks" do
+  it "creates exactly 8 official decks" do
     run_loader
-    expect(Deck.official.count).to eq(7)
+    expect(Deck.official.count).to eq(8)
   end
 
   it "creates the AI usage terms subjective official deck with 30 cards" do
@@ -47,6 +47,17 @@ RSpec.describe "Flashcards seed loader" do
     expect(deck.description).to include("단답형 주관식")
     expect(deck.cards.count).to eq(20)
     expect(deck.cards.first.back).to eq("기준금리")
+  end
+
+  it "creates the Software After AI official deck with subjective and multiple-choice cards" do
+    run_loader
+
+    deck = Deck.official.find_by!(title: "Software After AI")
+    expect(deck).to be_science_technology
+    expect(deck.cards.count).to eq(20)
+    expect(deck.cards.basic.count).to be > 0
+    expect(deck.cards.multiple_choice.count).to be > 0
+    expect(deck.cards.multiple_choice.first.answer_choices.size).to eq(3)
   end
 
   it "is idempotent — running twice does not create duplicate decks or cards" do

@@ -10,6 +10,7 @@ class Card < ApplicationRecord
   belongs_to :deck
   has_many :card_reviews, dependent: :destroy
   has_many :user_card_ratings, dependent: :destroy
+  has_many :card_bookmarks, dependent: :destroy
 
   has_one_attached :front_image
   has_one_attached :back_image

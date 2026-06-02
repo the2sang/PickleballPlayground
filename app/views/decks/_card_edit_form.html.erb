@@ -27,7 +27,8 @@
 
     <div class="cl-form">
       <%# 앞면 / 문제 (공통) %>
-      <div class="cl-form__field">
+      <div class="cl-form__field cl-form__field--inline cl-form__field--top">
+        <%= f.label :front, "앞면/문제", class: "cl-form__label" %>
         <%= f.text_area :front,
             class: "cl-form__textarea cl-form__textarea--front",
             placeholder: "앞면 / 문제",
@@ -39,10 +40,12 @@
       <%# 주관식 섹션 %>
       <div data-card-form-target="basicSection">
         <div class="cl-form">
-          <div class="cl-form__field">
+          <div class="cl-form__field cl-form__field--inline">
+            <%= f.label :back, "뒷면/정답", class: "cl-form__label" %>
             <%= f.text_field :back, class: "cl-form__input", placeholder: "뒷면 / 정답" %>
           </div>
-          <div class="cl-form__field">
+          <div class="cl-form__field cl-form__field--inline">
+            <%= f.label :hint, "힌트(선택)", class: "cl-form__label" %>
             <%= f.text_field :hint, class: "cl-form__input", placeholder: "힌트 (선택)" %>
           </div>
         </div>
@@ -76,7 +79,8 @@
       </div>
 
       <%# 태그 (공통) %>
-      <div class="cl-form__field">
+      <div class="cl-form__field cl-form__field--inline">
+        <%= f.label :tags, "태그(쉼표 구분)", class: "cl-form__label" %>
         <%= f.text_field :tags, class: "cl-form__input", placeholder: "태그 (쉼표 구분)" %>
       </div>
 

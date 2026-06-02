@@ -1,0 +1,9 @@
+<%= turbo_stream.update "study-card" do %>
+  <%= render "decks/studies/card", card: @card, deck: @deck,
+      options: @options, completed_count: @completed_count, total_count: @total_count,
+      study_session: @study_session, current_index: @current_index,
+      answered_rating: @answered_rating, selected_answer: @selected_answer,
+      previous_card_path: @previous_card_path, next_card_path: @next_card_path,
+      card_difficulty: @card_difficulty, card_bookmarked: @card_bookmarked,
+      edit_mode: @edit_mode %>
+<% end %>

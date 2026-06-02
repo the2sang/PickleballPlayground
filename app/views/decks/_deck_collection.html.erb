@@ -1,0 +1,52 @@
+<section class="deck-collection"
+         data-controller="deck-collection"
+         data-deck-collection-page-size-value="9">
+  <div class="deck-collection__header">
+    <div>
+      <h2 class="deck-collection__title"><%= title %></h2>
+      <p class="deck-collection__range" data-deck-collection-target="range"></p>
+    </div>
+
+    <label class="deck-collection__search">
+      <iconify-icon icon="lucide:search" width="14" aria-hidden="true"></iconify-icon>
+      <span class="sr-only"><%= title %> 검색</span>
+      <input type="search"
+             placeholder="덱 타이틀/초성 검색"
+             autocomplete="off"
+             data-deck-collection-target="query"
+             data-action="input->deck-collection#search">
+    </label>
+  </div>
+
+  <div class="cl-grid deck-collection__grid">
+    <% decks.each do |deck| %>
+      <div class="deck-collection__item"
+           data-deck-collection-target="item"
+           data-deck-title="<%= deck.title %>">
+        <%= render "decks/deck", deck: deck %>
+      </div>
+    <% end %>
+  </div>
+
+  <p class="deck-collection__empty" data-deck-collection-target="empty" hidden>
+    검색 결과가 없습니다.
+  </p>
+
+  <div class="deck-collection__pager">
+    <button type="button"
+            class="deck-collection__button"
+            data-deck-collection-target="prevButton"
+            data-action="click->deck-collection#prev">
+      <iconify-icon icon="lucide:chevron-left" width="15" aria-hidden="true"></iconify-icon>
+      이전
+    </button>
+    <span class="deck-collection__page" data-deck-collection-target="page"></span>
+    <button type="button"
+            class="deck-collection__button"
+            data-deck-collection-target="nextButton"
+            data-action="click->deck-collection#next">
+      다음
+      <iconify-icon icon="lucide:chevron-right" width="15" aria-hidden="true"></iconify-icon>
+    </button>
+  </div>
+</section>

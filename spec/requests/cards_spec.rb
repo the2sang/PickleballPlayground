@@ -57,6 +57,10 @@ RSpec.describe "Cards", type: :request do
           headers: { "Turbo-Frame" => "card_#{card.id}" }
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("card_#{card.id}")
+        expect(response.body).to include("앞면/문제")
+        expect(response.body).to include("뒷면/정답")
+        expect(response.body).to include("힌트(선택)")
+        expect(response.body).to include("태그(쉼표 구분)")
       end
 
       it "타인 덱 카드 편집 시도 시 접근 거부" do
@@ -102,6 +106,22 @@ RSpec.describe "Cards", type: :request do
           params: { card: { front: "수정된 앞면", back: "수정된 뒷면" } }
         expect(response).to have_http_status(:found)
         expect(flash[:alert]).to be_present
+      end
+    end
+
+    context "관리자 공식 덱 카드 수정" do
+      it "카드보기 페이지의 수정 폼 저장 경로로 공식 덱 문제를 수정한다" do
+        admin = create(:user, :admin)
+        official_deck = create(:deck, :official)
+        official_card = create(:card, deck: official_deck, front: "기존 문제", back: "기존 정답")
+        sign_in(admin)
+
+        patch deck_card_path(official_deck, official_card),
+          params: { card: { front: "수정된 문제", back: "수정된 정답" } }
+
+        expect(response).to redirect_to(deck_path(official_deck))
+        expect(official_card.reload.front).to eq("수정된 문제")
+        expect(official_card.back).to eq("수정된 정답")
       end
     end
   end

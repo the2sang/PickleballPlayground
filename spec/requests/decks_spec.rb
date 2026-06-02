@@ -75,6 +75,23 @@ RSpec.describe "Decks", type: :request do
         expect(response.body).to include("덱 추가 승인요청")
         expect(response.body).to include(deck_addition_requests_path)
       end
+
+      it "공식 덱과 내 덱에 페이지 이동과 타이틀/초성 검색 컨트롤을 렌더한다" do
+        7.times { |index| create(:deck, :official, title: "공식 초성 #{index}") }
+        9.times { |index| create(:deck, :personal, owner: user, title: "내 초성 #{index}") }
+
+        get decks_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body.scan('data-controller="deck-collection"').size).to be >= 2
+        expect(response.body.scan('data-deck-collection-page-size-value="9"').size).to be >= 2
+        expect(response.body).to include("덱 타이틀/초성 검색")
+        expect(response.body).to include("data-action=\"input->deck-collection#search\"")
+        expect(response.body).to include("data-action=\"click->deck-collection#prev\"")
+        expect(response.body).to include("data-action=\"click->deck-collection#next\"")
+        expect(response.body).to include("data-deck-title=\"공식 초성 0\"")
+        expect(response.body).to include("data-deck-title=\"내 초성 0\"")
+      end
     end
 
     context "approved 클럽 멤버십 없는 사용자" do
@@ -134,6 +151,31 @@ RSpec.describe "Decks", type: :request do
       expect(response.body).to include("주관식 학습")
       expect(response.body).to include("별3개 이상만")
       expect(response.body).to include(deck_flip_path(deck, min_stars: 3))
+    end
+
+    it "관리자에게 공식 덱 문제 수정 링크를 노출한다" do
+      admin = create(:user, :admin)
+      deck = create(:deck, :official)
+      card = create(:card, deck: deck, front: "기존 문제", back: "기존 정답")
+      sign_in(admin)
+
+      get deck_path(deck)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("기존 문제")
+      expect(response.body).to include("문제 수정")
+      expect(response.body).to include(edit_deck_card_path(deck, card))
+    end
+
+    it "일반 사용자에게 공식 덱 문제 수정 링크를 숨긴다" do
+      deck = create(:deck, :official)
+      create(:card, deck: deck, front: "기존 문제", back: "기존 정답")
+      sign_in(user)
+
+      get deck_path(deck)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("문제 수정")
     end
   end
 

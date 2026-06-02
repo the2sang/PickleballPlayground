@@ -3,11 +3,29 @@
   completed = local_assigns.fetch(:completed_count, 0)
   opts      = local_assigns.fetch(:options, [card.back])
   pct       = total > 0 ? (completed.to_f / total * 100).round : 0
+  current_index = local_assigns.fetch(:current_index, completed)
+  answered_rating = local_assigns[:answered_rating]
+  selected_answer = local_assigns[:selected_answer].to_s
+  answered = answered_rating.present?
+  previous_card_path = local_assigns[:previous_card_path]
+  next_card_path = local_assigns[:next_card_path]
+  next_disabled = answered ? next_card_path.blank? : true
+  card_difficulty = local_assigns[:card_difficulty].to_i
+  card_bookmarked = ActiveModel::Type::Boolean.new.cast(local_assigns[:card_bookmarked])
+  can_edit_card = card.multiple_choice? && policy(card).update?
+  edit_mode = ActiveModel::Type::Boolean.new.cast(local_assigns[:edit_mode])
+  wrong_choices = (card.answer_choices + Array.new(3)).first(3)
 %>
 
 <div data-controller="quiz-session"
      data-quiz-session-correct-value="<%= card.back %>"
-     data-quiz-session-duration-value="60">
+     data-quiz-session-duration-value="60"
+     data-quiz-session-answered-value="<%= answered %>"
+     data-quiz-session-next-url-value="<%= next_card_path %>"
+     data-quiz-session-deck-id-value="<%= deck.id %>"
+     data-quiz-session-card-id-value="<%= card.id %>"
+     data-quiz-session-difficulty-value="<%= card_difficulty %>"
+     data-quiz-session-bookmarked-value="<%= card_bookmarked %>">
 
   <%# ── Progress ─────────────────────────────────────────── %>
   <div class="quiz-progress" aria-label="학습 진행률 <%= completed %>/<%= total %>">
@@ -28,16 +46,48 @@
             data-quiz-session-target="timer"
             data-action="click->quiz-session#pauseToggle"
             aria-label="타이머 일시정지/재생">
-      <svg class="quiz-timer__svg" viewBox="0 0 40 40" aria-hidden="true">
-        <circle class="quiz-timer__track" cx="20" cy="20" r="16"/>
-        <circle class="quiz-timer__ring" cx="20" cy="20" r="16"
-                data-quiz-session-target="timerRing"/>
-      </svg>
+      <span class="quiz-hourglass" aria-hidden="true">
+        <span class="quiz-hourglass__bulb quiz-hourglass__bulb--top">
+          <span class="quiz-hourglass__sand quiz-hourglass__sand--top"></span>
+        </span>
+        <span class="quiz-hourglass__stream"></span>
+        <span class="quiz-hourglass__bulb quiz-hourglass__bulb--bottom">
+          <span class="quiz-hourglass__sand quiz-hourglass__sand--bottom"></span>
+        </span>
+      </span>
       <span class="quiz-timer__num" data-quiz-session-target="timerDisplay">60</span>
       <iconify-icon class="quiz-timer__icon"
                     data-quiz-session-target="pauseIcon"
                     icon="lucide:pause" width="9" aria-hidden="true"></iconify-icon>
     </button>
+
+    <div class="quiz-card-tools" aria-label="문제 상태">
+      <button type="button"
+              class="quiz-bookmark"
+              data-quiz-session-target="bookmarkButton"
+              data-action="click->quiz-session#toggleBookmark"
+              aria-pressed="<%= card_bookmarked %>"
+              aria-label="<%= card_bookmarked ? "북마크 해제" : "북마크" %>">
+        <iconify-icon data-quiz-session-target="bookmarkIcon"
+                      icon="<%= card_bookmarked ? "lucide:bookmark-check" : "lucide:bookmark" %>"
+                      width="15" aria-hidden="true"></iconify-icon>
+        <span>북마크</span>
+      </button>
+
+      <div class="quiz-difficulty" aria-label="난이도">
+        <span class="quiz-difficulty__label">난이도</span>
+        <% (1..5).each do |n| %>
+          <button type="button"
+                  class="quiz-difficulty__star<%= " quiz-difficulty__star--active" if card_difficulty >= n %>"
+                  data-quiz-session-target="difficultyStar"
+                  data-action="click->quiz-session#rateDifficulty"
+                  data-difficulty="<%= n %>"
+                  aria-label="난이도 <%= n %>점">
+            <iconify-icon icon="lucide:star" width="14" aria-hidden="true"></iconify-icon>
+          </button>
+        <% end %>
+      </div>
+    </div>
 
     <%# Question area %>
     <div class="quiz-card__question">
@@ -47,6 +97,84 @@
       </div>
       <p class="quiz-card__text"><%= card.front %></p>
     </div>
+
+    <% if can_edit_card %>
+      <div class="quiz-card__edit-actions"
+           data-quiz-session-target="displayPanel"
+           <%= "hidden" if edit_mode %>>
+        <button type="button"
+                class="quiz-edit-button"
+                data-action="click->quiz-session#startEdit">
+          <iconify-icon icon="lucide:pencil" width="13" aria-hidden="true"></iconify-icon>
+          문제 수정
+        </button>
+      </div>
+
+      <div class="quiz-card-edit"
+           data-quiz-session-target="editPanel"
+           <%= "hidden" unless edit_mode %>>
+        <%= form_with url: deck_study_card_edit_path(deck, card),
+              method: :patch,
+              scope: :card,
+              class: "quiz-card-edit__form",
+              data: { turbo: true } do |f| %>
+          <%= hidden_field_tag :study_session_id, local_assigns[:study_session]&.id %>
+          <%= hidden_field_tag :total_count, total %>
+          <%= hidden_field_tag :completed_count, completed %>
+          <%= hidden_field_tag :current_index, current_index %>
+
+          <% if card.errors.any? %>
+            <div class="quiz-card-edit__error">
+              <% card.errors.full_messages.each do |message| %>
+                <p><%= message %></p>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="quiz-card-edit__field">
+            <%= f.label :front, "문제", class: "quiz-card-edit__label" %>
+            <%= f.text_area :front,
+                  value: card.front,
+                  rows: 3,
+                  class: "quiz-card-edit__textarea",
+                  data: { "quiz-session-target": "editFront" } %>
+          </div>
+
+          <div class="quiz-card-edit__field">
+            <label class="quiz-card-edit__label" for="study-card-correct-<%= card.id %>">정답</label>
+            <%= text_field_tag :correct_answer,
+                  card.back,
+                  id: "study-card-correct-#{card.id}",
+                  class: "quiz-card-edit__input quiz-card-edit__input--locked",
+                  readonly: true,
+                  aria: { describedby: "study-card-correct-note-#{card.id}" } %>
+            <p id="study-card-correct-note-<%= card.id %>" class="quiz-card-edit__note">정답은 학습 중 수정할 수 없습니다.</p>
+          </div>
+
+          <div class="quiz-card-edit__choices">
+            <p class="quiz-card-edit__label">정답 이외의 보기</p>
+            <% wrong_choices.each_with_index do |choice, idx| %>
+              <label class="quiz-card-edit__choice">
+                <span>보기 <%= idx + 1 %></span>
+                <%= text_field_tag "card[answer_choices][]",
+                      choice,
+                      class: "quiz-card-edit__input",
+                      placeholder: "오답 보기 #{idx + 1}" %>
+              </label>
+            <% end %>
+          </div>
+
+          <div class="quiz-card-edit__actions">
+            <%= f.submit "저장", class: "quiz-edit-button quiz-edit-button--primary" %>
+            <button type="button"
+                    class="quiz-edit-button quiz-edit-button--ghost"
+                    data-action="click->quiz-session#cancelEdit">
+              취소
+            </button>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
 
     <%# Divider + section label %>
     <div class="quiz-card__divider">
@@ -61,16 +189,32 @@
       <%= f.hidden_field "card_review[card_id]",          value: card.id %>
       <%= f.hidden_field "card_review[deck_id]",          value: deck.id %>
       <%= f.hidden_field "card_review[study_session_id]", value: local_assigns[:study_session]&.id %>
-      <%= f.hidden_field "card_review[rating]", value: "",
+      <%= f.hidden_field "card_review[rating]", value: answered_rating || "",
           data: { "quiz-session-target": "rating" } %>
+      <%= f.hidden_field "card_review[selected_answer]", value: selected_answer,
+          data: { "quiz-session-target": "selectedAnswer" } %>
 
       <div class="quiz-options">
         <% opts.each_with_index do |option, idx| %>
+          <%
+            result = nil
+            if answered
+              result = if option == card.back
+                         "correct"
+              elsif option == selected_answer
+                         "wrong"
+              else
+                         "inactive"
+              end
+            end
+          %>
           <button type="button"
                   class="quiz-option"
                   data-quiz-session-target="option"
                   data-value="<%= option %>"
+                  <%= %(data-result="#{result}").html_safe if result %>
                   data-action="click->quiz-session#selectOption"
+                  <%= "disabled" if answered %>
                   aria-label="선택지 <%= idx + 1 %>: <%= option %>">
             <span class="quiz-option__key"><%= idx + 1 %></span>
             <span class="quiz-option__text"><%= option %></span>
@@ -78,14 +222,43 @@
         <% end %>
       </div>
 
-      <%# Don't know %>
       <div class="quiz-card__footer">
-        <button type="button"
-                class="quiz-skip"
-                data-action="click->quiz-session#skipCard">
-          <iconify-icon icon="lucide:flag" width="13"></iconify-icon>
-          모르겠어요?
-        </button>
+        <div class="quiz-card__secondary-actions">
+          <button type="button"
+                  class="quiz-skip"
+                  data-action="click->quiz-session#skipCard"
+                  <%= "disabled" if answered %>>
+            <iconify-icon icon="lucide:flag" width="13"></iconify-icon>
+            모르겠어요?
+          </button>
+          <span class="quiz-card__position"><%= current_index + 1 %> / <%= total %></span>
+        </div>
+
+        <div class="quiz-nav">
+          <% if previous_card_path.present? %>
+            <%= link_to previous_card_path,
+                class: "quiz-nav__button",
+                data: { turbo_stream: true },
+                aria: { label: "이전 문제" } do %>
+              <iconify-icon icon="lucide:arrow-left" width="15"></iconify-icon>
+              이전
+            <% end %>
+          <% else %>
+            <span class="quiz-nav__button quiz-nav__button--disabled" aria-disabled="true">
+              <iconify-icon icon="lucide:arrow-left" width="15"></iconify-icon>
+              이전
+            </span>
+          <% end %>
+
+          <button type="button"
+                  class="quiz-nav__button quiz-nav__button--primary"
+                  data-quiz-session-target="nextButton"
+                  data-action="click->quiz-session#nextCard"
+                  <%= "disabled" if next_disabled %>>
+            다음
+            <iconify-icon icon="lucide:arrow-right" width="15"></iconify-icon>
+          </button>
+        </div>
       </div>
     <% end %>
 

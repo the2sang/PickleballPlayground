@@ -13,9 +13,13 @@
     </div>
     <% if can_edit %>
       <div class="deck-row__actions">
-        <%= link_to "편집", edit_deck_card_path(deck, card),
-            class: "btn btn--ghost btn--sm",
-            data: { turbo_frame: "card_#{card.id}" } %>
+        <%= link_to edit_deck_card_path(deck, card),
+            class: "btn btn--ghost btn--sm deck-row__edit-link",
+            data: { turbo_frame: "card_#{card.id}" },
+            aria: { label: "#{card.position}번 문제 수정" } do %>
+          <iconify-icon icon="lucide:pencil" width="13"></iconify-icon>
+          문제 수정
+        <% end %>
       </div>
     <% end %>
   </div>

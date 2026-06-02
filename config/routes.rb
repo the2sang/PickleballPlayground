@@ -43,7 +43,11 @@ Rails.application.routes.draw do
     resource  :browse,         only: %i[show], module: :decks
     resource  :flip,           only: %i[show], module: :decks
     resources :card_ratings,   only: %i[create], module: :decks
-    resources :study_sessions, only: %i[show], module: :decks
+    resources :card_bookmarks, only: %i[create destroy], module: :decks, param: :card_id
+    resources :study_card_edits, only: %i[update], module: :decks, param: :card_id
+    resources :study_sessions, only: %i[show], module: :decks do
+      get "cards/:card_id", to: "study_cards#show", as: :card
+    end
     resource  :bookmark,       only: %i[create destroy], module: :decks
     resource  :fork,           only: %i[create], module: :decks
     resource  :feature,        only: %i[create destroy], module: :decks
