@@ -7,6 +7,7 @@ class DecksController < ApplicationController
   def index
     @site_setting = SiteSetting.current
     @selected_category = Deck.category_filter_value(params[:category])
+    @selected_deck_tab = deck_tab_value(params[:deck_tab])
     @category_options = Deck.category_options(include_all: true)
     @bookmarked_deck_ids = authenticated? ? Current.user.deck_bookmarks.pluck(:deck_id) : []
     @official_decks = filter_by_category(Deck.where(scope: :official))
@@ -127,6 +128,10 @@ class DecksController < ApplicationController
       .joins(join_sql)
       .order(Arel.sql("CASE WHEN deck_bookmarks_for_order.id IS NULL THEN 1 ELSE 0 END"))
       .order(fallback_order)
+  end
+
+  def deck_tab_value(value)
+    value == "personal" ? "personal" : "official"
   end
 
   def set_personal_deck_limit_state

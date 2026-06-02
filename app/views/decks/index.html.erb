@@ -27,11 +27,10 @@
     </div>
 
     <%# 공식 덱 미리보기 %>
-    <% if @official_decks.any? %>
     <div class="cl-content" style="margin-top:32px;">
-      <%= render "decks/deck_collection", title: "공식 덱", decks: @official_decks %>
+      <%= render "decks/hub_tabs" %>
+      <%= render "decks/hub_tab_panel" %>
     </div>
-    <% end %>
 
   <% elsif authenticated? %>
     <%# 3섹션 허브 — personal 덱 보유 사용자 %>
@@ -94,18 +93,8 @@
     </div>
 
     <div class="cl-content">
-      <%# 공식 덱 섹션 %>
-      <% if @official_decks.any? %>
-        <%= render "decks/deck_collection", title: "공식 덱", decks: @official_decks %>
-      <% end %>
-
-      <%# 클럽 덱 섹션 (approved 멤버십 보유 시에만) %>
-      <% if @show_club_section && @club_decks.any? %>
-        <%= render "decks/deck_collection", title: "클럽 덱", decks: @club_decks %>
-      <% end %>
-
-      <%# 내 덱 섹션 %>
-      <%= render "decks/deck_collection", title: "내 덱", decks: @personal_decks %>
+      <%= render "decks/hub_tabs" %>
+      <%= render "decks/hub_tab_panel" %>
     </div>
 
   <% else %>
@@ -130,10 +119,9 @@
       <%= render "decks/category_filter" %>
     </div>
 
-    <% if @official_decks.any? %>
     <div class="cl-content">
-      <%= render "decks/deck_collection", title: "공식 덱", decks: @official_decks %>
+      <%= render "decks/hub_tabs" %>
+      <%= render "decks/hub_tab_panel" %>
     </div>
-    <% end %>
   <% end %>
 </div>
