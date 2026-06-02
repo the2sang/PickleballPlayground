@@ -10,13 +10,19 @@
   previous_card_path = local_assigns[:previous_card_path]
   next_card_path = local_assigns[:next_card_path]
   next_disabled = answered ? next_card_path.blank? : true
+  card_difficulty = local_assigns[:card_difficulty].to_i
+  card_bookmarked = ActiveModel::Type::Boolean.new.cast(local_assigns[:card_bookmarked])
 %>
 
 <div data-controller="quiz-session"
      data-quiz-session-correct-value="<%= card.back %>"
      data-quiz-session-duration-value="60"
      data-quiz-session-answered-value="<%= answered %>"
-     data-quiz-session-next-url-value="<%= next_card_path %>">
+     data-quiz-session-next-url-value="<%= next_card_path %>"
+     data-quiz-session-deck-id-value="<%= deck.id %>"
+     data-quiz-session-card-id-value="<%= card.id %>"
+     data-quiz-session-difficulty-value="<%= card_difficulty %>"
+     data-quiz-session-bookmarked-value="<%= card_bookmarked %>">
 
   <%# ── Progress ─────────────────────────────────────────── %>
   <div class="quiz-progress" aria-label="학습 진행률 <%= completed %>/<%= total %>">
@@ -51,6 +57,34 @@
                     data-quiz-session-target="pauseIcon"
                     icon="lucide:pause" width="9" aria-hidden="true"></iconify-icon>
     </button>
+
+    <div class="quiz-card-tools" aria-label="문제 상태">
+      <button type="button"
+              class="quiz-bookmark"
+              data-quiz-session-target="bookmarkButton"
+              data-action="click->quiz-session#toggleBookmark"
+              aria-pressed="<%= card_bookmarked %>"
+              aria-label="<%= card_bookmarked ? "북마크 해제" : "북마크" %>">
+        <iconify-icon data-quiz-session-target="bookmarkIcon"
+                      icon="<%= card_bookmarked ? "lucide:bookmark-check" : "lucide:bookmark" %>"
+                      width="15" aria-hidden="true"></iconify-icon>
+        <span>북마크</span>
+      </button>
+
+      <div class="quiz-difficulty" aria-label="난이도">
+        <span class="quiz-difficulty__label">난이도</span>
+        <% (1..5).each do |n| %>
+          <button type="button"
+                  class="quiz-difficulty__star<%= " quiz-difficulty__star--active" if card_difficulty >= n %>"
+                  data-quiz-session-target="difficultyStar"
+                  data-action="click->quiz-session#rateDifficulty"
+                  data-difficulty="<%= n %>"
+                  aria-label="난이도 <%= n %>점">
+            <iconify-icon icon="lucide:star" width="14" aria-hidden="true"></iconify-icon>
+          </button>
+        <% end %>
+      </div>
+    </div>
 
     <%# Question area %>
     <div class="quiz-card__question">

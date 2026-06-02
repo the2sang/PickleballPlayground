@@ -1,12 +1,17 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "pauseIcon"]
+  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "pauseIcon",
+                    "bookmarkButton", "bookmarkIcon", "difficultyStar"]
   static values  = {
     correct: String,
     duration: { type: Number, default: 60 },
     answered: { type: Boolean, default: false },
-    nextUrl: String
+    nextUrl: String,
+    deckId: Number,
+    cardId: Number,
+    difficulty: { type: Number, default: 0 },
+    bookmarked: { type: Boolean, default: false }
   }
 
   connect() {
@@ -16,6 +21,8 @@ export default class extends Controller {
     this.handleKeydown = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
     this._updateProgress()
+    this._renderBookmark()
+    this._renderDifficulty()
     if (this.answered) {
       this._clearTimer()
       if (this.hasTimerTarget) this.timerTarget.disabled = true
@@ -79,6 +86,41 @@ export default class extends Controller {
       if (this.hasPauseIconTarget) this.pauseIconTarget.setAttribute("icon", "lucide:pause")
       if (this.hasTimerTarget) this.timerTarget.classList.remove("quiz-timer--paused")
     }
+  }
+
+  toggleBookmark(event) {
+    event.preventDefault()
+
+    const nextBookmarked = !this.bookmarkedValue
+    this.bookmarkedValue = nextBookmarked
+    this._renderBookmark()
+
+    fetch(nextBookmarked ? this._cardBookmarksUrl() : this._cardBookmarkUrl(), {
+      method: nextBookmarked ? "POST" : "DELETE",
+      headers: this._requestHeaders(),
+      body: nextBookmarked ? JSON.stringify({ card_id: this.cardIdValue }) : null
+    }).catch(() => {
+      this.bookmarkedValue = !nextBookmarked
+      this._renderBookmark()
+    })
+  }
+
+  rateDifficulty(event) {
+    event.preventDefault()
+
+    const nextDifficulty = parseInt(event.currentTarget.dataset.difficulty, 10)
+    const previousDifficulty = this.difficultyValue
+    this.difficultyValue = nextDifficulty
+    this._renderDifficulty()
+
+    fetch(`/decks/${this.deckIdValue}/card_ratings`, {
+      method: "POST",
+      headers: this._requestHeaders(),
+      body: JSON.stringify({ card_id: this.cardIdValue, difficulty: nextDifficulty })
+    }).catch(() => {
+      this.difficultyValue = previousDifficulty
+      this._renderDifficulty()
+    })
   }
 
   handleKeydown(event) {
@@ -157,5 +199,37 @@ export default class extends Controller {
 
   _enableNext() {
     if (this.hasNextButtonTarget) this.nextButtonTarget.disabled = false
+  }
+
+  _renderBookmark() {
+    if (this.hasBookmarkButtonTarget) {
+      this.bookmarkButtonTarget.classList.toggle("quiz-bookmark--active", this.bookmarkedValue)
+      this.bookmarkButtonTarget.setAttribute("aria-pressed", String(this.bookmarkedValue))
+      this.bookmarkButtonTarget.setAttribute("aria-label", this.bookmarkedValue ? "북마크 해제" : "북마크")
+    }
+    if (this.hasBookmarkIconTarget) {
+      this.bookmarkIconTarget.setAttribute("icon", this.bookmarkedValue ? "lucide:bookmark-check" : "lucide:bookmark")
+    }
+  }
+
+  _renderDifficulty() {
+    this.difficultyStarTargets.forEach((star, index) => {
+      star.classList.toggle("quiz-difficulty__star--active", index < this.difficultyValue)
+    })
+  }
+
+  _cardBookmarkUrl() {
+    return `/decks/${this.deckIdValue}/card_bookmarks/${this.cardIdValue}`
+  }
+
+  _cardBookmarksUrl() {
+    return `/decks/${this.deckIdValue}/card_bookmarks`
+  }
+
+  _requestHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+    }
   }
 }

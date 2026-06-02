@@ -1,5 +1,6 @@
 class Decks::StudiesController < ApplicationController
   include Flashcards::StudyNavigation
+  include Flashcards::CardStudyState
 
   before_action :set_deck
 
@@ -18,6 +19,19 @@ class Decks::StudiesController < ApplicationController
     min_stars = params[:min_stars].to_i
     if min_stars.between?(1, 5)
       rated_ids = UserCardRating.where(user: Current.user, difficulty: min_stars..)
+                                 .where(card: @deck.cards)
+                                 .pluck(:card_id)
+      @due_cards = @due_cards.where(id: rated_ids)
+    end
+
+    if params[:card_filter] == "bookmarked"
+      bookmarked_ids = CardBookmark.where(user: Current.user, card: @deck.cards).pluck(:card_id)
+      @due_cards = @due_cards.where(id: bookmarked_ids)
+    end
+
+    difficulty = params[:difficulty].to_i
+    if difficulty.between?(1, 5)
+      rated_ids = UserCardRating.where(user: Current.user, difficulty: difficulty)
                                  .where(card: @deck.cards)
                                  .pluck(:card_id)
       @due_cards = @due_cards.where(id: rated_ids)
@@ -45,6 +59,7 @@ class Decks::StudiesController < ApplicationController
     @completed_count = 0
     @current_index   = 0
     @options         = study_options_for(@study_session, @deck, @current_card)
+    set_card_study_state(@current_card)
   end
 
   private

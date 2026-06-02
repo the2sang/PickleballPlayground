@@ -106,4 +106,23 @@ class DecksControllerTest < ActionDispatch::IntegrationTest
     assert_select ".deck-hub-tabs__trigger", text: /내 덱/
     assert_select ".cl-empty__text", text: "아직 만든 내 덱이 없습니다."
   end
+
+  test "show includes bookmarked and exact difficulty study links when available" do
+    sign_in_as(users(:one))
+    deck = Deck.create!(title: "Official Rules", scope: :official)
+    card = deck.cards.create!(
+      front: "Kitchen",
+      back: "Non-volley zone",
+      card_type: :multiple_choice,
+      answer_choices: [ "Serve", "Baseline", "Fault" ]
+    )
+    CardBookmark.create!(user: users(:one), card: card)
+    UserCardRating.create!(user: users(:one), card: card, difficulty: 4)
+
+    get deck_path(deck)
+
+    assert_response :success
+    assert_select "a[href='#{deck_study_path(deck, card_filter: "bookmarked")}']", text: "북마크한 문제만"
+    assert_select "a[href='#{deck_study_path(deck, difficulty: 4)}']", text: "난이도 4점"
+  end
 end

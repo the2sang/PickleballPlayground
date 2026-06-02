@@ -56,6 +56,8 @@ class DecksController < ApplicationController
     @cards       = @deck.cards.order(:position, :id)
     @rated_count = authenticated? ?
       UserCardRating.where(user: Current.user, card: @cards).count : 0
+    @bookmarked_count = authenticated? ?
+      CardBookmark.where(user: Current.user, card: @cards).count : 0
   end
 
   def new

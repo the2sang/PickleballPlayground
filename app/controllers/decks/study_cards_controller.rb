@@ -2,6 +2,7 @@
 
 class Decks::StudyCardsController < ApplicationController
   include Flashcards::StudyNavigation
+  include Flashcards::CardStudyState
 
   before_action :set_deck
   before_action :set_study_session
@@ -27,6 +28,7 @@ class Decks::StudyCardsController < ApplicationController
     @selected_answer = answer&.selected_answer.to_s
     @previous_card_path = navigation_path(card_ids[@current_index - 1]) if @current_index.positive?
     @next_card_path = navigation_path(card_ids[@current_index + 1]) if @current_index < card_ids.size - 1
+    set_card_study_state(@current_card)
 
     respond_to do |format|
       format.turbo_stream
