@@ -11814,6 +11814,104 @@ lexxy-editor.lexxy-editor-field {
   margin-bottom: 0;
 }
 
+.deck-carousel {
+  margin-bottom: 40px;
+}
+
+.deck-carousel__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.deck-carousel__title {
+  margin: 0;
+  color: #18181b;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.deck-carousel__range {
+  min-height: 18px;
+  margin: 4px 0 0;
+  color: #71717a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.deck-carousel__shell {
+  position: relative;
+}
+
+.deck-carousel__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 2px;
+}
+
+.deck-carousel__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.deck-carousel__track {
+  display: flex;
+  gap: 16px;
+}
+
+.deck-carousel__item {
+  flex: 0 0 calc((100% - 32px) / 3);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.deck-carousel__item .deck-card {
+  height: 100%;
+}
+
+.deck-carousel__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  background: rgba(255, 247, 237, 0.96);
+  color: #c2410c;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  transform: translateY(-50%);
+  transition: background-color .15s, border-color .15s, color .15s, opacity .15s, transform .15s;
+}
+
+.deck-carousel__nav:hover:not(:disabled) {
+  background: #ffedd5;
+  border-color: #fb923c;
+  color: #9a3412;
+  transform: translateY(-50%) scale(1.04);
+}
+
+.deck-carousel__nav:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.deck-carousel__nav--prev {
+  left: -18px;
+}
+
+.deck-carousel__nav--next {
+  right: -18px;
+}
+
 .deck-community-link {
   display: inline-flex;
   align-items: center;
@@ -12925,9 +13023,23 @@ lexxy-editor.lexxy-editor-field {
   .deck-collection__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .deck-carousel__item {
+    flex-basis: calc((100% - 16px) / 2);
+  }
 }
 
 @media (max-width: 640px) {
+  .deck-hub-tabs {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .deck-hub-tabs__trigger {
+    flex: 0 0 auto;
+  }
+
   .deck-collection__header {
     align-items: stretch;
     flex-direction: column;
@@ -12947,6 +13059,25 @@ lexxy-editor.lexxy-editor-field {
 
   .deck-collection__button {
     flex: 1;
+  }
+
+  .deck-carousel__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .deck-carousel__viewport {
+    margin-right: -16px;
+    padding-right: 16px;
+  }
+
+  .deck-carousel__item {
+    flex-basis: min(86%, 320px);
+  }
+
+  .deck-carousel__nav {
+    display: none;
   }
 }
 
