@@ -2,6 +2,7 @@
 
 class CardReviewsController < ApplicationController
   include Flashcards::StudyNavigation
+  include Flashcards::CardStudyState
 
   def create
     @card = Card.find(params[:card_review][:card_id])
@@ -89,6 +90,7 @@ class CardReviewsController < ApplicationController
     if @study_session && next_index < card_ids.size - 1
       @next_card_path = deck_study_session_card_path(@deck, @study_session, card_ids[next_index + 1])
     end
+    set_card_study_state(@next_card)
 
     respond_to do |format|
       format.turbo_stream

@@ -1,21 +1,29 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "pauseIcon"]
+  static targets = ["option", "form", "rating", "selectedAnswer", "nextButton", "timer", "timerDisplay", "pauseIcon",
+                    "bookmarkButton", "bookmarkIcon", "difficultyStar", "displayPanel", "editPanel", "editFront"]
   static values  = {
     correct: String,
     duration: { type: Number, default: 60 },
     answered: { type: Boolean, default: false },
-    nextUrl: String
+    nextUrl: String,
+    deckId: Number,
+    cardId: Number,
+    difficulty: { type: Number, default: 0 },
+    bookmarked: { type: Boolean, default: false }
   }
 
   connect() {
     this.answered      = this.answeredValue
     this.paused        = false
+    this.editing       = false
     this.remaining     = this.durationValue
     this.handleKeydown = this.handleKeydown.bind(this)
     document.addEventListener("keydown", this.handleKeydown)
     this._updateProgress()
+    this._renderBookmark()
+    this._renderDifficulty()
     if (this.answered) {
       this._clearTimer()
       if (this.hasTimerTarget) this.timerTarget.disabled = true
@@ -81,8 +89,73 @@ export default class extends Controller {
     }
   }
 
+  toggleBookmark(event) {
+    event.preventDefault()
+
+    const nextBookmarked = !this.bookmarkedValue
+    this.bookmarkedValue = nextBookmarked
+    this._renderBookmark()
+
+    fetch(nextBookmarked ? this._cardBookmarksUrl() : this._cardBookmarkUrl(), {
+      method: nextBookmarked ? "POST" : "DELETE",
+      headers: this._requestHeaders(),
+      body: nextBookmarked ? JSON.stringify({ card_id: this.cardIdValue }) : null
+    }).catch(() => {
+      this.bookmarkedValue = !nextBookmarked
+      this._renderBookmark()
+    })
+  }
+
+  rateDifficulty(event) {
+    event.preventDefault()
+
+    const nextDifficulty = parseInt(event.currentTarget.dataset.difficulty, 10)
+    const previousDifficulty = this.difficultyValue
+    this.difficultyValue = nextDifficulty
+    this._renderDifficulty()
+
+    fetch(`/decks/${this.deckIdValue}/card_ratings`, {
+      method: "POST",
+      headers: this._requestHeaders(),
+      body: JSON.stringify({ card_id: this.cardIdValue, difficulty: nextDifficulty })
+    }).catch(() => {
+      this.difficultyValue = previousDifficulty
+      this._renderDifficulty()
+    })
+  }
+
+  startEdit(event) {
+    event.preventDefault()
+
+    this.editing = true
+    this.timerPausedForEdit = false
+
+    if (!this.answered && !this.paused) {
+      this._clearTimer()
+      this.timerPausedForEdit = true
+    }
+
+    if (this.hasDisplayPanelTarget) this.displayPanelTarget.hidden = true
+    if (this.hasEditPanelTarget) this.editPanelTarget.hidden = false
+    if (this.hasEditFrontTarget) this.editFrontTarget.focus()
+  }
+
+  cancelEdit(event) {
+    event.preventDefault()
+
+    this.editing = false
+    if (this.hasEditPanelTarget) this.editPanelTarget.hidden = true
+    if (this.hasDisplayPanelTarget) this.displayPanelTarget.hidden = false
+
+    if (this.timerPausedForEdit && !this.answered) {
+      this._startTimer()
+    }
+    this.timerPausedForEdit = false
+  }
+
   handleKeydown(event) {
     if (this.answered) return
+    if (this.editing || this._isFormField(event.target)) return
     if (event.metaKey || event.ctrlKey || event.altKey) return
     const idx = { "1": 0, "2": 1, "3": 2, "4": 3 }[event.key]
     if (idx !== undefined && this.optionTargets[idx]) {
@@ -157,5 +230,41 @@ export default class extends Controller {
 
   _enableNext() {
     if (this.hasNextButtonTarget) this.nextButtonTarget.disabled = false
+  }
+
+  _renderBookmark() {
+    if (this.hasBookmarkButtonTarget) {
+      this.bookmarkButtonTarget.classList.toggle("quiz-bookmark--active", this.bookmarkedValue)
+      this.bookmarkButtonTarget.setAttribute("aria-pressed", String(this.bookmarkedValue))
+      this.bookmarkButtonTarget.setAttribute("aria-label", this.bookmarkedValue ? "북마크 해제" : "북마크")
+    }
+    if (this.hasBookmarkIconTarget) {
+      this.bookmarkIconTarget.setAttribute("icon", this.bookmarkedValue ? "lucide:bookmark-check" : "lucide:bookmark")
+    }
+  }
+
+  _renderDifficulty() {
+    this.difficultyStarTargets.forEach((star, index) => {
+      star.classList.toggle("quiz-difficulty__star--active", index < this.difficultyValue)
+    })
+  }
+
+  _cardBookmarkUrl() {
+    return `/decks/${this.deckIdValue}/card_bookmarks/${this.cardIdValue}`
+  }
+
+  _cardBookmarksUrl() {
+    return `/decks/${this.deckIdValue}/card_bookmarks`
+  }
+
+  _requestHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+    }
+  }
+
+  _isFormField(target) {
+    return ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target?.tagName)
   }
 }

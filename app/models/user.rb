@@ -30,6 +30,7 @@ class User < ApplicationRecord
   has_many :card_reviews, dependent: :destroy
   has_many :study_sessions, dependent: :destroy
   has_many :user_card_ratings, dependent: :destroy
+  has_many :card_bookmarks, dependent: :destroy
   has_many :deck_addition_requests, dependent: :destroy
   has_many :deck_bookmarks, dependent: :destroy
   has_many :updated_site_settings, class_name: "SiteSetting", foreign_key: :updated_by_id, dependent: :nullify, inverse_of: :updated_by

@@ -1,6 +1,7 @@
 <% current_category_param = @selected_category || 0 %>
 <% official_tab_active = @selected_deck_tab == "official" %>
 <% personal_tab_active = @selected_deck_tab == "personal" %>
+<% bookmarked_tab_active = @selected_deck_tab == "bookmarked" %>
 
 <div class="deck-hub-tabs" role="tablist" aria-label="낱말카드 덱">
   <%= link_to decks_path(deck_tab: "official", category: current_category_param),
@@ -11,6 +12,16 @@
     <iconify-icon icon="lucide:badge-check" width="15" aria-hidden="true"></iconify-icon>
     <span>공식 덱</span>
     <span class="deck-hub-tabs__count"><%= @official_decks.size %></span>
+  <% end %>
+
+  <%= link_to decks_path(deck_tab: "bookmarked", category: current_category_param),
+        id: "deck-tab-bookmarked",
+        class: "deck-hub-tabs__trigger#{bookmarked_tab_active ? " deck-hub-tabs__trigger--active" : ""}",
+        role: "tab",
+        aria: { selected: bookmarked_tab_active, controls: "deck-panel-bookmarked" } do %>
+    <iconify-icon icon="lucide:bookmark-check" width="15" aria-hidden="true"></iconify-icon>
+    <span>북마크 덱</span>
+    <span class="deck-hub-tabs__count"><%= @bookmarked_decks.size %></span>
   <% end %>
 
   <%= link_to decks_path(deck_tab: "personal", category: current_category_param),
