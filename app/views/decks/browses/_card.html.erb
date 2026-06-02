@@ -1,10 +1,23 @@
-<div class="bg-white rounded-xl shadow-md p-8 text-center">
-  <p data-browse-target="front" class="text-base text-gray-800"></p>
-  <p data-browse-target="back" class="text-base text-gray-700 mt-4 hidden" aria-live="polite"></p>
+<div class="browse-card">
+  <div class="browse-card__label">
+    <span>카드</span>
+    <iconify-icon icon="lucide:layers-3" width="12" aria-hidden="true"></iconify-icon>
+  </div>
+  <p data-browse-target="front" class="browse-card__front"></p>
+
+  <div data-browse-target="back" class="browse-card__back hidden" aria-live="polite">
+    <span class="browse-card__answer-label">정답</span>
+    <p data-browse-target="backText" class="browse-card__answer-text"></p>
+  </div>
 </div>
 
-<button type="button"
-        data-action="click->browse#flip"
-        data-browse-target="showButton"
-        aria-expanded="false"
-        class="mt-4 w-full min-h-[44px] bg-gray-900 text-white rounded-lg font-semibold py-3 hover:bg-gray-700">답 보기</button>
+<div class="browse-actions">
+  <button type="button"
+          data-action="click->browse#flip"
+          data-browse-target="showButton"
+          aria-expanded="false"
+          class="browse-actions__button">
+    <iconify-icon icon="lucide:eye" width="15" aria-hidden="true"></iconify-icon>
+    답 보기
+  </button>
+</div>
