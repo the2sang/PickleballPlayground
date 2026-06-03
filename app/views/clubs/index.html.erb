@@ -99,7 +99,12 @@
                 <span class="cl-badge cl-badge--neutral">회원 <%= club.club_memberships.approved.count %>명</span>
               </div>
               <div class="cl-card__name-row">
-                <p class="cl-card__name"><%= club.name %></p>
+                <p class="cl-card__name">
+                  <%= club.name %>
+                  <% if club.hot_zone? %>
+                    <i class="fa-solid fa-thumbs-up cl-card__hot-zone-icon" style="color: rgb(255, 212, 59);" aria-label="핫존 클럽"></i>
+                  <% end %>
+                </p>
                 <div id="club-fav-<%= club.id %>" class="cl-card__fav-inline">
                   <%= render "club_favorites/button",
                         club: club,

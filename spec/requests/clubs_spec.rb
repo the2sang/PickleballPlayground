@@ -78,6 +78,28 @@ RSpec.describe "Clubs", type: :request do
         expect(response.body).not_to include(pending_club.name)
         expect(response.body).not_to include(suspended_club.name)
       end
+
+      it "즐겨찾기 버튼에 로그인 안내 토스트를 연결한다" do
+        get clubs_path
+
+        document = Nokogiri::HTML(response.body)
+        favorite_button = document.at_css("button.cl-fav-btn[data-controller='login-required-toast']")
+
+        expect(favorite_button).to be_present
+        expect(favorite_button["data-login-required-toast-message-value"]).to eq("즐겨찾기는 로그인 후 활성화됩니다.")
+        expect(favorite_button["data-action"]).to include("click->login-required-toast#show")
+      end
+
+      it "핫존 클럽명 오른쪽에 으뜸 아이콘을 표시한다" do
+        approved_club.update!(hot_zone: true)
+
+        get clubs_path
+
+        document = Nokogiri::HTML(response.body)
+        club_name = document.css(".cl-card__name").find { |node| node.text.include?(approved_club.name) }
+
+        expect(club_name.at_css("i.fa-solid.fa-thumbs-up.cl-card__hot-zone-icon")).to be_present
+      end
     end
 
     context "일반 사용자" do

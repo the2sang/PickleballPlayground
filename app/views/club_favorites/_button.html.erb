@@ -20,4 +20,14 @@
       <span class="cl-fav-btn__label">(즐겨찾기)</span>
     <% end %>
   <% end %>
+<% else %>
+  <button type="button"
+          class="cl-fav-btn"
+          title="즐겨찾기"
+          data-controller="login-required-toast"
+          data-login-required-toast-message-value="즐겨찾기는 로그인 후 활성화됩니다."
+          data-action="click->login-required-toast#show">
+    <iconify-icon icon="lucide:star" width="15"></iconify-icon>
+    <span class="cl-fav-btn__label">(즐겨찾기)</span>
+  </button>
 <% end %>

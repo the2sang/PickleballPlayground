@@ -4792,7 +4792,7 @@ lexxy-editor.lexxy-editor-field {
 .cl-hero--main-banner {
   background-image:
     linear-gradient(90deg, rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.18)),
-    url("club_main_banner.png");
+    url("pickleball_club_header_banner.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -13638,4 +13638,27 @@ lexxy-editor.lexxy-editor-field {
 .cl-hero--personal-session-banner .cl-hero__title {
   color: #ffffff;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.32);
+}
+.admin-hot-zone-toggle {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.admin-hot-zone-toggle input {
+  accent-color: #facc15;
+}
+
+.admin-hot-zone-toggle label {
+  color: var(--hcp-charcoal);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cl-card__hot-zone-icon {
+  display: inline-block;
+  font-size: 0.9em;
+  margin-left: 6px;
+  vertical-align: 1px;
 }

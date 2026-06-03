@@ -16,8 +16,18 @@ module Admin
     def update
       @club = Club.find(params[:id])
       authorize [ :admin, @club ]
-      @club.update!(status: params[:status])
-      redirect_to admin_clubs_path, notice: "클럽 상태가 변경되었습니다."
+      updates = {}
+      updates[:status] = params[:status] if params[:status].present?
+      updates.merge!(club_params) if params[:club].present?
+
+      @club.update!(updates)
+      redirect_to admin_clubs_path, notice: "클럽 정보가 변경되었습니다."
+    end
+
+    private
+
+    def club_params
+      params.require(:club).permit(:hot_zone)
     end
   end
 end

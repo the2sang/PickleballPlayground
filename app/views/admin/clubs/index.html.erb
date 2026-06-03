@@ -94,6 +94,7 @@
             <th>클럽명</th>
             <th>개설자</th>
             <th>개설일</th>
+            <th>핫존</th>
             <th>상태</th>
             <th></th>
           </tr>
@@ -108,6 +109,14 @@
               </td>
               <td class="admin-table__mono"><%= club.owner.nickname %></td>
               <td class="admin-table__mono"><%= club.created_at.strftime("%Y-%m-%d") %></td>
+              <td>
+                <%= form_with model: [:admin, club], method: :patch, class: "admin-hot-zone-toggle" do |f| %>
+                  <%= f.check_box :hot_zone,
+                        onchange: "this.form.requestSubmit()",
+                        aria: { label: "#{club.name} 핫존 표시" } %>
+                  <%= f.label :hot_zone, "핫존" %>
+                <% end %>
+              </td>
               <td><span class="admin-badge" style="background: #dcfce7; color: #15803d;">ACTIVE</span></td>
               <td style="text-align: right;">
                 <%= button_to admin_club_path(club), method: :patch, params: { status: "suspended" },
