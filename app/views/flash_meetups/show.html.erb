@@ -114,20 +114,29 @@
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:calendar" width="14"></iconify-icon></span>
         <span class="cl-info-row__label">시작</span>
         <span class="cl-info-row__value">
-          <%= format_session_date(@flash_meetup.scheduled_at, style: :long) + @flash_meetup.scheduled_at.strftime(" %H:%M") %>
+          <%= format_session_date(@flash_meetup.start_date, style: :long) %>
+          <% if @flash_meetup.start_time? %>
+            <%= @flash_meetup.start_time.strftime(" %H:%M") %>
+          <% end %>
         </span>
       </div>
-      <% if @flash_meetup.ends_at.present? %>
+      <% if @flash_meetup.end_date.present? %>
       <%
-        duration_minutes = ((@flash_meetup.ends_at - @flash_meetup.scheduled_at) / 60).to_i
-        duration_text = duration_minutes >= 60 ? "#{duration_minutes / 60}시간#{duration_minutes % 60 > 0 ? " #{duration_minutes % 60}분" : ""}" : "#{duration_minutes}분"
+        show_duration = @flash_meetup.start_time? && @flash_meetup.end_time?
+        duration_minutes = show_duration ? ((@flash_meetup.ends_at - @flash_meetup.scheduled_at) / 60).to_i : nil
+        duration_text = duration_minutes && duration_minutes >= 60 ? "#{duration_minutes / 60}시간#{duration_minutes % 60 > 0 ? " #{duration_minutes % 60}분" : ""}" : "#{duration_minutes}분"
       %>
       <div class="cl-info-row">
         <span class="cl-info-row__icon"><iconify-icon icon="lucide:clock" width="14"></iconify-icon></span>
         <span class="cl-info-row__label">종료</span>
         <span class="cl-info-row__value">
-          <%= @flash_meetup.ends_at.strftime("%H:%M") %>
-          <span class="cl-info-row__muted">&nbsp;(총 <%= duration_text %>)</span>
+          <%= format_session_date(@flash_meetup.end_date, style: :long) %>
+          <% if @flash_meetup.end_time? %>
+            <%= @flash_meetup.end_time.strftime(" %H:%M") %>
+          <% end %>
+          <% if show_duration %>
+            <span class="cl-info-row__muted">&nbsp;(총 <%= duration_text %>)</span>
+          <% end %>
         </span>
       </div>
       <% end %>

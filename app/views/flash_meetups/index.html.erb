@@ -70,13 +70,13 @@
               <div style="min-width:0;">
                 <p class="cl-list-item__club">
                   <%= fm.user.display_name %> 개설
-                  <% if fm.scheduled_at.to_date == Date.today %>
+                  <% if fm.start_date == Date.current %>
                     <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
                   <% end %>
                 </p>
                 <p class="cl-list-item__title"><%= fm.venue_name %></p>
                 <p class="cl-list-item__meta">
-                  <%= "#{format_session_date(fm.scheduled_at)} #{fm.scheduled_at.strftime('%H:%M')}" %> &middot;
+                  <%= format_session_date(fm.start_date) %><%= fm.start_time? ? " #{fm.start_time.strftime('%H:%M')}" : "" %> &middot;
                   참가 <%= fm.confirmed_count %>명
                   <% if fm.max_participants.present? %>
                     / <%= fm.max_participants %>명

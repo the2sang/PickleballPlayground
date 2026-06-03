@@ -3,8 +3,10 @@ FactoryBot.define do
     association :user
     venue_name { "용인 실내 코트" }
     address    { "경기도 용인시" }
-    scheduled_at { 2.days.from_now }
-    ends_at      { 2.days.from_now + 2.hours }
+    start_date { 2.days.from_now.to_date }
+    end_date   { 2.days.from_now.to_date }
+    start_time { "10:00" }
+    end_time   { "12:00" }
     max_participants { nil }
     gender_filter { :all_genders }
     level_filter  { :all_levels }

@@ -23,14 +23,32 @@
     </div>
   </div>
 
+  <div class="cl-form__section">
+    <div class="cl-form__section-header">
+      <iconify-icon icon="lucide:calendar-days"></iconify-icon>
+      <span>일정</span>
+    </div>
+
+    <div class="cl-form__grid">
+      <div class="cl-form__field">
+        <%= f.label :start_date, "시작일", class: "cl-form__label" %>
+        <%= f.date_field :start_date, class: "cl-form__input", required: true %>
+      </div>
+      <div class="cl-form__field">
+        <%= f.label :end_date, "종료일", class: "cl-form__label" %>
+        <%= f.date_field :end_date, class: "cl-form__input", required: true %>
+      </div>
+    </div>
+  </div>
+
   <div class="cl-form__grid">
     <div class="cl-form__field">
-      <%= f.label :scheduled_at, "시작 시간", class: "cl-form__label" %>
-      <%= f.datetime_local_field :scheduled_at, class: "cl-form__input" %>
+      <%= f.label :start_time, "시작시간 (선택)", class: "cl-form__label" %>
+      <%= f.time_field :start_time, class: "cl-form__input" %>
     </div>
     <div class="cl-form__field">
-      <%= f.label :ends_at, "종료 시간", class: "cl-form__label" %>
-      <%= f.datetime_local_field :ends_at, class: "cl-form__input" %>
+      <%= f.label :end_time, "종료시간 (선택)", class: "cl-form__label" %>
+      <%= f.time_field :end_time, class: "cl-form__input" %>
     </div>
   </div>
 

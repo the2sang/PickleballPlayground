@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_03_062000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -201,16 +201,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_000100) do
     t.string "address"
     t.string "allowed_age_groups", default: "", null: false
     t.datetime "created_at", null: false
+    t.date "end_date", null: false
+    t.time "end_time"
     t.datetime "ends_at"
     t.integer "gender_filter", default: 0, null: false
     t.string "kakao_open_chat_url"
     t.integer "level_filter", default: 0, null: false
     t.integer "max_participants"
     t.datetime "scheduled_at", null: false
+    t.date "start_date", null: false
+    t.time "start_time"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.string "venue_name", null: false
     t.index ["scheduled_at"], name: "index_flash_meetups_on_scheduled_at"
+    t.index ["start_date"], name: "index_flash_meetups_on_start_date"
     t.index ["user_id"], name: "index_flash_meetups_on_user_id"
   end
 

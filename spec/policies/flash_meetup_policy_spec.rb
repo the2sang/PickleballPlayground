@@ -52,8 +52,8 @@ RSpec.describe FlashMeetupPolicy, type: :policy do
 
   describe "Scope" do
     it "upcoming 모임만 반환" do
-      create(:flash_meetup, scheduled_at: 1.day.ago)
-      upcoming = create(:flash_meetup, scheduled_at: 1.day.from_now)
+      create(:flash_meetup, start_date: 2.days.ago.to_date, end_date: 1.day.ago.to_date, start_time: "10:00", end_time: "12:00")
+      upcoming = create(:flash_meetup, start_date: 1.day.from_now.to_date, end_date: 1.day.from_now.to_date)
       scope = described_class::Scope.new(nil, FlashMeetup).resolve
       expect(scope).to include(upcoming)
     end

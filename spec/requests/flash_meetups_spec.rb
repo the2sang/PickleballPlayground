@@ -5,8 +5,11 @@ RSpec.describe "FlashMeetups", type: :request do
   let(:other)    { create(:user, :profile_complete) }
   let(:meetup)   { create(:flash_meetup, user: user) }
   let(:valid_params) do
-    { flash_meetup: { venue_name: "테스트 코트", scheduled_at: 2.days.from_now,
-                      ends_at: 2.days.from_now + 2.hours,
+    { flash_meetup: { venue_name: "테스트 코트",
+                      start_date: 2.days.from_now.to_date.to_s,
+                      end_date: 2.days.from_now.to_date.to_s,
+                      start_time: "10:00",
+                      end_time: "12:00",
                       gender_filter: "all_genders", level_filter: "all_levels",
                       allowed_age_groups: [] } }
   end
@@ -65,7 +68,26 @@ RSpec.describe "FlashMeetups", type: :request do
       expect {
         post flash_meetups_path, params: valid_params
       }.to change(FlashMeetup, :count).by(1)
+      expect(FlashMeetup.last.start_date).to eq(2.days.from_now.to_date)
+      expect(FlashMeetup.last.start_time.strftime("%H:%M")).to eq("10:00")
       expect(response).to redirect_to(flash_meetup_path(FlashMeetup.last))
+    end
+
+    it "시간 없이 날짜만으로 모임 생성" do
+      sign_in(user)
+      params = valid_params.deep_dup
+      params[:flash_meetup][:start_time] = ""
+      params[:flash_meetup][:end_time] = ""
+
+      expect {
+        post flash_meetups_path, params: params
+      }.to change(FlashMeetup, :count).by(1)
+
+      created = FlashMeetup.last
+      expect(created.start_date).to eq(2.days.from_now.to_date)
+      expect(created.end_date).to eq(2.days.from_now.to_date)
+      expect(created.start_time).to be_nil
+      expect(created.end_time).to be_nil
     end
 
     it "유효하지 않은 파라미터는 new 렌더링" do

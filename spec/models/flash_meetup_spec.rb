@@ -13,7 +13,8 @@ RSpec.describe FlashMeetup, type: :model do
   # ── Validations ───────────────────────────────────────────
   describe "validations" do
     it { is_expected.to validate_presence_of(:venue_name) }
-    it { is_expected.to validate_presence_of(:scheduled_at) }
+    it { is_expected.to validate_presence_of(:start_date) }
+    it { is_expected.to validate_presence_of(:end_date) }
     it { is_expected.to validate_numericality_of(:max_participants).is_greater_than(0).allow_nil }
 
     context "kakao_open_chat_url" do
@@ -32,6 +33,53 @@ RSpec.describe FlashMeetup, type: :model do
         expect(subject).not_to be_valid
         expect(subject.errors[:kakao_open_chat_url]).to be_present
       end
+    end
+  end
+
+  describe "schedule fields" do
+    it "syncs separated date and time fields to compatibility datetimes" do
+      meetup = build(:flash_meetup,
+                     start_date: Date.new(2026, 6, 10),
+                     end_date: Date.new(2026, 6, 10),
+                     start_time: "09:30",
+                     end_time: "11:00")
+
+      meetup.valid?
+
+      expect(meetup.scheduled_at.strftime("%Y-%m-%d %H:%M")).to eq("2026-06-10 09:30")
+      expect(meetup.ends_at.strftime("%Y-%m-%d %H:%M")).to eq("2026-06-10 11:00")
+    end
+
+    it "allows date-only schedules" do
+      meetup = build(:flash_meetup,
+                     start_date: Date.new(2026, 6, 10),
+                     end_date: Date.new(2026, 6, 11),
+                     start_time: nil,
+                     end_time: nil)
+
+      expect(meetup).to be_valid
+      expect(meetup.scheduled_at).to eq(meetup.start_date.in_time_zone.beginning_of_day)
+      expect(meetup.ends_at).to eq(meetup.end_date.in_time_zone.end_of_day)
+    end
+
+    it "rejects an end date before the start date" do
+      meetup = build(:flash_meetup,
+                     start_date: Date.new(2026, 6, 11),
+                     end_date: Date.new(2026, 6, 10))
+
+      expect(meetup).not_to be_valid
+      expect(meetup.errors[:end_date]).to be_present
+    end
+
+    it "rejects an end time before the start time on the same date" do
+      meetup = build(:flash_meetup,
+                     start_date: Date.new(2026, 6, 10),
+                     end_date: Date.new(2026, 6, 10),
+                     start_time: "12:00",
+                     end_time: "10:00")
+
+      expect(meetup).not_to be_valid
+      expect(meetup.errors[:end_time]).to be_present
     end
   end
 
