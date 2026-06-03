@@ -47,7 +47,7 @@ class DecksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".deck-hub-tabs[role='tablist']" do
       assert_select "a.deck-hub-tabs__trigger", text: /공식 덱/
-      assert_select "a.deck-hub-tabs__trigger", text: /내 덱/
+      assert_select "a.deck-hub-tabs__trigger", text: /마이 덱/
       assert_select "a.deck-hub-tabs__trigger", text: /북마크 덱/
     end
     assert_select "[role='tabpanel'] .deck-collection__title", text: "공식 덱"
@@ -59,8 +59,8 @@ class DecksControllerTest < ActionDispatch::IntegrationTest
     get decks_path(deck_tab: "personal")
 
     assert_response :success
-    assert_select ".deck-hub-tabs__trigger[aria-selected='true']", text: /내 덱/
-    assert_select ".cl-empty__text", text: "내 덱은 로그인 후 사용할 수 있습니다."
+    assert_select ".deck-hub-tabs__trigger[aria-selected='true']", text: /마이 덱/
+    assert_select ".cl-empty__text", text: "마이 덱은 로그인 후 사용할 수 있습니다."
     assert_select "a[href='#{new_session_path}']", text: /로그인하고 시작하기/
   end
 
@@ -86,7 +86,7 @@ class DecksControllerTest < ActionDispatch::IntegrationTest
     assert_select ".deck-hub-tabs[role='tablist']" do
       assert_select "a.deck-hub-tabs__trigger[aria-selected='true']", text: /공식 덱/
       assert_select "a.deck-hub-tabs__trigger iconify-icon[icon='lucide:badge-check']", 1
-      assert_select "a.deck-hub-tabs__trigger", text: /내 덱/
+      assert_select "a.deck-hub-tabs__trigger", text: /마이 덱/
       assert_select "a.deck-hub-tabs__trigger iconify-icon[icon='lucide:folder-user']", 1
       assert_select "a.deck-hub-tabs__trigger", text: /북마크 덱/
       assert_select "a.deck-hub-tabs__trigger iconify-icon[icon='lucide:bookmark-check']", 1
@@ -134,8 +134,9 @@ class DecksControllerTest < ActionDispatch::IntegrationTest
     get decks_path(deck_tab: "personal")
 
     assert_response :success
-    assert_select ".deck-hub-tabs__trigger[aria-selected='true']", text: /내 덱/
-    assert_select "[role='tabpanel'] .deck-collection__title", text: "내 덱"
+    assert_select ".deck-hub-tabs__trigger[aria-selected='true']", text: /마이 덱/
+    assert_select "[role='tabpanel'] .deck-collection__title", text: "마이 덱"
+    assert_select "[role='tabpanel'] .deck-collection__title iconify-icon[icon='lucide:folder-user']", 1
     assert_select ".deck-card__title", text: "My Drill Notes"
     assert_select ".deck-card__title", text: "Official Rules", count: 0
   end
@@ -147,8 +148,8 @@ class DecksControllerTest < ActionDispatch::IntegrationTest
     get decks_path(deck_tab: "personal")
 
     assert_response :success
-    assert_select ".deck-hub-tabs__trigger", text: /내 덱/
-    assert_select ".cl-empty__text", text: "아직 만든 내 덱이 없습니다."
+    assert_select ".deck-hub-tabs__trigger", text: /마이 덱/
+    assert_select ".cl-empty__text", text: "아직 만든 마이 덱이 없습니다."
   end
 
   test "show includes bookmarked and exact difficulty study links when available" do

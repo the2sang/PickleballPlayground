@@ -1,9 +1,15 @@
 <section class="deck-collection"
          data-controller="deck-collection"
          data-deck-collection-page-size-value="9">
+  <% title_icon = local_assigns[:icon] %>
   <div class="deck-collection__header">
     <div>
-      <h2 class="deck-collection__title"><%= title %></h2>
+      <h2 class="deck-collection__title">
+        <% if title_icon.present? %>
+          <iconify-icon icon="<%= title_icon %>" width="17" aria-hidden="true"></iconify-icon>
+        <% end %>
+        <span><%= title %></span>
+      </h2>
       <p class="deck-collection__range" data-deck-collection-target="range"></p>
     </div>
 

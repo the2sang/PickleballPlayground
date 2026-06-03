@@ -29,7 +29,7 @@
   <%= link_to deck, class: "deck-card__body" do %>
     <div class="deck-card__top-row">
       <div class="deck-card__scope-badge deck-card__scope-badge--<%= deck.scope %>">
-        <%= { "official" => "공식", "club" => "클럽", "personal" => "내 덱" }[deck.scope] %>
+        <%= { "official" => "공식", "club" => "클럽", "personal" => "마이 덱" }[deck.scope] %>
       </div>
       <div class="deck-card__category-badge">
         <%= deck.category_label %>

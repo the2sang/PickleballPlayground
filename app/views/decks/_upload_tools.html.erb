@@ -21,7 +21,7 @@
 
   <% if @personal_deck_count && @personal_deck_limit %>
     <div class="deck-upload-tools__quota">
-      내 덱 <%= @personal_deck_count %>/<%= @personal_deck_limit %>
+      마이 덱 <%= @personal_deck_count %>/<%= @personal_deck_limit %>
       <% if @personal_deck_count >= @personal_deck_limit %>
         <% if @pending_deck_addition_request.present? %>
           <span>승인요청 접수됨</span>

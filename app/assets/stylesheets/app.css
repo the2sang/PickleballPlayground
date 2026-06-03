@@ -11580,10 +11580,17 @@ lexxy-editor.lexxy-editor-field {
 }
 
 .deck-collection__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-size: 1.1rem;
   font-weight: 700;
   margin: 0;
   color: #111827;
+}
+
+.deck-collection__title iconify-icon {
+  color: #f97316;
 }
 
 .deck-collection__range {
