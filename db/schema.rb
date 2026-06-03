@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_062000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_03_070000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -205,6 +205,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_062000) do
     t.time "end_time"
     t.datetime "ends_at"
     t.integer "gender_filter", default: 0, null: false
+    t.boolean "hot_zone", default: false, null: false
     t.string "kakao_open_chat_url"
     t.integer "level_filter", default: 0, null: false
     t.integer "max_participants"

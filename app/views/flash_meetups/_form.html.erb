@@ -100,5 +100,16 @@
     <%= f.url_field :kakao_open_chat_url, class: "cl-form__input", placeholder: "https://open.kakao.com/..." %>
   </div>
 
+  <label class="cl-form-check">
+    <%= f.check_box :hot_zone, class: "cl-form-check__input" %>
+    <span class="cl-form-check__body">
+      <span class="cl-form-check__title">
+        <i class="fa-solid fa-thumbs-up" style="color: rgb(255, 212, 59);" aria-hidden="true"></i>
+        핫존 설정
+      </span>
+      <span class="cl-form-check__desc">개인모집 운동세션 목록에서 운동장소 옆에 핫존 아이콘을 표시합니다.</span>
+    </span>
+  </label>
+
   <%= f.submit flash_meetup.persisted? ? "수정" : "개설", class: "cl-form__submit" %>
 <% end %>

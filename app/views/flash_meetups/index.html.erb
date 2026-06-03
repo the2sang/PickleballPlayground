@@ -74,7 +74,12 @@
                     <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
                   <% end %>
                 </p>
-                <p class="cl-list-item__title"><%= fm.venue_name %></p>
+                <p class="cl-list-item__title">
+                  <%= fm.venue_name %>
+                  <% if fm.hot_zone? %>
+                    <i class="fa-solid fa-thumbs-up cl-list-item__hot-zone-icon" style="color: rgb(255, 212, 59);" aria-label="핫존 운동모임"></i>
+                  <% end %>
+                </p>
                 <p class="cl-list-item__meta">
                   <%= format_session_date(fm.start_date) %><%= fm.start_time? ? " #{fm.start_time.strftime('%H:%M')}" : "" %> &middot;
                   참가 <%= fm.confirmed_count %>명

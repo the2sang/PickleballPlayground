@@ -11,6 +11,7 @@ RSpec.describe "FlashMeetups", type: :request do
                       start_time: "10:00",
                       end_time: "12:00",
                       gender_filter: "all_genders", level_filter: "all_levels",
+                      hot_zone: "0",
                       allowed_age_groups: [] } }
   end
 
@@ -18,6 +19,17 @@ RSpec.describe "FlashMeetups", type: :request do
     it "비로그인 사용자도 접근 가능" do
       get flash_meetups_path
       expect(response).to have_http_status(:ok)
+    end
+
+    it "핫존 운동모임은 장소명 오른쪽에 핫존 아이콘을 표시한다" do
+      meetup.update!(hot_zone: true)
+
+      get flash_meetups_path
+
+      document = Nokogiri::HTML(response.body)
+      title = document.css(".cl-list-item__title").find { |node| node.text.include?(meetup.venue_name) }
+
+      expect(title.at_css("i.fa-solid.fa-thumbs-up.cl-list-item__hot-zone-icon")).to be_present
     end
   end
 
@@ -108,6 +120,12 @@ RSpec.describe "FlashMeetups", type: :request do
       sign_in(user)
       patch flash_meetup_path(meetup), params: { flash_meetup: { venue_name: "새 코트" } }
       expect(meetup.reload.venue_name).to eq("새 코트")
+    end
+
+    it "개설자는 핫존 설정을 수정할 수 있다" do
+      sign_in(user)
+      patch flash_meetup_path(meetup), params: { flash_meetup: { hot_zone: "1" } }
+      expect(meetup.reload).to be_hot_zone
     end
   end
 

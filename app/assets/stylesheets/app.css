@@ -5401,6 +5401,52 @@ lexxy-editor.lexxy-editor-field {
   text-decoration: none;
 }
 
+.cl-form-check {
+  align-items: flex-start;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.cl-form-check__input {
+  accent-color: #f97316;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.cl-form-check__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cl-form-check__title {
+  align-items: center;
+  color: var(--hcp-black);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 6px;
+}
+
+.cl-form-check__desc {
+  color: var(--hcp-mid-gray);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cl-list-item__hot-zone-icon {
+  display: inline-block;
+  font-size: 0.9em;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+
 /* ── Form Card ──────────────────────────────────────────────── */
 .cl-form-card {
   background: #ffffff;
