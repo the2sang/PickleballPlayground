@@ -18,6 +18,6 @@ class SessionsController < ApplicationController
 
   def destroy
     terminate_session
-    redirect_to root_path, status: :see_other
+    redirect_to root_path, status: :see_other, notice: "정상적으로 로그아웃이 되었습니다."
   end
 end

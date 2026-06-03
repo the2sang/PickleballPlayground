@@ -28,6 +28,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     delete session_path
 
     assert_redirected_to root_path
+    assert_equal "정상적으로 로그아웃이 되었습니다.", flash[:notice]
     assert_empty cookies[:session_id]
   end
 end
