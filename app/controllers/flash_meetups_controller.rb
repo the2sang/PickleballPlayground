@@ -59,7 +59,7 @@ class FlashMeetupsController < ApplicationController
       :venue_name, :address,
       :start_date, :end_date, :start_time, :end_time,
       :scheduled_at, :ends_at, :max_participants,
-      :gender_filter, :level_filter, :kakao_open_chat_url, :hot_zone,
+      :additional_info, :gender_filter, :level_filter, :kakao_open_chat_url, :hot_zone,
       allowed_age_groups: []
     )
     if p[:allowed_age_groups].present?

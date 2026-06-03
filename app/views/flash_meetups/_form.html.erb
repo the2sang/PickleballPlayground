@@ -57,6 +57,14 @@
     <%= f.number_field :max_participants, min: 1, placeholder: "무제한", class: "cl-form__input" %>
   </div>
 
+  <div class="cl-form__field">
+    <%= f.label :additional_info, "추가정보(선택)", class: "cl-form__label" %>
+    <%= f.text_area :additional_info,
+          rows: 5,
+          class: "cl-form__textarea",
+          placeholder: "참가자에게 전달할 준비물, 주차, 코트 이용 안내 등을 입력하세요" %>
+  </div>
+
   <div class="cl-form__section">
     <div class="cl-form__section-header">
       <iconify-icon icon="lucide:filter"></iconify-icon>
