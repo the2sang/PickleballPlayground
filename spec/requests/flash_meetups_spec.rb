@@ -23,6 +23,22 @@ RSpec.describe "FlashMeetups", type: :request do
       get flash_meetup_path(meetup)
       expect(response).to have_http_status(:ok)
     end
+
+    it "주소가 있으면 네이버 지도 연동 링크로 표시한다" do
+      meetup.update!(address: "서울시 송파구 올림픽로 424")
+
+      get flash_meetup_path(meetup)
+
+      document = Nokogiri::HTML(response.body)
+      link = document.at_css("a.cl-map-address-link")
+
+      expect(link).to be_present
+      expect(link.text).to eq("서울시 송파구 올림픽로 424")
+      expect(link["href"]).to include("https://map.naver.com/p/search/")
+      expect(link["data-controller"]).to eq("naver-map")
+      expect(link["data-action"]).to include("click->naver-map#open")
+      expect(link["data-naver-map-query-value"]).to eq("서울시 송파구 올림픽로 424")
+    end
   end
 
   describe "GET /flash_meetups/new" do
