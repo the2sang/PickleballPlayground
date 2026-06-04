@@ -421,6 +421,9 @@ bin/brakeman --no-pager
 bin/rails console
 ```
 
+> 최초 클론 후 한 번 실행 — 줄바꿈 정규화 커밋이 `git blame`을 오염시키지 않도록 설정:
+> `git config blame.ignoreRevsFile .git-blame-ignore-revs`
+
 ---
 
 ## 배포
