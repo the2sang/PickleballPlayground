@@ -1,5 +1,52 @@
 # See https://git-scm.com/docs/gitattributes for more about git attribute files.
 
+# ---------------------------------------------------------------------------
+# Line-ending normalization (Windows / macOS / Linux 혼용 환경 대응)
+#
+# 기본 정책: 모든 텍스트 파일을 리포지토리에는 LF로 저장하고,
+# 어떤 OS에서 체크아웃해도 작업트리에 LF로 풀어준다(eol=lf).
+# 이렇게 하면 OS가 바뀌어도 CRLF/LF 차이로 인한 대량 diff/충돌이 사라진다.
+# ---------------------------------------------------------------------------
+* text=auto eol=lf
+
+# 셸 스크립트 / 실행 바이너리는 반드시 LF (CRLF면 실행 깨짐)
+*.sh   text eol=lf
+bin/*  text eol=lf
+
+# Windows 전용 스크립트가 추가될 경우를 대비해 CRLF 강제 (현재 리포에는 없음)
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# ---------------------------------------------------------------------------
+# 바이너리 파일: 절대 줄바꿈 정규화하지 않음 (손상 방지)
+# ---------------------------------------------------------------------------
+# 이미지
+*.png  binary
+*.PNG  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+# 폰트
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.otf   binary
+# 기타 바이너리
+*.pdf   binary
+*.zip   binary
+*.gz    binary
+
+# Rails 암호화 자격증명: 바이너리로 취급해야 정규화로 손상되지 않음
+*.enc  binary
+# (참고: .svg 는 XML 텍스트이므로 정규화 대상으로 둔다)
+
+# ---------------------------------------------------------------------------
+# Rails 기본 설정
+# ---------------------------------------------------------------------------
 # Mark the database schema as having been generated.
 db/schema.rb linguist-generated
 

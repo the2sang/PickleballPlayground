@@ -39,3 +39,6 @@
 .gstack/
 /vendor/
 /.playwright-mcp/
+
+# JetBrains IDE settings (per-developer, should not be tracked)
+/.idea/

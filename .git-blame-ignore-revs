@@ -1,0 +1,8 @@
+# Revisions listed here are skipped by `git blame`.
+# Enable locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# These are bulk, mechanical changes (e.g. line-ending normalization)
+# that would otherwise pollute blame history.
+
+# chore: normalize line endings to LF (.gitattributes rollout)
