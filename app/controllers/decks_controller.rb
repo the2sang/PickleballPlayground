@@ -60,6 +60,11 @@ class DecksController < ApplicationController
       UserCardRating.where(user: Current.user, card: @cards).count : 0
     @bookmarked_count = authenticated? ?
       CardBookmark.where(user: Current.user, card: @cards).count : 0
+    @study_history = authenticated? ?
+      StudySession.completed
+                  .where(user: Current.user, deck: @deck)
+                  .order(completed_at: :desc, id: :desc)
+                  .limit(20) : []
   end
 
   def new

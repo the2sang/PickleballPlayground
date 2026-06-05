@@ -13290,6 +13290,144 @@ lexxy-editor.lexxy-editor-field {
 .deck-card__top-row   { display:flex; align-items:center; justify-content:space-between; }
 .deck-card__stats     { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#6b7280; background:#f9fafb; border:1px solid #e5e7eb; border-radius:99px; padding:2px 8px; }
 
+/* deck study history modal */
+.study-history-dialog {
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  width: min(92vw, 560px);
+  max-height: min(86vh, 720px);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
+  background: #fff;
+  overflow: hidden;
+}
+.study-history-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(2px);
+}
+.study-history-dialog__inner {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: min(86vh, 720px);
+}
+.study-history-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.study-history-dialog__eyebrow {
+  margin: 0 0 4px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+}
+.study-history-dialog__title {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+}
+.study-history-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+.study-history-dialog__close:hover {
+  background: #f9fafb;
+  color: #111827;
+}
+.study-history-dialog__summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+.study-history-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.study-history-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.study-history-list__item:last-child { border-bottom: 0; }
+.study-history-list__date {
+  margin: 0 0 4px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+}
+.study-history-list__score {
+  margin: 0;
+  color: #4b5563;
+  font-size: 13px;
+}
+.study-history-list__score span {
+  margin-left: 6px;
+  color: #2563eb;
+  font-weight: 700;
+}
+.study-history-list__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.study-history-list__link:hover { color: #1d4ed8; }
+.study-history-empty {
+  padding: 36px 16px;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  text-align: center;
+  color: #6b7280;
+}
+.study-history-empty__title {
+  margin: 10px 0 4px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+}
+.study-history-empty__desc {
+  margin: 0;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .study-history-dialog__inner { padding: 20px; }
+  .study-history-dialog__summary,
+  .study-history-list__item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    Flip Card Mode (주관식 학습)
    ═══════════════════════════════════════════════════════════════ */

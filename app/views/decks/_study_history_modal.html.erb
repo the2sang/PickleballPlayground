@@ -1,0 +1,56 @@
+<dialog class="study-history-dialog"
+        data-modal-target="dialog"
+        data-action="click->modal#backdropClose"
+        aria-labelledby="study-history-title-<%= deck.id %>">
+  <div class="study-history-dialog__inner">
+    <div class="study-history-dialog__header">
+      <div>
+        <p class="study-history-dialog__eyebrow"><%= deck.title %></p>
+        <h2 id="study-history-title-<%= deck.id %>" class="study-history-dialog__title">내 학습이력</h2>
+      </div>
+      <button type="button"
+              class="study-history-dialog__close"
+              data-action="click->modal#close"
+              aria-label="닫기">
+        <iconify-icon icon="lucide:x" width="18" aria-hidden="true"></iconify-icon>
+      </button>
+    </div>
+
+    <% if study_history.any? %>
+      <div class="study-history-dialog__summary">
+        <span>총 <%= study_history.size %>회</span>
+        <span>최근 <%= study_history.first.completed_at.in_time_zone.strftime("%Y.%m.%d %H:%M") %></span>
+      </div>
+
+      <div class="study-history-list">
+        <% study_history.each do |study_session| %>
+          <div class="study-history-list__item">
+            <div>
+              <p class="study-history-list__date">
+                <%= study_session.completed_at.in_time_zone.strftime("%Y.%m.%d %H:%M") %>
+              </p>
+              <p class="study-history-list__score">
+                <%= study_session.correct_count %> / <%= study_session.total_count %>
+                <% if study_session.score_pct %>
+                  <span><%= study_session.score_pct %>%</span>
+                <% end %>
+              </p>
+            </div>
+            <%= link_to deck_study_session_path(deck, study_session),
+                  class: "study-history-list__link",
+                  aria: { label: "#{study_session.completed_at.in_time_zone.strftime("%Y.%m.%d %H:%M")} 학습 결과 보기" } do %>
+              결과보기
+              <iconify-icon icon="lucide:arrow-right" width="13" aria-hidden="true"></iconify-icon>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="study-history-empty">
+        <iconify-icon icon="lucide:clipboard-list" width="28" aria-hidden="true"></iconify-icon>
+        <p class="study-history-empty__title">아직 완료한 학습이 없습니다.</p>
+        <p class="study-history-empty__desc">객관식 학습을 끝까지 풀면 이곳에 결과가 저장됩니다.</p>
+      </div>
+    <% end %>
+  </div>
+</dialog>

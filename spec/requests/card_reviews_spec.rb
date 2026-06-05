@@ -34,6 +34,36 @@ RSpec.describe "CardReviews", type: :request do
         expect(response).to redirect_to(deck_path(deck))
       end
 
+      it "마지막 객관식 답 제출 후 유저별 학습 결과를 StudySession에 저장한다" do
+        study_session = create(:study_session, user: user, deck: deck)
+
+        freeze_time do
+          post card_reviews_path,
+            params: {
+              card_review: {
+                card_id: card.id,
+                deck_id: deck.id,
+                study_session_id: study_session.id,
+                rating: 4,
+                selected_answer: card.back
+              }
+            },
+            headers: headers
+
+          expect(response).to redirect_to(deck_study_session_path(deck, study_session))
+          expect(study_session.reload).to have_attributes(
+            completed_at: Time.current,
+            total_count: 1,
+            correct_count: 1
+          )
+        end
+
+        expect(study_session.study_session_answers.find_by!(card: card)).to have_attributes(
+          is_correct: true,
+          selected_answer: card.back
+        )
+      end
+
       it "두 번째 due 카드가 있으면 complete가 아닌 _card partial로 replace" do
         # next_card 추가 — 평가 후 큐에 남는 카드가 있도록
         create(:card, deck: deck, position: 2)

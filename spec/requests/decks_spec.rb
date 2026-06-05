@@ -140,6 +140,52 @@ RSpec.describe "Decks", type: :request do
   end
 
   describe "GET /decks/:id" do
+    it "완료된 내 객관식 학습 이력을 모달로 렌더한다" do
+      sign_in(user)
+      deck = create(:deck, :personal, owner: user)
+      create(:card, deck: deck)
+      completed_session = create(
+        :study_session,
+        :completed,
+        user: user,
+        deck: deck,
+        completed_at: Time.zone.local(2026, 6, 5, 9, 30),
+        total_count: 4,
+        correct_count: 3
+      )
+
+      get deck_path(deck)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("학습이력")
+      expect(response.body).to include("내 학습이력")
+      expect(response.body).to include("총 1회")
+      expect(response.body).to include("3 / 4")
+      expect(response.body).to include("75%")
+      expect(response.body).to include(deck_study_session_path(deck, completed_session))
+    end
+
+    it "다른 사용자의 학습 이력은 덱 상세에 노출하지 않는다" do
+      sign_in(user)
+      deck = create(:deck, :personal, owner: user)
+      create(:card, deck: deck)
+      create(
+        :study_session,
+        :completed,
+        user: other_user,
+        deck: deck,
+        total_count: 9,
+        correct_count: 9
+      )
+
+      get deck_path(deck)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("학습이력")
+      expect(response.body).to include("아직 완료한 학습이 없습니다.")
+      expect(response.body).not_to include("9 / 9")
+    end
+
     it "주관식 학습 메뉴에 별3개 이상만 필터 링크를 노출한다" do
       sign_in(user)
       deck = create(:deck, :personal, owner: user)

@@ -77,6 +77,16 @@
               <button type="button" class="btn btn--primary btn--sm" disabled aria-disabled="true" title="카드를 먼저 추가하세요">학습 시작</button>
               <span style="font-size:0.85rem; color:#6b7280; align-self:center;">카드를 먼저 추가하세요</span>
             <% end %>
+            <% if authenticated? %>
+              <div data-controller="modal">
+                <button type="button"
+                        class="btn btn--ghost btn--sm"
+                        data-action="click->modal#open">
+                  학습이력
+                </button>
+                <%= render "decks/study_history_modal", deck: @deck, study_history: @study_history %>
+              </div>
+            <% end %>
             <% if can_fork %>
               <%= button_to "내 덱으로 복제", deck_fork_path(@deck), method: :post,
                     class: "btn btn--ghost btn--sm",
