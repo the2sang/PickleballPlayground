@@ -42,3 +42,5 @@
 
 # JetBrains IDE settings (per-developer, should not be tracked)
 /.idea/
+/AI-Agent-Wiki-Template/.obsidian/
+/AI-Agent-Wiki-Template/.smart-env/

@@ -13,14 +13,14 @@
 ```text
 현재 폴더는 더미 데이터가 없는 Obsidian AI 업무 위키 템플릿이야.
 
-먼저 이 템플릿의 폴더 구조와 CLAUDE.md, AGENTS.md, index.md, log.md를 읽고 현재 규칙을 파악해줘.
+먼저 폴더 구조와 CLAUDE.md, AGENTS.md, index.md, log.md를 읽고 현재 규칙을 파악해줘.
 
 그 다음 아래 Karpathy LLM Wiki gist를 읽고 핵심 설계를 학습해줘.
 https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 
 템플릿 구조와 카파시 원칙을 비교해서, 현재 폴더를 내 업무에 맞는 Obsidian 기반 AI 에이전트 업무 위키로 세팅해줘.
 
-목표는 개인 메모장이 아니라 회사 실무에서 여러 AI 에이전트가 같은 업무 맥락을 공유하는 안정적인 비즈니스 프로세스야.
+목표는 개인 메모장이 아니라 회사 실무에서 여러 AI 에이전트와 동료가 같은 업무 맥락을 공유하는 안정적인 비즈니스 프로세스야.
 
 raw, wiki, conversations, index.md, log.md, Claude Code용 CLAUDE.md, Codex용 AGENTS.md가 올바르게 구성되어 있는지 점검하고 보강해줘.
 
@@ -41,8 +41,14 @@ raw, wiki, conversations, index.md, log.md, Claude Code용 CLAUDE.md, Codex용 A
 
 ## 기본 명령
 
-- `save`: 현재 작업 맥락을 저장합니다.
-- `ingest`: raw 자료를 읽고 wiki 자료로 정리합니다.
+- `save`: 현재 작업 맥락 중 저장 필터를 통과한 내용만 저장합니다.
+- `ingest`: raw 자료를 읽고 wiki 자료로 컴파일합니다.
 - `query`: wiki와 log를 참조해 이전 맥락을 복원합니다.
 - `lint`: vault 구조와 규칙 위반을 점검합니다.
 
+## 운영 기준
+
+- `AI-Sessions/raw/`는 불변 원천 자료입니다.
+- `AI-Sessions/wiki/`는 에이전트가 유지하는 업무 지식입니다.
+- `AI-Sessions/conversations/`는 다음 세션으로 넘겨야 하는 handoff만 저장합니다.
+- 중요한 저장 후에는 `index.md`와 `log.md`를 함께 갱신합니다.

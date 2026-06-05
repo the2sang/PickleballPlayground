@@ -29,6 +29,18 @@ required_dirs=(
   "scripts"
 )
 
+gitkeep_dirs=(
+  "AI-Sessions/raw"
+  "AI-Sessions/conversations"
+  "AI-Sessions/wiki/sources"
+  "AI-Sessions/wiki/concepts"
+  "AI-Sessions/wiki/decisions"
+  "AI-Sessions/wiki/errors"
+  "AI-Sessions/wiki/projects"
+  "AI-Sessions/wiki/design"
+  "AI-Sessions/wiki/dev-tasks"
+)
+
 for file in "${required_files[@]}"; do
   if [[ ! -f "$ROOT/$file" ]]; then
     echo "Missing required file: $file" >&2
@@ -39,6 +51,13 @@ done
 for dir in "${required_dirs[@]}"; do
   if [[ ! -d "$ROOT/$dir" ]]; then
     echo "Missing required directory: $dir" >&2
+    exit 1
+  fi
+done
+
+for dir in "${gitkeep_dirs[@]}"; do
+  if [[ ! -f "$ROOT/$dir/.gitkeep" ]]; then
+    echo "Missing .gitkeep in required empty directory: $dir" >&2
     exit 1
   fi
 done
