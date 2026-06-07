@@ -208,7 +208,20 @@
         <span class="cl-info-row__value">
           <%= @game_session.venue_name %>
           <% if @game_session.address.present? %>
-            <span class="cl-info-row__muted">&nbsp;(<%= @game_session.address %>)</span>
+            <% naver_map_query = @game_session.address.to_s.strip %>
+            <% naver_map_url = "https://map.naver.com/p/search/#{ERB::Util.url_encode(naver_map_query)}" %>
+            <span class="cl-info-row__muted">&nbsp;(</span><%= link_to @game_session.address,
+                  naver_map_url,
+                  class: "cl-map-address-link",
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  aria: { label: "#{@game_session.address} 네이버 지도 열기" },
+                  data: {
+                    controller: "naver-map",
+                    action: "click->naver-map#open",
+                    naver_map_query_value: naver_map_query,
+                    naver_map_appname_value: "https://codedash.co.kr"
+                  } %><span class="cl-info-row__muted">)</span>
           <% end %>
         </span>
       </div>
