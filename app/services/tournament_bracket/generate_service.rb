@@ -7,8 +7,9 @@ module TournamentBracket
 
     def self.call(**args) = new(**args).call
 
-    def initialize(tournament_event:)
+    def initialize(tournament_event:, advancing_team_ids: nil)
       @event = tournament_event
+      @advancing_team_ids = Array(advancing_team_ids).reject(&:blank?)
     end
 
     def call
@@ -32,6 +33,8 @@ module TournamentBracket
     private
 
     def collect_advancing_teams
+      return selected_advancing_teams if @advancing_team_ids.present?
+
       advances = @event.advances_per_group
       @event.tournament_groups.map do |group|
         standings = TournamentGroups::StandingsService.call(tournament_group: group).data
@@ -39,10 +42,18 @@ module TournamentBracket
       end.flatten
     end
 
+    def selected_advancing_teams
+      team_ids = @advancing_team_ids.map(&:to_i).uniq
+      teams_by_id = @event.tournament_teams.where(id: team_ids).index_by(&:id)
+      team_ids.filter_map { |id| teams_by_id[id] }
+    end
+
     # Cross-seed: group teams by rank tier, reversing odd-rank tiers so teams
     # from the same group never meet in R1 (e.g. 2 groups × 2 advances produces
     # [A1, B1, B2, A2] → Match 1: A1 vs B1, Match 2: B2 vs A2).
     def seed_teams(teams, bracket_size)
+      return teams.first(bracket_size) + Array.new(bracket_size - teams.size) if @advancing_team_ids.present?
+
       advances = @event.advances_per_group
       groups   = teams.each_slice(advances).to_a
 

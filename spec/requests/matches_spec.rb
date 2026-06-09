@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Matches", type: :request do
+  before { host! "localhost" }
+
   let(:owner)      { create(:user) }
   let(:other)      { create(:user) }
   let(:club)       { create(:club, owner: owner) }
@@ -31,6 +33,15 @@ RSpec.describe "Matches", type: :request do
       patch match_path(match), params: sets_params
       expect(match.reload.status).to eq("completed")
       expect(match.winner).to eq(team_a)
+    end
+
+    it "return_to가 있으면 저장 후 해당 대시보드로 돌아간다" do
+      sign_in(owner)
+      return_to = tournament_event_path(event, anchor: "tournament_group_#{group.id}")
+
+      patch match_path(match), params: sets_params.merge(return_to: return_to)
+
+      expect(response).to redirect_to(return_to)
     end
 
     it "타인은 403" do

@@ -11,6 +11,7 @@ class MatchesController < ApplicationController
   def edit
     authorize @match
     @sets = @match.match_sets.order(:set_number)
+    @return_to = safe_return_to
   end
 
   def update
@@ -19,7 +20,7 @@ class MatchesController < ApplicationController
     result = Matches::RecordResultService.call(match: @match, sets: sets)
     if result.success?
       flash[:notice] = result.warning || "경기 결과가 저장되었습니다."
-      redirect_to @match
+      redirect_to safe_return_to || @match
     else
       redirect_to edit_match_path(@match), alert: result.error
     end
@@ -47,5 +48,13 @@ class MatchesController < ApplicationController
     raw.values
        .reject { |s| s[:home_score].blank? && s[:away_score].blank? }
        .map { |s| { home_score: s[:home_score].to_i, away_score: s[:away_score].to_i } }
+  end
+
+  def safe_return_to
+    path = params[:return_to].to_s
+    return nil if path.blank?
+    return nil unless path.start_with?("/") && !path.start_with?("//")
+
+    path
   end
 end

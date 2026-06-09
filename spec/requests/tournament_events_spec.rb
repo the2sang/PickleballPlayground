@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "TournamentEvents", type: :request do
+  before { host! "localhost" }
+
   let(:owner)      { create(:user) }
   let(:other)      { create(:user) }
   let(:club)       { create(:club, owner: owner) }
@@ -16,6 +18,24 @@ RSpec.describe "TournamentEvents", type: :request do
     it "비로그인도 접근 가능" do
       get tournament_event_path(event)
       expect(response).to have_http_status(:ok)
+    end
+
+    it "조별 리그 대진표와 예선 통과팀 선택 UI를 표시한다" do
+      group = create(:tournament_group, tournament_event: event, name: "A조")
+      team_a = create(:tournament_team, tournament_event: event, name: "A팀")
+      team_b = create(:tournament_team, tournament_event: event, name: "B팀")
+      create(:tournament_group_team, tournament_group: group, tournament_team: team_a)
+      create(:tournament_group_team, tournament_group: group, tournament_team: team_b)
+      create(:match, matchable: group, home_team: team_a, away_team: team_b, match_number: 1)
+      event.update!(status: :qualifying)
+
+      sign_in(owner)
+      get tournament_event_path(event)
+
+      expect(response.body).to include("조별 리그 대시보드")
+      expect(response.body).to include("예선 통과팀 선택")
+      expect(response.body).to include("A팀")
+      expect(response.body).to include("B팀")
     end
   end
 
@@ -53,6 +73,33 @@ RSpec.describe "TournamentEvents", type: :request do
       expect {
         delete tournament_event_path(e)
       }.to change(TournamentEvent, :count).by(-1)
+    end
+  end
+
+  describe "POST /tournament_events/:id/generate_bracket" do
+    it "오너가 선택한 예선 통과팀으로 본선 대진 생성" do
+      group = create(:tournament_group, tournament_event: event)
+      teams = 4.times.map { |i| create(:tournament_team, tournament_event: event, name: "통과#{i + 1}") }
+      teams.each { |team| create(:tournament_group_team, tournament_group: group, tournament_team: team) }
+      event.update!(status: :qualifying)
+
+      sign_in(owner)
+      expect {
+        post generate_bracket_tournament_event_path(event), params: { advancing_team_ids: teams.map(&:id) }
+      }.to change { Match.where(matchable: event).count }.by(3)
+
+      expect(response).to redirect_to(tournament_event_path(event))
+      expect(event.reload.status).to eq("bracket")
+    end
+
+    it "선택팀 없이 요청하면 종목 화면으로 돌려보낸다" do
+      event.update!(status: :qualifying)
+      sign_in(owner)
+
+      post generate_bracket_tournament_event_path(event), params: { advancing_team_ids: [] }
+
+      expect(response).to redirect_to(tournament_event_path(event))
+      expect(flash[:alert]).to be_present
     end
   end
 end

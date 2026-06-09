@@ -78,19 +78,40 @@
       <% end %>
     </div>
 
-    <%# 조 편성 섹션 (예선 이상) %>
+    <%# 조별 리그 대시보드 (예선 이상) %>
     <% if @event.qualifying? || @event.bracket? || @event.completed? %>
       <div class="cl-info-card" style="margin-bottom:16px;">
-        <div class="cl-info-card__header" style="display:flex;justify-content:space-between;align-items:center;">
-          <p class="cl-info-card__header-label">조 편성 (<%= @groups.size %>조)</p>
-        </div>
-        <% @groups.each do |group| %>
-          <div style="padding:10px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
-            <%= link_to tournament_group_path(group), style: "font-weight:500;font-size:14px;" do %><%= group.name %><% end %>
-            <span style="font-size:12px;color:var(--hcp-cool-gray);margin-left:8px;">
-              <%= group.teams.map(&:name).join(", ") %>
-            </span>
+        <div class="cl-info-card__header" style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+          <div>
+            <p class="cl-info-card__header-label">조별 리그 대시보드</p>
+            <p style="font-size:12px;color:var(--hcp-cool-gray);margin-top:3px;">
+              각 조의 가로/세로 대진표에서 경기 결과를 입력하고 예선 통과팀을 선택하세요.
+            </p>
           </div>
+          <span class="cl-badge cl-badge--muted"><%= @groups.size %>조</span>
+        </div>
+
+        <% if @event.qualifying? && is_manager %>
+          <%= form_with url: generate_bracket_tournament_event_path(@event), method: :post do %>
+            <%= render partial: "tournament_events/group_dashboard",
+                  collection: @group_dashboards,
+                  as: :dashboard,
+                  locals: { event: @event, is_manager: is_manager, selectable: true } %>
+
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 16px;background:var(--hcp-bg-subtle,#f9fafb);border-top:1px solid var(--hcp-border,#e5e7eb);">
+              <p style="font-size:12px;color:var(--hcp-cool-gray);margin:0;">
+                선택한 팀 수에 따라 4강 또는 8강 본선 대진표가 자동 생성됩니다.
+              </p>
+              <%= submit_tag "선택팀으로 본선 대진 생성",
+                    class: "btn btn--primary btn--sm",
+                    data: { turbo_confirm: "선택한 예선 통과팀으로 본선 대진을 생성하시겠습니까?" } %>
+            </div>
+          <% end %>
+        <% else %>
+          <%= render partial: "tournament_events/group_dashboard",
+                collection: @group_dashboards,
+                as: :dashboard,
+                locals: { event: @event, is_manager: is_manager, selectable: false } %>
         <% end %>
       </div>
     <% end %>

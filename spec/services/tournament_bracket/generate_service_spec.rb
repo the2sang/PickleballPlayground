@@ -120,4 +120,34 @@ RSpec.describe TournamentBracket::GenerateService, type: :service do
       expect(bye_match).to be_present
     end
   end
+
+  context "선택한 예선 통과팀으로 본선 생성" do
+    let(:event) { create(:tournament_event, tournament: tournament, advances_per_group: 2) }
+
+    it "선택된 팀만 4강 대진에 배정한다" do
+      group = create(:tournament_group, tournament_event: event)
+      selected = 4.times.map { |i| create(:tournament_team, tournament_event: event, name: "통과#{i + 1}") }
+      skipped = create(:tournament_team, tournament_event: event, name: "미통과")
+      (selected + [ skipped ]).each { |team| create(:tournament_group_team, tournament_group: group, tournament_team: team) }
+
+      result = described_class.call(tournament_event: event, advancing_team_ids: selected.map(&:id))
+
+      expect(result.success?).to be true
+      bracket_team_ids = Match.where(matchable: event).flat_map { |m| [ m.home_team_id, m.away_team_id ] }.compact
+      expect(bracket_team_ids).to include(*selected.map(&:id))
+      expect(bracket_team_ids).not_to include(skipped.id)
+      expect(Match.where(matchable: event).count).to eq(3)
+    end
+
+    it "5팀 이상 선택하면 8강 크기의 대진을 만든다" do
+      group = create(:tournament_group, tournament_event: event)
+      selected = 5.times.map { |i| create(:tournament_team, tournament_event: event, name: "통과#{i + 1}") }
+      selected.each { |team| create(:tournament_group_team, tournament_group: group, tournament_team: team) }
+
+      result = described_class.call(tournament_event: event, advancing_team_ids: selected.map(&:id))
+
+      expect(result.success?).to be true
+      expect(Match.where(matchable: event, round: 1).count).to eq(4)
+    end
+  end
 end

@@ -8,7 +8,9 @@ class TournamentEventsController < ApplicationController
     authorize @event
     @teams  = @event.tournament_teams.includes(:users)
     @groups = @event.tournament_groups
-                    .includes(tournament_group_teams: { tournament_team: :users })
+                    .includes(:matches, tournament_group_teams: { tournament_team: :users })
+                    .order(:name)
+    @group_dashboards = build_group_dashboards(@groups)
     @bracket_matches = Match.where(matchable: @event)
                             .includes(:home_team, :away_team, :winner)
                             .order(:round, :match_number)
@@ -64,7 +66,10 @@ class TournamentEventsController < ApplicationController
 
   def generate_bracket
     authorize @event, :update?
-    result = TournamentBracket::GenerateService.call(tournament_event: @event)
+    result = TournamentBracket::GenerateService.call(
+      tournament_event: @event,
+      advancing_team_ids: params[:advancing_team_ids]
+    )
     if result.success?
       redirect_to @event, notice: "본선 대진이 생성되었습니다."
     else
@@ -81,5 +86,20 @@ class TournamentEventsController < ApplicationController
     params.require(:tournament_event).permit(
       :discipline, :sub_category, :scoring_format, :points_to_win, :advances_per_group
     )
+  end
+
+  def build_group_dashboards(groups)
+    groups.map do |group|
+      matches = group.matches.includes(:home_team, :away_team, :winner, :match_sets).order(:match_number).to_a
+      standings = TournamentGroups::StandingsService.call(tournament_group: group).data
+
+      {
+        group: group,
+        teams: group.teams.order(:name).to_a,
+        matches: matches,
+        matches_by_pair: matches.index_by { |match| [ match.home_team_id, match.away_team_id ].compact.sort },
+        standings: standings
+      }
+    end
   end
 end
