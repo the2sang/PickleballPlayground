@@ -65,9 +65,10 @@
         <% @teams.each do |team| %>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--hcp-border,#e5e7eb);">
             <div>
-              <span style="font-weight:500;font-size:14px;"><%= team.name %></span>
-              <% if team.users.any? %>
-                <span style="font-size:12px;color:var(--hcp-cool-gray);margin-left:8px;"><%= team.users.map(&:display_name).join(", ") %></span>
+              <% member_names = tournament_team_member_names(team) %>
+              <span style="display:block;font-weight:600;font-size:14px;"><%= team.name %></span>
+              <% if member_names.present? %>
+                <span style="display:block;font-size:12px;color:var(--hcp-cool-gray);margin-top:2px;">(<%= member_names %>)</span>
               <% end %>
             </div>
             <%= link_to tournament_team_path(team), class: "btn btn--secondary btn--sm" do %>

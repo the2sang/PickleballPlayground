@@ -95,7 +95,7 @@ class TournamentEventsController < ApplicationController
 
       {
         group: group,
-        teams: group.teams.order(:name).to_a,
+        teams: group.teams.includes(:users).order(:name).to_a,
         matches: matches,
         matches_by_pair: matches.index_by { |match| [ match.home_team_id, match.away_team_id ].compact.sort },
         standings: standings

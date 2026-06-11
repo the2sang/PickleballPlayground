@@ -71,4 +71,14 @@ module ApplicationHelper
                 .includes(:club)
                 .map(&:club)
   end
+
+  def tournament_team_label(team)
+    member_names = tournament_team_member_names(team)
+    member_names.present? ? "#{team.name}(#{member_names})" : team.name
+  end
+
+  def tournament_team_member_names(team)
+    team.player_names.presence ||
+      team.users.map { |user| user.display_name.presence || user.nickname }.compact_blank.join(", ")
+  end
 end

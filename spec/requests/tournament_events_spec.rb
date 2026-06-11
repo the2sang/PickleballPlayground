@@ -22,8 +22,8 @@ RSpec.describe "TournamentEvents", type: :request do
 
     it "조별 리그 대진표와 예선 통과팀 선택 UI를 표시한다" do
       group = create(:tournament_group, tournament_event: event, name: "A조")
-      team_a = create(:tournament_team, tournament_event: event, name: "A팀")
-      team_b = create(:tournament_team, tournament_event: event, name: "B팀")
+      team_a = create(:tournament_team, tournament_event: event, name: "A팀", player_names: "김하나")
+      team_b = create(:tournament_team, tournament_event: event, name: "B팀", player_names: "박두리")
       create(:tournament_group_team, tournament_group: group, tournament_team: team_a)
       create(:tournament_group_team, tournament_group: group, tournament_team: team_b)
       create(:match, matchable: group, home_team: team_a, away_team: team_b, match_number: 1)
@@ -34,8 +34,21 @@ RSpec.describe "TournamentEvents", type: :request do
 
       expect(response.body).to include("조별 리그 대시보드")
       expect(response.body).to include("예선 통과팀 선택")
-      expect(response.body).to include("A팀")
-      expect(response.body).to include("B팀")
+      expect(response.body).to include(">A팀</span>")
+      expect(response.body).to include(">(김하나)</span>")
+      expect(response.body).to include(">B팀</span>")
+      expect(response.body).to include(">(박두리)</span>")
+      expect(response.body).to include("min-width:646px")
+      expect(response.body).to include("min-width:133px")
+    end
+
+    it "참가팀을 팀명과 팀원명 2행 형식으로 표시한다" do
+      create(:tournament_team, tournament_event: event, name: "스매시", player_names: "김하나, 박두리")
+
+      get tournament_event_path(event)
+
+      expect(response.body).to include(">스매시</span>")
+      expect(response.body).to include(">(김하나, 박두리)</span>")
     end
   end
 

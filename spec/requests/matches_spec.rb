@@ -20,6 +20,22 @@ RSpec.describe "Matches", type: :request do
     end
   end
 
+  describe "GET /matches/:id/edit" do
+    it "점수 입력용 0부터 11까지 원형 선택 버튼을 표시한다" do
+      sign_in(owner)
+
+      get edit_match_path(match, return_to: tournament_event_path(event, anchor: "tournament_group_#{group.id}"))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('data-controller="score-picker"')
+      expect(response.body).to include('data-score-picker-target="input"')
+      expect(response.body).to include('data-score-picker-value-param="0"')
+      expect(response.body).to include('data-score-picker-value-param="11"')
+      expect(response.body).to include('style="max-width:702px;"')
+      expect(response.body).not_to include("overflow-x:auto;max-width:240px")
+    end
+  end
+
   describe "PATCH /matches/:id" do
     let(:sets_params) { { sets: { "0" => { home_score: "11", away_score: "5" } } } }
 

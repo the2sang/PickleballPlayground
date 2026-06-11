@@ -11,7 +11,7 @@
         <%= link_to group.name, tournament_group_path(group), style: "color:inherit;text-decoration:none;" %>
       </h2>
       <p style="font-size:12px;color:var(--hcp-cool-gray);margin:0;">
-        <%= teams.map(&:name).join(", ") %>
+        <%= teams.map { |team| tournament_team_label(team) }.join(", ") %>
       </p>
     </div>
 
@@ -21,20 +21,30 @@
   </div>
 
   <div style="overflow-x:auto;margin-bottom:14px;">
-    <table style="width:100%;min-width:680px;border-collapse:collapse;font-size:13px;">
+    <table style="width:100%;min-width:646px;border-collapse:collapse;font-size:13px;">
       <thead>
         <tr style="background:var(--hcp-bg-subtle,#f9fafb);border-bottom:2px solid var(--hcp-border,#e5e7eb);">
-          <th style="position:sticky;left:0;background:var(--hcp-bg-subtle,#f9fafb);z-index:1;padding:10px 12px;text-align:left;min-width:150px;">팀</th>
+          <th style="position:sticky;left:0;background:var(--hcp-bg-subtle,#f9fafb);z-index:1;padding:10px 12px;text-align:left;min-width:142px;">팀</th>
           <% teams.each do |team| %>
-            <th style="padding:10px 12px;text-align:center;min-width:140px;"><%= team.name %></th>
+            <% member_names = tournament_team_member_names(team) %>
+            <th style="padding:10px 12px;text-align:center;min-width:133px;white-space:normal;word-break:keep-all;">
+              <span style="display:block;font-weight:700;"><%= team.name %></span>
+              <% if member_names.present? %>
+                <span style="display:block;font-size:11px;color:var(--hcp-cool-gray);margin-top:2px;">(<%= member_names %>)</span>
+              <% end %>
+            </th>
           <% end %>
         </tr>
       </thead>
       <tbody>
         <% teams.each do |row_team| %>
           <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);">
-            <th style="position:sticky;left:0;background:white;z-index:1;padding:10px 12px;text-align:left;font-weight:600;">
-              <%= row_team.name %>
+            <th style="position:sticky;left:0;background:white;z-index:1;padding:10px 12px;text-align:left;font-weight:600;min-width:142px;white-space:normal;word-break:keep-all;">
+              <% member_names = tournament_team_member_names(row_team) %>
+              <span style="display:block;"><%= row_team.name %></span>
+              <% if member_names.present? %>
+                <span style="display:block;font-size:11px;color:var(--hcp-cool-gray);margin-top:2px;">(<%= member_names %>)</span>
+              <% end %>
             </th>
             <% teams.each do |column_team| %>
               <td style="padding:8px 10px;text-align:center;vertical-align:top;border-left:1px solid var(--hcp-border,#e5e7eb);">
@@ -110,11 +120,17 @@
           <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);">
             <% if selectable %>
               <td style="padding:9px 10px;text-align:center;">
-                <%= check_box_tag "advancing_team_ids[]", row[:team].id, checked_by_rank, aria: { label: "#{row[:team].name} 예선 통과" } %>
+                <%= check_box_tag "advancing_team_ids[]", row[:team].id, checked_by_rank, aria: { label: "#{tournament_team_label(row[:team])} 예선 통과" } %>
               </td>
             <% end %>
             <td style="padding:9px 10px;text-align:center;font-weight:700;"><%= row[:rank] %></td>
-            <td style="padding:9px 10px;font-weight:600;"><%= row[:team].name %></td>
+            <td style="padding:9px 10px;font-weight:600;">
+              <% member_names = tournament_team_member_names(row[:team]) %>
+              <span style="display:block;"><%= row[:team].name %></span>
+              <% if member_names.present? %>
+                <span style="display:block;font-size:11px;color:var(--hcp-cool-gray);margin-top:2px;">(<%= member_names %>)</span>
+              <% end %>
+            </td>
             <td style="padding:9px 10px;text-align:center;color:#16a34a;font-weight:700;"><%= row[:wins] %></td>
             <td style="padding:9px 10px;text-align:center;color:#dc2626;"><%= row[:losses] %></td>
             <td style="padding:9px 10px;text-align:center;"><%= "%.0f%%" % (row[:win_pct] * 100) %></td>

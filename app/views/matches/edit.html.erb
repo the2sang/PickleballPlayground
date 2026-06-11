@@ -22,7 +22,7 @@
     </p>
   </div></div>
 
-  <div class="cl-content" style="max-width:540px;">
+  <div class="cl-content" style="max-width:702px;">
     <div class="cl-info-card">
       <%= form_with url: match_path(@match), method: :patch, class: "cl-form" do |f| %>
         <%= hidden_field_tag :return_to, @return_to if @return_to.present? %>
@@ -43,26 +43,50 @@
               <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);">
                 <td style="padding:10px 16px;font-weight:500;"><%= @match.home_team&.name || "BYE" %></td>
                 <% set_count.times do |i| %>
-                  <td style="padding:6px 12px;text-align:center;">
+                  <td style="padding:6px 12px;text-align:center;" data-controller="score-picker">
                     <%= number_field_tag "sets[#{i}][home_score]",
                           @sets[i]&.home_score,
                           min: 0, max: 99,
                           class: "cl-form__input",
                           style: "width:64px;text-align:center;",
-                          placeholder: "0" %>
+                          placeholder: "0",
+                          data: { score_picker_target: "input" } %>
+                    <div style="display:flex;justify-content:center;gap:6px;margin:8px auto 0;padding:2px 2px 6px;white-space:nowrap;">
+                      <% (0..11).each do |score| %>
+                        <button type="button"
+                                data-action="score-picker#select"
+                                data-score-picker-value-param="<%= score %>"
+                                aria-label="<%= @match.home_team&.name || '홈 팀' %> 세트 <%= i + 1 %> 점수 <%= score %> 입력"
+                                style="flex:0 0 28px;width:28px;height:28px;border-radius:999px;border:1px solid var(--hcp-border,#e5e7eb);background:white;color:#374151;font-size:12px;font-weight:700;line-height:1;cursor:pointer;">
+                          <%= score %>
+                        </button>
+                      <% end %>
+                    </div>
                   </td>
                 <% end %>
               </tr>
               <tr>
                 <td style="padding:10px 16px;font-weight:500;"><%= @match.away_team&.name || "BYE" %></td>
                 <% set_count.times do |i| %>
-                  <td style="padding:6px 12px;text-align:center;">
+                  <td style="padding:6px 12px;text-align:center;" data-controller="score-picker">
                     <%= number_field_tag "sets[#{i}][away_score]",
                           @sets[i]&.away_score,
                           min: 0, max: 99,
                           class: "cl-form__input",
                           style: "width:64px;text-align:center;",
-                          placeholder: "0" %>
+                          placeholder: "0",
+                          data: { score_picker_target: "input" } %>
+                    <div style="display:flex;justify-content:center;gap:6px;margin:8px auto 0;padding:2px 2px 6px;white-space:nowrap;">
+                      <% (0..11).each do |score| %>
+                        <button type="button"
+                                data-action="score-picker#select"
+                                data-score-picker-value-param="<%= score %>"
+                                aria-label="<%= @match.away_team&.name || '상대 팀' %> 세트 <%= i + 1 %> 점수 <%= score %> 입력"
+                                style="flex:0 0 28px;width:28px;height:28px;border-radius:999px;border:1px solid var(--hcp-border,#e5e7eb);background:white;color:#374151;font-size:12px;font-weight:700;line-height:1;cursor:pointer;">
+                          <%= score %>
+                        </button>
+                      <% end %>
+                    </div>
                   </td>
                 <% end %>
               </tr>
