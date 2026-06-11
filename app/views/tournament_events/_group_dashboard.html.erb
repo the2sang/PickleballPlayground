@@ -64,10 +64,11 @@
                             end
                           end
                         %>
-                        <span style="font-weight:700;color:<%= match.winner_id == row_team.id ? '#16a34a' : '#374151' %>;">
+                        <span style="font-weight:700;color:<%= match.winner_id == row_team.id ? '#2563eb' : '#374151' %>;">
                           <%= score_parts.join(" / ") %>
                         </span>
-                        <span class="cl-badge <%= match.winner_id == row_team.id ? 'cl-badge--success' : 'cl-badge--muted' %>">
+                        <span class="cl-badge <%= match.winner_id == row_team.id ? '' : 'cl-badge--muted' %>"
+                              style="<%= match.winner_id == row_team.id ? 'background:#eff6ff;color:#2563eb;' : '' %>">
                           <%= match.winner_id == row_team.id ? "승" : "패" %>
                         </span>
                       <% else %>
@@ -103,7 +104,7 @@
       <thead>
         <tr style="background:var(--hcp-bg-subtle,#f9fafb);border-bottom:2px solid var(--hcp-border,#e5e7eb);">
           <% if selectable %>
-            <th style="padding:8px 10px;text-align:center;width:56px;">통과</th>
+            <th style="padding:8px 10px;text-align:center;width:92px;">본선</th>
           <% end %>
           <th style="padding:8px 10px;text-align:center;width:50px;">순위</th>
           <th style="padding:8px 10px;text-align:left;">팀</th>
@@ -116,11 +117,18 @@
       </thead>
       <tbody>
         <% standings.each do |row| %>
-          <% checked_by_rank = row[:rank].present? && row[:rank] <= event.advances_per_group %>
           <tr style="border-bottom:1px solid var(--hcp-border,#e5e7eb);">
             <% if selectable %>
               <td style="padding:9px 10px;text-align:center;">
-                <%= check_box_tag "advancing_team_ids[]", row[:team].id, checked_by_rank, aria: { label: "#{tournament_team_label(row[:team])} 예선 통과" } %>
+                <button type="button"
+                        class="btn btn--secondary btn--sm"
+                        data-action="bracket-selection#toggle"
+                        data-bracket-selection-team-id-param="<%= row[:team].id %>"
+                        data-bracket-selection-label-param="<%= tournament_team_label(row[:team]) %>"
+                        aria-pressed="false"
+                        style="min-width:72px;padding:5px 8px;font-size:12px;">
+                  진출 선택
+                </button>
               </td>
             <% end %>
             <td style="padding:9px 10px;text-align:center;font-weight:700;"><%= row[:rank] %></td>

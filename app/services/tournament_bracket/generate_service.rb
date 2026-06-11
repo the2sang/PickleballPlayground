@@ -13,11 +13,12 @@ module TournamentBracket
     end
 
     def call
-      advancing = collect_advancing_teams
+      advancing_groups = collect_advancing_groups
+      advancing = advancing_groups.flatten
       return Result.new(success: false, error: "진출 팀이 없습니다.") if advancing.empty?
 
       bracket_size = next_power_of_two(advancing.size)
-      seeded       = seed_teams(advancing, bracket_size)
+      seeded       = seed_teams(advancing_groups, bracket_size)
 
       ActiveRecord::Base.transaction do
         Match.where(matchable: @event).destroy_all
@@ -32,40 +33,39 @@ module TournamentBracket
 
     private
 
-    def collect_advancing_teams
-      return selected_advancing_teams if @advancing_team_ids.present?
-
+    def collect_advancing_groups
       advances = @event.advances_per_group
-      @event.tournament_groups.map do |group|
+      selected_ids = @advancing_team_ids.map(&:to_i).to_set
+
+      @event.tournament_groups.order(:name).map do |group|
         standings = TournamentGroups::StandingsService.call(tournament_group: group).data
-        standings.first(advances).map { |r| r[:team] }
-      end.flatten
+        ranked_teams = standings.map { |r| r[:team] }
+        @advancing_team_ids.present? ? ranked_teams.select { |team| selected_ids.include?(team.id) } : ranked_teams.first(advances)
+      end.reject(&:empty?)
     end
 
-    def selected_advancing_teams
-      team_ids = @advancing_team_ids.map(&:to_i).uniq
-      teams_by_id = @event.tournament_teams.where(id: team_ids).index_by(&:id)
-      team_ids.filter_map { |id| teams_by_id[id] }
+    # Cross-seed group winners against another group's runner-up:
+    # 2 groups x top 2 => [A1, B2, B1, A2].
+    def seed_teams(groups, bracket_size)
+      seeded = cross_seed_top_two(groups)
+      seeded += remaining_ranked_teams(groups, seeded)
+      seeded = groups.flatten if seeded.empty?
+      seeded.first(bracket_size) + Array.new(bracket_size - seeded.size)
     end
 
-    # Cross-seed: group teams by rank tier, reversing odd-rank tiers so teams
-    # from the same group never meet in R1 (e.g. 2 groups × 2 advances produces
-    # [A1, B1, B2, A2] → Match 1: A1 vs B1, Match 2: B2 vs A2).
-    def seed_teams(teams, bracket_size)
-      return teams.first(bracket_size) + Array.new(bracket_size - teams.size) if @advancing_team_ids.present?
+    def cross_seed_top_two(groups)
+      first_place = groups.map(&:first).compact
+      second_place = groups.map { |group| group[1] }.compact
+      return [] unless first_place.any? && first_place.size == second_place.size
 
-      advances = @event.advances_per_group
-      groups   = teams.each_slice(advances).to_a
-
-      # transpose → [[rank1_of_each_group], [rank2_of_each_group], ...]
-      # reversing odd-rank tiers ensures no same-group pairing in R1
-      interleaved = groups.transpose.flat_map.with_index do |rank_teams, i|
-        i.odd? ? rank_teams.reverse : rank_teams
+      first_place.flat_map.with_index do |team, index|
+        [ team, second_place[(index + 1) % second_place.size] ]
       end
+    end
 
-      seeded = Array.new(bracket_size)
-      interleaved.compact.each_with_index { |t, i| seeded[i] = t }
-      seeded
+    def remaining_ranked_teams(groups, seeded)
+      seeded_ids = seeded.map(&:id).to_set
+      groups.flatten.reject { |team| seeded_ids.include?(team.id) }
     end
 
     def build_bracket(seeded)

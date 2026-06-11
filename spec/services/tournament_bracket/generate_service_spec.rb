@@ -22,6 +22,19 @@ RSpec.describe TournamentBracket::GenerateService, type: :service do
     winner
   end
 
+  def create_group_with_top2(group_name, rank1_name, rank2_name)
+    group  = create(:tournament_group, tournament_event: event, name: group_name)
+    rank1  = create(:tournament_team, tournament_event: event, name: rank1_name)
+    rank2  = create(:tournament_team, tournament_event: event, name: rank2_name)
+    loser  = create(:tournament_team, tournament_event: event)
+    [ rank1, rank2, loser ].each { |t| create(:tournament_group_team, tournament_group: group, tournament_team: t) }
+    m1 = create(:match, matchable: group, home_team: rank1, away_team: loser, status: :completed, winner: rank1, match_number: Match.count + 1)
+    create(:match_set, match: m1, set_number: 1, home_score: 11, away_score: 3)
+    m2 = create(:match, matchable: group, home_team: rank2, away_team: loser, status: :completed, winner: rank2, match_number: Match.count + 1)
+    create(:match_set, match: m2, set_number: 1, home_score: 11, away_score: 6)
+    [ rank1, rank2, group ]
+  end
+
   context "4개 조 × 1위 진출 = 4팀 브라켓" do
     before do
       create_group_with_winner("A조", "A1")
@@ -63,19 +76,6 @@ RSpec.describe TournamentBracket::GenerateService, type: :service do
   context "2개 조 × 2위 진출 = 4팀 (같은 조 R1 미배정 검증)" do
     let(:event) { create(:tournament_event, tournament: tournament, advances_per_group: 2) }
 
-    def create_group_with_top2(group_name, rank1_name, rank2_name)
-      group  = create(:tournament_group, tournament_event: event, name: group_name)
-      rank1  = create(:tournament_team, tournament_event: event, name: rank1_name)
-      rank2  = create(:tournament_team, tournament_event: event, name: rank2_name)
-      loser  = create(:tournament_team, tournament_event: event)
-      [ rank1, rank2, loser ].each { |t| create(:tournament_group_team, tournament_group: group, tournament_team: t) }
-      m1 = create(:match, matchable: group, home_team: rank1, away_team: loser, status: :completed, winner: rank1, match_number: Match.count + 1)
-      create(:match_set, match: m1, set_number: 1, home_score: 11, away_score: 3)
-      m2 = create(:match, matchable: group, home_team: rank2, away_team: loser, status: :completed, winner: rank2, match_number: Match.count + 1)
-      create(:match_set, match: m2, set_number: 1, home_score: 11, away_score: 6)
-      [ rank1, rank2, group ]
-    end
-
     before do
       @a1, @a2, @group_a = create_group_with_top2("A조", "A1", "A2")
       @b1, @b2, @group_b = create_group_with_top2("B조", "B1", "B2")
@@ -100,6 +100,15 @@ RSpec.describe TournamentBracket::GenerateService, type: :service do
         expect(both_in_a).to be false
         expect(both_in_b).to be false
       end
+    end
+
+    it "1라운드는 A조 1위-B조 2위, B조 1위-A조 2위로 교차 배정한다" do
+      result
+      pair_names = Match.where(matchable: event, round: 1).order(:match_number).map do |match|
+        [ match.home_team.name, match.away_team.name ]
+      end
+
+      expect(pair_names).to eq([ %w[A1 B2], %w[B1 A2] ])
     end
   end
 
@@ -137,6 +146,19 @@ RSpec.describe TournamentBracket::GenerateService, type: :service do
       expect(bracket_team_ids).to include(*selected.map(&:id))
       expect(bracket_team_ids).not_to include(skipped.id)
       expect(Match.where(matchable: event).count).to eq(3)
+    end
+
+    it "선택팀도 조별 1위와 다른 조 2위가 만나도록 교차 배정한다" do
+      @a1, @a2, = create_group_with_top2("A조", "A1", "A2")
+      @b1, @b2, = create_group_with_top2("B조", "B1", "B2")
+
+      result = described_class.call(tournament_event: event, advancing_team_ids: [ @a1.id, @a2.id, @b1.id, @b2.id ])
+
+      expect(result.success?).to be true
+      pair_names = Match.where(matchable: event, round: 1).order(:match_number).map do |match|
+        [ match.home_team.name, match.away_team.name ]
+      end
+      expect(pair_names).to eq([ %w[A1 B2], %w[B1 A2] ])
     end
 
     it "5팀 이상 선택하면 8강 크기의 대진을 만든다" do

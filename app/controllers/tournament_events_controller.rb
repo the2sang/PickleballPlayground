@@ -66,6 +66,11 @@ class TournamentEventsController < ApplicationController
 
   def generate_bracket
     authorize @event, :update?
+    if manual_advancing_selection? && params[:advancing_team_ids].blank?
+      redirect_to @event, alert: "본선 진출팀을 선택해 주세요."
+      return
+    end
+
     result = TournamentBracket::GenerateService.call(
       tournament_event: @event,
       advancing_team_ids: params[:advancing_team_ids]
@@ -86,6 +91,10 @@ class TournamentEventsController < ApplicationController
     params.require(:tournament_event).permit(
       :discipline, :sub_category, :scoring_format, :points_to_win, :advances_per_group
     )
+  end
+
+  def manual_advancing_selection?
+    params[:manual_advancing_selection].present?
   end
 
   def build_group_dashboards(groups)
