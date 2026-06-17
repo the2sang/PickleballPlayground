@@ -68,10 +68,20 @@
     background:#a3e635; color:#1a1a1a; font-size:10px; font-weight:800;
     flex-shrink:0;
   }
-  .oss-slot__level {
-    font-size:9px; font-weight:600; color:#6b7280;
-    max-width:56px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  .oss-slot__name--tip { position:relative; cursor:pointer; }
+  .oss-slot__tip {
+    display:none; position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+    background:#1a1a1a; color:#fff; border-radius:8px; padding:8px 10px;
+    white-space:nowrap; z-index:100; box-shadow:0 4px 12px rgba(0,0,0,.3);
+    pointer-events:none;
   }
+  .oss-slot__tip::after {
+    content:""; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:5px solid transparent; border-top-color:#1a1a1a;
+  }
+  .oss-slot__name--tip:hover .oss-slot__tip,
+  .oss-slot__name--tip:focus .oss-slot__tip { display:block; }
+  .oss-slot__tip-row { display:block; font-size:11px; line-height:1.7; }
   .oss-slot__form { margin:8px 0 0; }
   .oss-slot__recruit {
     display:inline-block; margin-top:8px; padding:4px 8px; border:none; border-radius:6px;
