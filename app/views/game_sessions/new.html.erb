@@ -1,13 +1,18 @@
-<% content_for :title, "클럽 운동 세션 등록" %>
+<% page_title = @game_session.open_game? ? "오픈 게임 세션 등록" : "클럽 운동 세션 등록" %>
+<% content_for :title, page_title %>
 
 <div class="cl-page">
   <div class="cl-content cl-content--form">
     <div style="margin-bottom:32px;">
       <p class="cl-hero__eyebrow">
-        <%= link_to "클럽 운동 세션", game_sessions_path %>
+        <% if @game_session.open_game? %>
+          <%= link_to "오픈 게임 세션", club_open_sessions_path(@club) %>
+        <% else %>
+          <%= link_to "클럽 운동 세션", game_sessions_path %>
+        <% end %>
         <span class="sep">/</span> 등록
       </p>
-      <h1 class="cl-hero__title">클럽 운동 세션 등록</h1>
+      <h1 class="cl-hero__title"><%= page_title %></h1>
     </div>
     <div class="cl-form-card">
       <%= render "form", game_session: @game_session %>
