@@ -10,6 +10,7 @@ class OpenSessionsController < ApplicationController
 
     @game_sessions = sessions.includes(participations: :user)
                              .order(:scheduled_date, :start_time, :court_name)
+                             .reject(&:session_started?)
     @can_manage = GameSessionPolicy.new(Current.user, @club.game_sessions.build(session_type: :open_game)).create?
   end
 

@@ -75,6 +75,11 @@ class GameSession < ApplicationRecord
     participations.confirmed.count
   end
 
+  def session_started?
+    scheduled_date < Date.current ||
+      (scheduled_date == Date.current && start_time <= Time.current)
+  end
+
   def session_ended?
     scheduled_date < Date.current ||
       (scheduled_date == Date.current && end_time < Time.current)

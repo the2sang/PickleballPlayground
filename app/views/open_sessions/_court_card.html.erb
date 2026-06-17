@@ -8,7 +8,7 @@
   capacity   = session.max_participants || GameSession::SLOT_LIMIT
   my_participation = Current.user &&
     session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
-  can_apply = Current.user.present? && session.open? && my_participation.nil?
+  can_apply = Current.user.present? && session.open? && my_participation.nil? && !session.session_started?
   is_today  = session.scheduled_date == Date.today
 %>
 <article class="oss-card <%= "oss-card--today" if is_today %>" data-accordion-target="item">
@@ -28,7 +28,7 @@
         <%= session.start_time.strftime("%H:%M") %>-<%= session.end_time.strftime("%H:%M") %>
       </span>
       <span class="oss-card__count"><%= confirmed.size %>/<%= capacity %></span>
-      <% if session.open? %>
+      <% if session.open? && !session.session_started? %>
         <span class="cl-badge cl-badge--dark oss-status oss-status--open">모집중</span>
       <% else %>
         <span class="cl-badge cl-badge--neutral oss-status oss-status--closed">마감</span>
