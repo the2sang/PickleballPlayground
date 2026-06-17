@@ -28,10 +28,9 @@
       <% if participant %>
         <span class="oss-slot__filled" title="<%= participant.display_name %>">
           <iconify-icon icon="<%= gender_icon.call(participant.user) %>" width="14"></iconify-icon>
-          <span class="oss-slot__name"><%= participant.display_name %></span>
-          <% if (lv = level_label.call(participant.user)) %>
-            <span class="oss-slot__level"><%= lv %></span>
-          <% end %>
+          <span class="oss-slot__name">
+            <%= participant.display_name %><% if (lv = level_label.call(participant.user)) %>(<%= lv %>)<% end %>
+          </span>
         </span>
       <% elsif session.open? %>
         <% if can_apply %>
