@@ -80,4 +80,46 @@
   .oss-applicants__name { font-weight:600; color:var(--hcp-black,#111); }
 
   .oss-card__admin { display:flex; gap:8px; padding-top:8px; border-top:1px dashed var(--hcp-border,#eee); }
+
+  .oss-mine-bar {
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    margin:0 0 12px; padding:8px 12px; border-radius:8px;
+    background:#eef2ff; border:1px solid #c7d2fe;
+  }
+  .oss-mine-bar__label {
+    display:flex; align-items:center; gap:5px;
+    font-size:12px; font-weight:700; color:#4f46e5;
+  }
+
+  .oss-modal {
+    width:min(420px, calc(100vw - 32px)); margin:auto;
+    border:none; border-radius:12px; padding:0;
+    box-shadow:0 24px 70px rgba(15,23,42,0.24);
+  }
+  .oss-modal::backdrop { background:rgba(15,23,42,0.42); }
+  .oss-modal__header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 18px 12px; border-bottom:1px solid var(--hcp-border-light,#eee); background:#f8fafc;
+  }
+  .oss-modal__title { margin:0; font-size:16px; font-weight:800; color:var(--hcp-black,#111); }
+  .oss-modal__close {
+    width:30px; height:30px; border-radius:50%; border:1px solid var(--hcp-border-light,#e5e7eb);
+    background:#fff; color:var(--hcp-mid-gray,#6b7280); cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .oss-modal__body { padding:16px 18px 18px; }
+  .oss-modal__lead { font-size:13px; color:var(--hcp-charcoal,#333); margin:0 0 14px; line-height:1.6; }
+  .oss-modal__info {
+    margin:0 0 14px; padding:12px; border:1px solid var(--hcp-border,#e5e7eb);
+    border-radius:8px; background:#fafafa; display:flex; flex-direction:column; gap:6px;
+  }
+  .oss-modal__info > div { display:flex; justify-content:space-between; font-size:13px; }
+  .oss-modal__info dt { margin:0; color:var(--hcp-cool-gray,#6b7280); }
+  .oss-modal__info dd { margin:0; font-weight:700; color:var(--hcp-black,#111); }
+  .oss-modal__notice {
+    display:flex; align-items:flex-start; gap:5px; margin:0 0 14px;
+    font-size:12px; color:#92400e; background:#fffbeb; border:1px solid #fde68a;
+    border-radius:8px; padding:9px 11px; line-height:1.5;
+  }
+  .oss-modal__footer { display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
 </style>

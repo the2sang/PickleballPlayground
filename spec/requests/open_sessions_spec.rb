@@ -110,4 +110,27 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response).to redirect_to(game_session_path(session))
     end
   end
+
+  describe "신청 UI 노출" do
+    let!(:session) { create(:game_session, :with_court, club: club) }
+
+    it "프로필 완성 회원에게는 참가 신청 모달이 렌더된다" do
+      sign_in(member)
+      get club_open_sessions_path(club)
+      expect(response.body).to include("참가 신청")
+      expect(response.body).to include("data-action=\"click->modal#open\"")
+    end
+
+    it "이미 신청한 회원에게는 신청 취소 버튼이 보인다" do
+      create(:participation, game_session: session, user: member, status: :confirmed)
+      sign_in(member)
+      get club_open_sessions_path(club)
+      expect(response.body).to include("신청 취소")
+    end
+
+    it "비로그인 사용자에게는 로그인 유도 링크가 보인다" do
+      get club_open_sessions_path(club)
+      expect(response.body).to include(new_session_path(return_to: club_open_sessions_path(club)))
+    end
+  end
 end

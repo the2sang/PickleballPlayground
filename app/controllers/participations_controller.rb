@@ -35,7 +35,7 @@ class ParticipationsController < ApplicationController
     @participation = @game_session.participations.find(params[:id])
     authorize @participation
     Participations::CancelService.call(participation: @participation)
-    redirect_to game_session_path(@game_session), notice: "참가 신청이 취소되었습니다."
+    redirect_to safe_return_to || game_session_path(@game_session), notice: "참가 신청이 취소되었습니다."
   end
 
   private

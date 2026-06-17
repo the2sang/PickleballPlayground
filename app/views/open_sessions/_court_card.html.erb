@@ -8,6 +8,7 @@
   capacity   = session.max_participants || GameSession::SLOT_LIMIT
   my_participation = Current.user &&
     session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
+  can_apply = Current.user.present? && session.open? && my_participation.nil?
 %>
 <article class="oss-card" data-accordion-target="item">
   <button type="button"
@@ -32,7 +33,8 @@
     </span>
   </button>
 
-  <div class="oss-card__panel" data-accordion-target="panel" hidden>
+  <div class="oss-card__panel" data-accordion-target="panel" hidden
+       <%= tag.attributes(data: { controller: "modal" }) if can_apply %>>
     <p class="oss-card__title"><%= session.title %></p>
 
     <div class="oss-summary">
@@ -47,7 +49,29 @@
 
     <%= render "open_sessions/slot_grid",
           session: session, confirmed: confirmed, waitlisted: waitlisted,
-          capacity: capacity, my_participation: my_participation %>
+          capacity: capacity, my_participation: my_participation, can_apply: can_apply %>
+
+    <% if my_participation %>
+      <div class="oss-mine-bar">
+        <span class="oss-mine-bar__label">
+          <iconify-icon icon="lucide:check-circle" width="13"></iconify-icon>
+          <%= my_participation.waitlisted? ? "대기 신청됨" : "참가 신청됨" %>
+        </span>
+        <% if policy(my_participation).destroy? %>
+          <%= button_to game_session_participation_path(session, my_participation),
+                method: :delete,
+                params: { return_to: club_open_sessions_path(session.club) },
+                class: "btn btn--secondary btn--sm",
+                form: { data: { turbo_confirm: "참가 신청을 취소하시겠습니까?" } } do %>
+            <iconify-icon icon="lucide:x-circle" width="12"></iconify-icon> 신청 취소
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if can_apply %>
+      <%= render "open_sessions/apply_modal", session: session %>
+    <% end %>
 
     <p class="oss-guide">
       <iconify-icon icon="lucide:info" width="12"></iconify-icon>

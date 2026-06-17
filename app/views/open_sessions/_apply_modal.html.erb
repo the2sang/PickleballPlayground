@@ -1,0 +1,61 @@
+<%#
+  참가 신청 확인 모달. 회원 정보(닉네임/성별/레벨)를 자동 표시하고 확인 시 참가 신청한다.
+  locals: session
+%>
+<%
+  gender_labels = { "unspecified" => "미설정", "male" => "남성", "female" => "여성", "other" => "기타" }
+  level_labels  = { "beginner" => "초급", "beginner_intermediate" => "초중급", "intermediate" => "중급",
+                    "intermediate_advanced" => "중상급", "advanced" => "상급" }
+  user = Current.user
+  full = session.full?
+%>
+<dialog class="oss-modal" data-modal-target="dialog" data-action="click->modal#backdropClose">
+  <div class="oss-modal__inner">
+    <div class="oss-modal__header">
+      <h2 class="oss-modal__title">참가 신청</h2>
+      <button type="button" class="oss-modal__close" aria-label="닫기" data-action="click->modal#close">
+        <iconify-icon icon="lucide:x" width="16"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="oss-modal__body">
+      <p class="oss-modal__lead">
+        <strong><%= session.court_name.presence || session.title %></strong>
+        (<%= session.level_label %>) 세션에 신청합니다.
+      </p>
+
+      <% if user.profile_complete? %>
+        <dl class="oss-modal__info">
+          <div><dt>닉네임</dt><dd><%= user.display_name.presence || user.nickname %></dd></div>
+          <div><dt>성별</dt><dd><%= gender_labels[user.gender] %></dd></div>
+          <div><dt>운동레벨</dt><dd><%= level_labels[user.sport_level] %></dd></div>
+        </dl>
+
+        <% if full %>
+          <p class="oss-modal__notice">
+            <iconify-icon icon="lucide:info" width="12"></iconify-icon>
+            정원이 마감되어 <strong>대기자</strong>로 등록됩니다. 취소 발생 시 순번에 따라 참가 확정됩니다.
+          </p>
+        <% end %>
+
+        <%= form_with url: game_session_participations_path(session), method: :post do |f| %>
+          <%= hidden_field_tag :return_to, club_open_sessions_path(session.club) %>
+          <div class="oss-modal__footer">
+            <button type="button" class="btn btn--ghost btn--sm" data-action="click->modal#close">취소</button>
+            <%= f.submit(full ? "대기 신청" : "참가 신청", class: "btn btn--primary btn--sm") %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="oss-modal__notice">
+          <iconify-icon icon="lucide:user-plus" width="12"></iconify-icon>
+          참가 신청을 위해 기본 정보(성별·닉네임·운동레벨)를 먼저 등록해 주세요.
+        </p>
+        <div class="oss-modal__footer">
+          <button type="button" class="btn btn--ghost btn--sm" data-action="click->modal#close">닫기</button>
+          <%= link_to "정보 등록하기", edit_profile_path(return_to: club_open_sessions_path(session.club)),
+                class: "btn btn--primary btn--sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</dialog>

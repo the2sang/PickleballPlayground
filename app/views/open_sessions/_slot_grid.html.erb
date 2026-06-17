@@ -1,6 +1,6 @@
 <%#
   12슬롯 그리드. 1..capacity = 정원, capacity+1..12 = 대기.
-  locals: session, confirmed, waitlisted, capacity, my_participation
+  locals: session, confirmed, waitlisted, capacity, my_participation, can_apply
 %>
 <%
   return_path = club_open_sessions_path(session.club)
@@ -27,15 +27,14 @@
           <span class="oss-slot__name"><%= participant.display_name %></span>
         </span>
       <% elsif session.open? %>
-        <% if Current.user %>
-          <%= button_to game_session_participations_path(session),
-                params: { return_to: return_path, slot: slot_no },
-                class: "oss-slot__recruit",
-                form: { class: "oss-slot__form", data: { open_session_apply_target: "form" } } do %>
-            모집
-          <% end %>
-        <% else %>
+        <% if can_apply %>
+          <button type="button" class="oss-slot__recruit" data-action="click->modal#open">모집</button>
+        <% elsif my_participation %>
+          <span class="oss-slot__empty">—</span>
+        <% elsif Current.user.nil? %>
           <%= link_to "모집", new_session_path(return_to: return_path), class: "oss-slot__recruit" %>
+        <% else %>
+          <span class="oss-slot__empty">—</span>
         <% end %>
       <% else %>
         <span class="oss-slot__empty">—</span>
