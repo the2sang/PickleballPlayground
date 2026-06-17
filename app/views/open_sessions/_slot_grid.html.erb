@@ -4,24 +4,6 @@
 %>
 <%
   return_path = club_open_sessions_path(session.club)
-  gender_icon = ->(user) do
-    case user&.gender
-    when "male"   then "lucide:mars"
-    when "female" then "lucide:venus"
-    else               "lucide:circle-user-round"
-    end
-  end
-  level_label = ->(user) do
-    { "beginner" => "초급", "beginner_intermediate" => "초중급", "intermediate" => "중급",
-      "intermediate_advanced" => "중상급", "advanced" => "상급" }[user&.sport_level]
-  end
-  gender_label = ->(user) do
-    { "unspecified" => "미설정", "male" => "남성", "female" => "여성", "other" => "기타" }[user&.gender]
-  end
-  age_label = ->(user) do
-    { "teens" => "10대", "twenties" => "20대", "thirties" => "30대",
-      "forties" => "40대", "fifties" => "50대", "sixties_plus" => "60대+" }[user&.age_group]
-  end
 %>
 <ol class="oss-slots">
   <% (1..GameSession::SLOT_LIMIT).each do |slot_no| %>
@@ -34,14 +16,10 @@
       <span class="oss-slot__no"><%= slot_no %></span>
       <% if participant %>
         <span class="oss-slot__filled">
-          <iconify-icon icon="<%= gender_icon.call(participant.user) %>" width="14"></iconify-icon>
-          <span class="oss-slot__name oss-slot__name--tip" tabindex="0">
-            <%= participant.display_name %>
-            <span class="oss-slot__tip" role="tooltip">
-              <span class="oss-slot__tip-row">레벨: <%= level_label.call(participant.user) || "미설정" %></span>
-              <span class="oss-slot__tip-row">성별: <%= gender_label.call(participant.user) %></span>
-              <span class="oss-slot__tip-row">연령: <%= age_label.call(participant.user) %></span>
-            </span>
+          <iconify-icon icon="<%= open_session_gender_icon(participant.user) %>" width="14"></iconify-icon>
+          <span class="oss-slot__name oss-participant-popup-trigger" tabindex="0">
+            <span class="oss-slot__name-text"><%= participant.display_name %></span>
+            <%= open_session_participant_popup(participant) %>
           </span>
         </span>
       <% elsif session.open? %>

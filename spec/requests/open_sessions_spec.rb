@@ -144,5 +144,23 @@ RSpec.describe "OpenSessions", type: :request do
       get club_open_sessions_path(club)
       expect(response.body).to include(new_session_path(return_to: club_open_sessions_path(club)))
     end
+
+    it "슬롯과 신청자 이름 팝업에 참가자 기본 정보를 렌더한다" do
+      applicant = create(:user, :profile_complete, :male, :intermediate, :thirties, display_name: "홍길동")
+      create(:participation, game_session: session, user: applicant, status: :confirmed)
+
+      get club_open_sessions_path(club)
+
+      expect(response.body.scan("oss-participant-popup-trigger").size).to be >= 2
+      expect(response.body).to include("oss-slot__name-text")
+      expect(response.body).to include("oss-participant-popup")
+      expect(response.body).to include("홍길동")
+      expect(response.body).to include("성별")
+      expect(response.body).to include("남성")
+      expect(response.body).to include("운동레벨")
+      expect(response.body).to include("중급")
+      expect(response.body).to include("연령대")
+      expect(response.body).to include("30대")
+    end
   end
 end

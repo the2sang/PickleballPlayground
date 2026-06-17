@@ -86,7 +86,14 @@
     <% if applicants.any? %>
       <p class="oss-applicants">
         <span class="oss-applicants__label">신청자</span>
-        <%= safe_join(applicants.map { |p| content_tag(:span, p.display_name, class: "oss-applicants__name") }, ", ") %>
+        <%= safe_join(applicants.map { |participant|
+              content_tag(:span, class: "oss-applicants__name oss-participant-popup-trigger", tabindex: "0") do
+                safe_join([
+                  participant.display_name,
+                  open_session_participant_popup(participant)
+                ])
+              end
+            }, ", ") %>
       </p>
     <% end %>
 
