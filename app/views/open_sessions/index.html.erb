@@ -14,7 +14,7 @@
   <div class="cl-content" style="max-width:760px;">
     <% if @can_manage %>
       <div class="oss-admin-bar">
-        <%= link_to new_game_session_path(club_id: @club.id), class: "btn btn--primary btn--sm" do %>
+        <%= link_to new_game_session_path(club_id: @club.id, session_type: "open_game"), class: "btn btn--primary btn--sm" do %>
           <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 새 세션 만들기
         <% end %>
         <% if @game_sessions.present? %>

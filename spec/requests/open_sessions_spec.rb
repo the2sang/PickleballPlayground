@@ -28,13 +28,23 @@ RSpec.describe "OpenSessions", type: :request do
     end
 
     it "공개 세션은 보이고 회원전용 세션은 비로그인 사용자에게 숨긴다" do
-      public_session  = create(:game_session, :with_court, club: club, title: "공개세션")
-      members_session = create(:game_session, :members_only, club: club, title: "회원세션")
+      public_session  = create(:game_session, :open_game, :with_court, club: club, title: "공개세션")
+      members_session = create(:game_session, :open_game, :members_only, club: club, title: "회원세션")
 
       get club_open_sessions_path(club)
 
       expect(response.body).to include(public_session.title)
       expect(response.body).not_to include(members_session.title)
+    end
+
+    it "일반(클럽 운동) 세션은 오픈 게임 페이지에 표시하지 않는다" do
+      open_one    = create(:game_session, :open_game, club: club, title: "오픈게임세션")
+      regular_one = create(:game_session, club: club, title: "일반운동세션")
+
+      get club_open_sessions_path(club)
+
+      expect(response.body).to include(open_one.title)
+      expect(response.body).not_to include(regular_one.title)
     end
   end
 
@@ -49,10 +59,11 @@ RSpec.describe "OpenSessions", type: :request do
         expect(response).to redirect_to(club_open_sessions_path(club))
         expect(club.game_sessions.last.court_name).to eq("A코트")
         expect(club.game_sessions.last.level).to eq("intermediate")
+        expect(club.game_sessions.last).to be_open_game
       end
 
       it "copy_from 으로 마지막 세션을 복사하고 코트명을 비운다" do
-        source = create(:game_session, :with_court, club: club,
+        source = create(:game_session, :open_game, :with_court, club: club,
                         level: :advanced, max_participants: 6, title: "원본세션")
 
         expect {
@@ -64,6 +75,7 @@ RSpec.describe "OpenSessions", type: :request do
         expect(copy.max_participants).to eq(6)
         expect(copy.court_name).to be_blank
         expect(copy.title).to eq("원본세션")
+        expect(copy).to be_open_game
       end
     end
 
@@ -88,7 +100,7 @@ RSpec.describe "OpenSessions", type: :request do
   end
 
   describe "오픈 세션에서 슬롯 신청" do
-    let(:session) { create(:game_session, :with_court, club: club) }
+    let(:session) { create(:game_session, :open_game, :with_court, club: club) }
 
     it "회원이 신청하면 오픈 세션 페이지로 돌아온다" do
       sign_in(member)
@@ -112,7 +124,7 @@ RSpec.describe "OpenSessions", type: :request do
   end
 
   describe "신청 UI 노출" do
-    let!(:session) { create(:game_session, :with_court, club: club) }
+    let!(:session) { create(:game_session, :open_game, :with_court, club: club) }
 
     it "프로필 완성 회원에게는 참가 신청 모달이 렌더된다" do
       sign_in(member)

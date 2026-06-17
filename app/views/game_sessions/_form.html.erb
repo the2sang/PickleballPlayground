@@ -2,6 +2,7 @@
                   url: game_session.persisted? ? game_session_path(game_session) : game_sessions_path,
                   class: "cl-form" do |f| %>
   <%= hidden_field_tag :club_id, @club&.id if @club %>
+  <%= f.hidden_field :session_type %>
   <% if game_session.errors.any? %>
     <div class="cl-form__error">
       <% game_session.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>

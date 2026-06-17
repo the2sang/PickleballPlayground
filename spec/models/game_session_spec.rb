@@ -39,6 +39,16 @@ RSpec.describe GameSession, type: :model do
     end
   end
 
+  describe "session_type enum" do
+    it "기본값은 regular(클럽 운동 세션) 이다" do
+      expect(GameSession.new.session_type).to eq("regular")
+    end
+
+    it "open_game 으로 지정할 수 있다" do
+      expect(build(:game_session, :open_game)).to be_open_game
+    end
+  end
+
   describe "#waitlist_capacity" do
     it "정원 8, 슬롯 상한 12 이면 대기 정원은 4 이다" do
       session = build(:game_session, max_participants: 8)

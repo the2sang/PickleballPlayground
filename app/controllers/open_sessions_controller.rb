@@ -5,12 +5,12 @@ class OpenSessionsController < ApplicationController
 
   # 클럽 단위 오픈 게임 세션 페이지. 코트별 세션을 날짜/시간 순으로 보여준다.
   def index
-    sessions = @club.game_sessions.where.not(status: :cancelled)
+    sessions = @club.game_sessions.open_game.where.not(status: :cancelled)
     sessions = sessions.where(visibility: :public_visibility) unless viewer_sees_members_only?
 
     @game_sessions = sessions.includes(participations: :user)
                              .order(:scheduled_date, :start_time, :court_name)
-    @can_manage = GameSessionPolicy.new(Current.user, @club.game_sessions.build).create?
+    @can_manage = GameSessionPolicy.new(Current.user, @club.game_sessions.build(session_type: :open_game)).create?
   end
 
   def create
@@ -30,12 +30,12 @@ class OpenSessionsController < ApplicationController
   def set_club = @club = Club.find(params[:club_id])
 
   def build_session
-    @club.game_sessions.build(open_session_params)
+    @club.game_sessions.build(open_session_params.merge(session_type: :open_game))
   end
 
   # "세션 추가": 마지막 세션을 복사하되 코트명과 참가자는 초기화한다.
   def copy_last_session
-    source = @club.game_sessions.find(params[:copy_from])
+    source = @club.game_sessions.open_game.find(params[:copy_from])
     @club.game_sessions.build(
       title:            source.title,
       venue_name:       source.venue_name,
@@ -46,6 +46,7 @@ class OpenSessionsController < ApplicationController
       level:            source.level,
       max_participants: source.max_participants,
       visibility:       source.visibility,
+      session_type:     :open_game,
       status:           :open,
       court_name:       nil
     )

@@ -7,6 +7,7 @@ class GameSessionsController < ApplicationController
   def index
     @query = params[:q].presence
     sessions = policy_scope(GameSession)
+      .regular
       .joins(:club)
       .includes(:club)
       .order("clubs.name ASC, scheduled_date ASC, start_time ASC")
@@ -33,7 +34,7 @@ class GameSessionsController < ApplicationController
   end
 
   def new
-    @game_session = @club.game_sessions.build
+    @game_session = @club.game_sessions.build(session_type: new_session_type)
     authorize @game_session
   end
 
@@ -70,6 +71,10 @@ class GameSessionsController < ApplicationController
   private
 
   def set_club = @club = Club.find(params[:club_id])
+
+  def new_session_type
+    GameSession.session_types.key?(params[:session_type]) ? params[:session_type] : :regular
+  end
   def set_game_session
     @game_session = GameSession.includes(participations: :user).find(params[:id])
   end
@@ -77,7 +82,7 @@ class GameSessionsController < ApplicationController
   def game_session_params
     p = params.require(:game_session).permit(
       :title, :venue_name, :address, :scheduled_date,
-      :start_time, :end_time, :court_count, :court_name, :level, :fee, :notes,
+      :start_time, :end_time, :court_count, :court_name, :level, :session_type, :fee, :notes,
       :max_participants, :visibility, :status,
       :repeat_type, :repeat_ends_on, repeat_days: []
     )
