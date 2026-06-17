@@ -161,11 +161,16 @@
   <div class="cl-content">
     <div class="cl-section-header">
       <p class="cl-section-label">운동 세션</p>
-      <% if policy(@club).manage? %>
-        <%= link_to new_game_session_path(club_id: @club.id), class: "btn btn--primary btn--sm" do %>
-          <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 세션 추가
+      <div style="display:flex; gap:8px;">
+        <%= link_to club_open_sessions_path(@club), class: "btn btn--secondary btn--sm" do %>
+          <iconify-icon icon="lucide:layout-grid" width="13"></iconify-icon> 오픈 게임
         <% end %>
-      <% end %>
+        <% if policy(@club).manage? %>
+          <%= link_to new_game_session_path(club_id: @club.id), class: "btn btn--primary btn--sm" do %>
+            <iconify-icon icon="lucide:plus" width="13"></iconify-icon> 세션 추가
+          <% end %>
+        <% end %>
+      </div>
     </div>
 
     <% if @game_sessions.empty? %>

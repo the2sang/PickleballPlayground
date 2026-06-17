@@ -24,7 +24,7 @@ class ParticipationsController < ApplicationController
 
     if result.success?
       msg = result.participation.waitlisted? ? "대기열에 등록되었습니다." : "참가 신청이 완료되었습니다."
-      redirect_to game_session_path(@game_session), notice: msg
+      redirect_to safe_return_to || game_session_path(@game_session), notice: msg
     else
       flash.now[:alert] = result.errors.join(", ")
       render :new, status: :unprocessable_entity
@@ -35,12 +35,18 @@ class ParticipationsController < ApplicationController
     @participation = @game_session.participations.find(params[:id])
     authorize @participation
     Participations::CancelService.call(participation: @participation)
-    redirect_to game_session_path(@game_session), notice: "참가 신청이 취소되었습니다."
+    redirect_to safe_return_to || game_session_path(@game_session), notice: "참가 신청이 취소되었습니다."
   end
 
   private
 
   def set_game_session = @game_session = GameSession.find(params[:game_session_id])
+
+  # 오픈 인젝션 방지를 위해 같은 사이트 내부 상대 경로만 허용한다.
+  def safe_return_to
+    to = params[:return_to].to_s
+    to if to.start_with?("/") && !to.start_with?("//")
+  end
 
   def require_profile!
     return if Current.user.profile_complete?

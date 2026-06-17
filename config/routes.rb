@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     resources :guest_applications, only: %i[new create], path: "guest"
     resources :tournaments, only: %i[index new create]
     resources :club_notices, except: %i[index show]
+    resources :open_sessions, only: %i[index create]
   end
 
   resources :decks do

@@ -9,9 +9,12 @@ module Participations
     end
 
     def call
-      was_confirmed = @participation.confirmed?
-      @participation.cancelled!
-      promote_waitlist if was_confirmed
+      # 세션 행을 잠가 동시 취소 시 대기자가 중복 승급되는 경합을 방지한다.
+      @participation.game_session.with_lock do
+        was_confirmed = @participation.confirmed?
+        @participation.cancelled!
+        promote_waitlist if was_confirmed
+      end
       Result.new(success?: true, errors: [])
     end
 

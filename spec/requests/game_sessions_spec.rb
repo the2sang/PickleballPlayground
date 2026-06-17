@@ -1,0 +1,37 @@
+require "rails_helper"
+
+RSpec.describe "GameSessions", type: :request do
+  let(:manager) { create(:user, :profile_complete) }
+  let(:club)    { create(:club, owner: manager) }
+
+  describe "POST /game_sessions" do
+    let(:params) do
+      {
+        club_id: club.id,
+        game_session: {
+          title: "수요 오픈게임",
+          venue_name: "올림픽 체육관",
+          scheduled_date: (Date.current + 1).to_s,
+          start_time: "19:00",
+          end_time: "21:00",
+          level: "intermediate",
+          court_name: "A코트",
+          max_participants: 8
+        }
+      }
+    end
+
+    it "관리자가 레벨과 코트명을 지정해 세션을 생성한다" do
+      sign_in(manager)
+
+      expect {
+        post game_sessions_path, params: params
+      }.to change { club.game_sessions.count }.by(1)
+
+      session = club.game_sessions.last
+      expect(session.level).to eq("intermediate")
+      expect(session.court_name).to eq("A코트")
+      expect(session.max_participants).to eq(8)
+    end
+  end
+end

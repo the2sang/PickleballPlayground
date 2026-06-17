@@ -1,0 +1,44 @@
+<%#
+  12슬롯 그리드. 1..capacity = 정원, capacity+1..12 = 대기.
+  locals: session, confirmed, waitlisted, capacity, my_participation, can_apply
+%>
+<%
+  return_path = club_open_sessions_path(session.club)
+  gender_icon = ->(user) do
+    case user&.gender
+    when "male"   then "lucide:mars"
+    when "female" then "lucide:venus"
+    else               "lucide:circle-user-round"
+    end
+  end
+%>
+<ol class="oss-slots">
+  <% (1..GameSession::SLOT_LIMIT).each do |slot_no| %>
+    <%
+      is_roster   = slot_no <= capacity
+      participant = is_roster ? confirmed[slot_no - 1] : waitlisted[slot_no - capacity - 1]
+      mine        = participant && my_participation && participant.id == my_participation.id
+    %>
+    <li class="oss-slot <%= is_roster ? "oss-slot--roster" : "oss-slot--wait" %> <%= "oss-slot--mine" if mine %>">
+      <span class="oss-slot__no"><%= slot_no %></span>
+      <% if participant %>
+        <span class="oss-slot__filled" title="<%= participant.display_name %>">
+          <iconify-icon icon="<%= gender_icon.call(participant.user) %>" width="14"></iconify-icon>
+          <span class="oss-slot__name"><%= participant.display_name %></span>
+        </span>
+      <% elsif session.open? %>
+        <% if can_apply %>
+          <button type="button" class="oss-slot__recruit" data-action="click->modal#open">모집</button>
+        <% elsif my_participation %>
+          <span class="oss-slot__empty">—</span>
+        <% elsif Current.user.nil? %>
+          <%= link_to "모집", new_session_path(return_to: return_path), class: "oss-slot__recruit" %>
+        <% else %>
+          <span class="oss-slot__empty">—</span>
+        <% end %>
+      <% else %>
+        <span class="oss-slot__empty">—</span>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

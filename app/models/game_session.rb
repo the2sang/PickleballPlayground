@@ -8,8 +8,20 @@ class GameSession < ApplicationRecord
   enum :visibility,   { public_visibility: 0, members_only: 1 }, default: :public_visibility
   enum :status,       { open: 0, closed: 1, cancelled: 2 }, default: :open
   enum :repeat_type,  { no_repeat: 0, daily: 1, weekly: 2, specific_days: 3 }, default: :no_repeat
+  enum :level, {
+    all_level: 0, beginner: 1, beginner_intermediate: 2,
+    intermediate: 3, intermediate_advanced: 4, advanced: 5
+  }, default: :all_level
 
   DAYS_KO = %w[일 월 화 수 목 금 토].freeze
+
+  # 오픈 게임 한 세션(코트)의 최대 슬롯 수. 정원을 넘는 슬롯은 대기 자리로 표시된다.
+  SLOT_LIMIT = 12
+
+  LEVEL_LABELS = {
+    "all_level" => "올레벨", "beginner" => "초급", "beginner_intermediate" => "초중급",
+    "intermediate" => "중급", "intermediate_advanced" => "중상급", "advanced" => "상급"
+  }.freeze
 
   scope :templates, -> { where(template_id: nil).where.not(repeat_type: :no_repeat) }
 
@@ -42,6 +54,14 @@ class GameSession < ApplicationRecord
     when "specific_days" then repeat_days_array.include?(date.wday)
     else false
     end
+  end
+
+  def level_label = LEVEL_LABELS.fetch(level, level)
+
+  # 슬롯 상한(12)에서 정원을 뺀 대기 자리 수
+  def waitlist_capacity
+    return 0 if max_participants.nil?
+    [ SLOT_LIMIT - max_participants, 0 ].max
   end
 
   def full?

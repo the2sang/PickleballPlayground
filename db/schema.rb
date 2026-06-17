@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_075831) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_033255) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -225,9 +225,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_075831) do
     t.string "address"
     t.integer "club_id", null: false
     t.integer "court_count", default: 1
+    t.string "court_name"
     t.datetime "created_at", null: false
     t.time "end_time", null: false
     t.integer "fee", default: 0, null: false
+    t.integer "level", default: 0, null: false
     t.integer "max_participants"
     t.text "notes"
     t.string "repeat_days"
