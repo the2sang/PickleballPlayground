@@ -31,7 +31,9 @@
         <% elsif my_participation %>
           <span class="oss-slot__empty">—</span>
         <% elsif Current.user.nil? %>
-          <%= link_to "모집", new_session_path(return_to: return_path), class: "oss-slot__recruit" %>
+          <%= link_to "모집", new_session_path(return_to: return_path),
+                class: "oss-slot__recruit",
+                data: { turbo_confirm: "참가 신청시 로그인 혹은 회원가입이 필요합니다.\n로그인 페이지로 이동하시겠습니까?" } %>
         <% else %>
           <span class="oss-slot__empty">—</span>
         <% end %>
