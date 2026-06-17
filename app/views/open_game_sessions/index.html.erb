@@ -1,0 +1,97 @@
+<% content_for :title, "오픈 게임 세션" %>
+
+<div class="cl-page">
+  <div class="cl-hero cl-hero--game-sessions-banner">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow">Open Game</p>
+      <h1 class="cl-hero__title">오픈 게임 세션</h1>
+      <p class="cl-hero__subtitle">클럽별로 모집 중인 오픈 게임 세션을 확인하세요.</p>
+
+      <%= form_with url: open_game_sessions_path, method: :get, class: "cl-search-bar" do |f| %>
+        <div class="cl-search-bar__inner">
+          <iconify-icon icon="lucide:search" class="cl-search-bar__icon"></iconify-icon>
+          <%= f.text_field :q,
+                value: @query,
+                class: "cl-search-bar__input",
+                placeholder: "클럽 이름으로 검색",
+                autocomplete: "off",
+                autofocus: @query.present? %>
+          <% if @query.present? %>
+            <%= link_to open_game_sessions_path, class: "cl-search-bar__clear", aria: { label: "검색 초기화" } do %>
+              <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="cl-content">
+    <% if @query.present? %>
+      <p class="cl-search-result-info">
+        <strong>"<%= @query %>"</strong> 검색 결과 <%= @game_sessions_by_club.values.sum(&:size) %>건
+      </p>
+    <% end %>
+
+    <% if @game_sessions_by_club.empty? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:calendar" width="20"></iconify-icon>
+        </div>
+        <p class="cl-empty__text"><%= @query.present? ? "\"#{@query}\" 검색 결과가 없습니다." : "등록된 오픈 게임 세션이 없습니다." %></p>
+      </div>
+    <% else %>
+      <% @game_sessions_by_club.each do |club, sessions| %>
+        <div class="cl-session-group" style="margin-bottom:28px;">
+          <div class="cl-session-group__header">
+            <%= link_to club_open_sessions_path(club), class: "cl-session-group__club-link" do %>
+              <iconify-icon icon="lucide:users" width="13"></iconify-icon>
+              <%= club.name %>
+              <iconify-icon icon="lucide:chevron-right" width="12" style="opacity:0.5;"></iconify-icon>
+            <% end %>
+          </div>
+          <div class="cl-list">
+            <% sessions.each do |gs| %>
+              <%= link_to club_open_sessions_path(gs.club), class: "cl-list-item" do %>
+                <div class="cl-list-item__left">
+                  <div class="cl-list-item__icon">
+                    <iconify-icon icon="lucide:trophy" width="15"></iconify-icon>
+                  </div>
+                  <div style="min-width:0;">
+                    <p class="cl-list-item__club">
+                      <% if gs.session_ended? %>
+                        <span style="display:inline-flex;align-items:center;justify-content:center;background:#e5e7eb;color:#6b7280;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;line-height:1.6;">종료</span>
+                      <% elsif gs.scheduled_date.to_date == Date.today %>
+                        <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;line-height:1.6;">오늘</span>
+                      <% end %>
+                      <span class="cl-badge cl-badge--open-game" style="font-size:10px;">오픈</span>
+                    </p>
+                    <p class="cl-list-item__title"><%= gs.title %></p>
+                    <p class="cl-list-item__meta">
+                      <%= format_session_date(gs.scheduled_date) %> &middot;
+                      <%= gs.venue_name %> &middot;
+                      <%= gs.level_label %> &middot;
+                      <%= gs.court_name.presence || "코트 미지정" %>
+                    </p>
+                  </div>
+                </div>
+                <div class="cl-list-item__right">
+                  <% confirmed = gs.participations.select(&:confirmed?) %>
+                  <% capacity = gs.max_participants || GameSession::SLOT_LIMIT %>
+                  <% if gs.full? %>
+                    <span class="cl-badge cl-badge--neutral">마감</span>
+                  <% else %>
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+                      <span style="font-size:10px;color:var(--hcp-cool-gray);">신청현황</span>
+                      <span class="cl-badge cl-badge--dark"><%= confirmed.size %>/<%= capacity %>명</span>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
