@@ -11,6 +11,10 @@
     else               "lucide:circle-user-round"
     end
   end
+  level_label = ->(user) do
+    { "beginner" => "초급", "beginner_intermediate" => "초중급", "intermediate" => "중급",
+      "intermediate_advanced" => "중상급", "advanced" => "상급" }[user&.sport_level]
+  end
 %>
 <ol class="oss-slots">
   <% (1..GameSession::SLOT_LIMIT).each do |slot_no| %>
@@ -25,6 +29,9 @@
         <span class="oss-slot__filled" title="<%= participant.display_name %>">
           <iconify-icon icon="<%= gender_icon.call(participant.user) %>" width="14"></iconify-icon>
           <span class="oss-slot__name"><%= participant.display_name %></span>
+          <% if (lv = level_label.call(participant.user)) %>
+            <span class="oss-slot__level"><%= lv %></span>
+          <% end %>
         </span>
       <% elsif session.open? %>
         <% if can_apply %>
