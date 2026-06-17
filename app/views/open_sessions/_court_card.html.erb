@@ -9,13 +9,17 @@
   my_participation = Current.user &&
     session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
   can_apply = Current.user.present? && session.open? && my_participation.nil?
+  is_today  = session.scheduled_date == Date.today
 %>
-<article class="oss-card" data-accordion-target="item">
+<article class="oss-card <%= "oss-card--today" if is_today %>" data-accordion-target="item">
   <button type="button"
           class="oss-card__header"
-          aria-expanded="false"
+          aria-expanded="<%= is_today %>"
           data-action="accordion#toggle">
     <span class="oss-card__heading">
+      <% if is_today %>
+        <span class="oss-card__today-badge">오늘</span>
+      <% end %>
       <span class="oss-card__court"><%= session.court_name.presence || "코트 미지정" %></span>
       <span class="cl-badge cl-badge--neutral oss-card__level"><%= session.level_label %></span>
     </span>
@@ -33,7 +37,7 @@
     </span>
   </button>
 
-  <div class="oss-card__panel" data-accordion-target="panel" hidden
+  <div class="oss-card__panel" data-accordion-target="panel" <%= "hidden" unless is_today %>
        <%= tag.attributes(data: { controller: "modal" }) if can_apply %>>
     <p class="oss-card__title"><%= session.title %></p>
 
