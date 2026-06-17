@@ -145,6 +145,34 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).to include(new_session_path(return_to: club_open_sessions_path(club)))
     end
 
+    it "정원이 차기 전에는 대기자 박스 모집 버튼을 비활성화한다" do
+      session.update!(max_participants: 2)
+      create(:participation, :profile_complete_user, game_session: session, status: :confirmed)
+      sign_in(member)
+
+      get club_open_sessions_path(club)
+
+      html = Nokogiri::HTML(response.body)
+      wait_slots = html.css(".oss-slot--wait")
+      expect(wait_slots).to be_present
+      expect(wait_slots.first.at_css(".oss-slot__recruit--disabled[disabled]")).to be_present
+      expect(wait_slots.first.at_css("[data-action='click->modal#open']")).to be_nil
+    end
+
+    it "정원이 모두 차면 대기자 박스 모집 버튼을 활성화한다" do
+      session.update!(max_participants: 2)
+      create_list(:participation, 2, :profile_complete_user, game_session: session, status: :confirmed)
+      sign_in(member)
+
+      get club_open_sessions_path(club)
+
+      html = Nokogiri::HTML(response.body)
+      wait_slots = html.css(".oss-slot--wait")
+      expect(wait_slots).to be_present
+      expect(wait_slots.first.at_css(".oss-slot__recruit--disabled[disabled]")).to be_nil
+      expect(wait_slots.first.at_css(".oss-slot__recruit[data-action='click->modal#open']")).to be_present
+    end
+
     it "슬롯과 신청자 이름 팝업에 참가자 기본 정보를 렌더한다" do
       applicant = create(:user, :profile_complete, :male, :intermediate, :thirties, display_name: "홍길동")
       create(:participation, game_session: session, user: applicant, status: :confirmed)

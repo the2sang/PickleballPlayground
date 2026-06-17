@@ -4,6 +4,7 @@
 %>
 <%
   return_path = club_open_sessions_path(session.club)
+  roster_full = confirmed.size >= capacity
 %>
 <ol class="oss-slots">
   <% (1..GameSession::SLOT_LIMIT).each do |slot_no| %>
@@ -23,7 +24,9 @@
           </span>
         </span>
       <% elsif session.open? %>
-        <% if can_apply %>
+        <% if !is_roster && !roster_full %>
+          <button type="button" class="oss-slot__recruit oss-slot__recruit--disabled" disabled aria-disabled="true">모집</button>
+        <% elsif can_apply %>
           <button type="button" class="oss-slot__recruit" data-action="click->modal#open">모집</button>
         <% elsif my_participation %>
           <span class="oss-slot__empty">—</span>
