@@ -77,7 +77,7 @@ class GameSessionsController < ApplicationController
   def game_session_params
     p = params.require(:game_session).permit(
       :title, :venue_name, :address, :scheduled_date,
-      :start_time, :end_time, :court_count, :fee, :notes,
+      :start_time, :end_time, :court_count, :court_name, :level, :fee, :notes,
       :max_participants, :visibility, :status,
       :repeat_type, :repeat_ends_on, repeat_days: []
     )
