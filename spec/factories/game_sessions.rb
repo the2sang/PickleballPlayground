@@ -14,6 +14,10 @@ FactoryBot.define do
     visibility { :public_visibility }
     repeat_type { :no_repeat }
 
+    trait :with_court do
+      court_name { "A코트" }
+    end
+
     trait :closed do
       status { :closed }
     end
