@@ -86,4 +86,28 @@ RSpec.describe "OpenSessions", type: :request do
       end
     end
   end
+
+  describe "오픈 세션에서 슬롯 신청" do
+    let(:session) { create(:game_session, :with_court, club: club) }
+
+    it "회원이 신청하면 오픈 세션 페이지로 돌아온다" do
+      sign_in(member)
+
+      expect {
+        post game_session_participations_path(session),
+             params: { return_to: club_open_sessions_path(club) }
+      }.to change { session.participations.confirmed.count }.by(1)
+
+      expect(response).to redirect_to(club_open_sessions_path(club))
+    end
+
+    it "외부 URL 로의 return_to 는 무시한다" do
+      sign_in(member)
+
+      post game_session_participations_path(session),
+           params: { return_to: "https://evil.example.com" }
+
+      expect(response).to redirect_to(game_session_path(session))
+    end
+  end
 end

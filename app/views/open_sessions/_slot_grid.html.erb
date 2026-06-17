@@ -1,0 +1,45 @@
+<%#
+  12슬롯 그리드. 1..capacity = 정원, capacity+1..12 = 대기.
+  locals: session, confirmed, waitlisted, capacity, my_participation
+%>
+<%
+  return_path = club_open_sessions_path(session.club)
+  gender_icon = ->(user) do
+    case user&.gender
+    when "male"   then "lucide:mars"
+    when "female" then "lucide:venus"
+    else               "lucide:circle-user-round"
+    end
+  end
+%>
+<ol class="oss-slots">
+  <% (1..GameSession::SLOT_LIMIT).each do |slot_no| %>
+    <%
+      is_roster   = slot_no <= capacity
+      participant = is_roster ? confirmed[slot_no - 1] : waitlisted[slot_no - capacity - 1]
+      mine        = participant && my_participation && participant.id == my_participation.id
+    %>
+    <li class="oss-slot <%= is_roster ? "oss-slot--roster" : "oss-slot--wait" %> <%= "oss-slot--mine" if mine %>">
+      <span class="oss-slot__no"><%= slot_no %></span>
+      <% if participant %>
+        <span class="oss-slot__filled" title="<%= participant.display_name %>">
+          <iconify-icon icon="<%= gender_icon.call(participant.user) %>" width="14"></iconify-icon>
+          <span class="oss-slot__name"><%= participant.display_name %></span>
+        </span>
+      <% elsif session.open? %>
+        <% if Current.user %>
+          <%= button_to game_session_participations_path(session),
+                params: { return_to: return_path, slot: slot_no },
+                class: "oss-slot__recruit",
+                form: { class: "oss-slot__form", data: { open_session_apply_target: "form" } } do %>
+            모집
+          <% end %>
+        <% else %>
+          <%= link_to "모집", new_session_path(return_to: return_path), class: "oss-slot__recruit" %>
+        <% end %>
+      <% else %>
+        <span class="oss-slot__empty">—</span>
+      <% end %>
+    </li>
+  <% end %>
+</ol>
