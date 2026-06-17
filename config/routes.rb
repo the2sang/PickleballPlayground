@@ -86,6 +86,8 @@ Rails.application.routes.draw do
   resources :matches, only: %i[show edit update] do
     member { post :advance_winner }
   end
+  get "open_game_sessions", to: "open_game_sessions#index", as: :open_game_sessions
+
   resources :game_sessions, only: %i[index show new create edit update destroy] do
     resource :code_dash_participation, only: :create
     resources :participations, only: %i[new create destroy], shallow: false
