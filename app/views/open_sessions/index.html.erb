@@ -1,0 +1,29 @@
+<%# 최소 골격 - PR5에서 아코디언 + 12슬롯 그리드로 확장 %>
+<div class="open-sessions" data-controller="accordion">
+  <h1 class="open-sessions__title"><%= @club.name %> 오픈 게임</h1>
+
+  <% if @can_manage %>
+    <div class="open-sessions__admin-actions">
+      <%= button_to "세션 추가", club_open_sessions_path(@club),
+            params: { copy_from: @game_sessions.last&.id },
+            class: "btn btn--primary btn--sm" %>
+    </div>
+  <% end %>
+
+  <% if @game_sessions.empty? %>
+    <p class="open-sessions__empty">등록된 오픈 게임 세션이 없습니다.</p>
+  <% else %>
+    <ul class="open-sessions__list">
+      <% @game_sessions.each do |session| %>
+        <li class="open-sessions__item">
+          <span class="open-sessions__court"><%= session.court_name.presence || "코트 미지정" %></span>
+          <span class="open-sessions__name"><%= session.title %></span> ·
+          <%= session.level_label %> ·
+          <%= session.scheduled_date.strftime("%Y-%m-%d") %>
+          <%= session.start_time.strftime("%H:%M") %>-<%= session.end_time.strftime("%H:%M") %>
+          <span class="open-sessions__status"><%= session.open? ? "모집중" : "마감" %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
