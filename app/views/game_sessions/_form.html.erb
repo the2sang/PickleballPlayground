@@ -50,6 +50,12 @@
       <%= f.label :max_participants, "정원", class: "cl-form__label" %>
       <%= f.number_field :max_participants, min: 1, max: GameSession::SLOT_LIMIT, placeholder: "무제한", class: "cl-form__input" %>
     </div>
+    <% if game_session.open_game? %>
+      <div class="cl-form__field">
+        <%= f.label :max_waitlist, "대기 인원", class: "cl-form__label" %>
+        <%= f.number_field :max_waitlist, min: 0, placeholder: "없음", class: "cl-form__input" %>
+      </div>
+    <% end %>
     <div class="cl-form__field">
       <%= f.label :level, "레벨", class: "cl-form__label" %>
       <%= f.select :level,

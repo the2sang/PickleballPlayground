@@ -83,7 +83,7 @@ class GameSessionsController < ApplicationController
     p = params.require(:game_session).permit(
       :title, :venue_name, :address, :scheduled_date,
       :start_time, :end_time, :court_count, :court_name, :level, :session_type, :fee, :notes,
-      :max_participants, :visibility, :status,
+      :max_participants, :max_waitlist, :visibility, :status,
       :repeat_type, :repeat_ends_on, repeat_days: []
     )
     # 체크박스 배열을 쉼표 구분 문자열로 변환

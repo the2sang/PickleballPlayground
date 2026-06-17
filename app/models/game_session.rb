@@ -61,6 +61,7 @@ class GameSession < ApplicationRecord
 
   # 슬롯 상한(12)에서 정원을 뺀 대기 자리 수
   def waitlist_capacity
+    return max_waitlist if max_waitlist.present?
     return 0 if max_participants.nil?
     [ SLOT_LIMIT - max_participants, 0 ].max
   end

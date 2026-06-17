@@ -45,6 +45,7 @@ class OpenSessionsController < ApplicationController
       end_time:         source.end_time,
       level:            source.level,
       max_participants: source.max_participants,
+      max_waitlist:     source.max_waitlist,
       visibility:       source.visibility,
       session_type:     :open_game,
       status:           :open,
@@ -55,7 +56,7 @@ class OpenSessionsController < ApplicationController
   def open_session_params
     params.require(:game_session).permit(
       :title, :venue_name, :address, :scheduled_date, :start_time, :end_time,
-      :level, :court_name, :max_participants, :visibility, :notes
+      :level, :court_name, :max_participants, :max_waitlist, :visibility, :notes
     )
   end
 
