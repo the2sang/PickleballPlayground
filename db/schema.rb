@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_033255) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_050110) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -236,6 +236,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_033255) do
     t.date "repeat_ends_on"
     t.integer "repeat_type", default: 0, null: false
     t.date "scheduled_date", null: false
+    t.integer "session_type", default: 0, null: false
     t.time "start_time", null: false
     t.integer "status", default: 0, null: false
     t.integer "template_id"
@@ -244,6 +245,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_033255) do
     t.string "venue_name", null: false
     t.integer "visibility", default: 0, null: false
     t.index ["club_id", "scheduled_date"], name: "index_game_sessions_on_club_id_and_scheduled_date"
+    t.index ["club_id", "session_type"], name: "index_game_sessions_on_club_id_and_session_type"
     t.index ["club_id"], name: "index_game_sessions_on_club_id"
     t.index ["repeat_type"], name: "index_game_sessions_on_repeat_type"
     t.index ["scheduled_date"], name: "index_game_sessions_on_scheduled_date"

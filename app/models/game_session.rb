@@ -12,6 +12,7 @@ class GameSession < ApplicationRecord
     all_level: 0, beginner: 1, beginner_intermediate: 2,
     intermediate: 3, intermediate_advanced: 4, advanced: 5
   }, default: :all_level
+  enum :session_type, { regular: 0, open_game: 1 }, default: :regular
 
   DAYS_KO = %w[일 월 화 수 목 금 토].freeze
 
