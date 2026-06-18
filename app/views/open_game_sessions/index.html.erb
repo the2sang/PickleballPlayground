@@ -52,7 +52,7 @@
           </div>
           <div class="cl-list">
             <% sessions.each do |gs| %>
-              <%= link_to club_open_sessions_path(gs.club), class: "cl-list-item" do %>
+              <%= link_to club_open_sessions_path(gs.club, open_session_id: gs.id, anchor: "open_session_#{gs.id}"), class: "cl-list-item" do %>
                 <div class="cl-list-item__left">
                   <div class="cl-list-item__icon">
                     <iconify-icon icon="lucide:trophy" width="15"></iconify-icon>

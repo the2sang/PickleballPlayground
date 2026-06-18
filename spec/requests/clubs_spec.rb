@@ -53,6 +53,21 @@ RSpec.describe "Clubs", type: :request do
       expect(response.body).not_to include(members_session.title)
     end
 
+    it "종료된 오픈 게임 세션도 대상 세션 링크로 표시한다" do
+      ended_session = create(:game_session, :open_game, :with_court,
+                             club: club,
+                             title: "종료된 오픈 게임",
+                             scheduled_date: Date.current - 1,
+                             start_time: Time.zone.parse("09:00"),
+                             end_time: Time.zone.parse("10:00"))
+
+      get club_path(club)
+
+      expect(response.body).to include("종료된 오픈 게임")
+      expect(response.body).to include("종료")
+      expect(response.body).to include(club_open_sessions_path(club, open_session_id: ended_session.id, anchor: "open_session_#{ended_session.id}"))
+    end
+
     context "클럽 매니저" do
       let(:manager) { create(:user) }
       before do

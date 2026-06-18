@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "OpenSessions", type: :request do
+  before { host! "localhost" }
+
   let(:manager) { create(:user, :profile_complete) }
   let(:club)    { create(:club, owner: manager) }
   let(:member)  { create(:user, :profile_complete) }
@@ -57,6 +59,46 @@ RSpec.describe "OpenSessions", type: :request do
       expect(card).to be_present
       expect(card.at_css(".oss-card__header")["aria-expanded"]).to eq("true")
       expect(card.at_css(".oss-card__panel")["hidden"]).to be_nil
+    end
+
+    it "종료된 open_session_id 세션도 조회하고 펼친다" do
+      session = create(:game_session, :open_game, :with_court,
+                       club: club,
+                       title: "지난 오픈게임",
+                       scheduled_date: Date.current - 1,
+                       start_time: Time.zone.parse("09:00"),
+                       end_time: Time.zone.parse("10:00"))
+
+      get club_open_sessions_path(club, open_session_id: session.id)
+
+      html = Nokogiri::HTML(response.body)
+      card = html.at_css("#open_session_#{session.id}")
+      expect(response.body).to include("지난 오픈게임")
+      expect(response.body).to include(">종료</span>")
+      expect(response.body).to include("오픈 게임 조회 :")
+      expect(response.body).to include("value=\"#{session.scheduled_date.iso8601}\"")
+      expect(card).to be_present
+      expect(card.at_css(".oss-card__header")["aria-expanded"]).to eq("true")
+      expect(card.at_css(".oss-card__panel")["hidden"]).to be_nil
+    end
+
+    it "session_date 로 과거 오픈 게임 세션을 조회한다" do
+      past_session = create(:game_session, :open_game, :with_court,
+                            club: club,
+                            title: "조회할 과거 게임",
+                            scheduled_date: Date.current - 3,
+                            start_time: Time.zone.parse("09:00"),
+                            end_time: Time.zone.parse("10:00"))
+      other_session = create(:game_session, :open_game, :with_court,
+                             club: club,
+                             title: "다른 날짜 게임",
+                             scheduled_date: Date.current + 1)
+
+      get club_open_sessions_path(club, session_date: past_session.scheduled_date.iso8601)
+
+      expect(response.body).to include("조회할 과거 게임")
+      expect(response.body).not_to include(other_session.title)
+      expect(response.body).to include("value=\"#{past_session.scheduled_date.iso8601}\"")
     end
   end
 

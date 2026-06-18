@@ -12,6 +12,23 @@
   </div>
 
   <div class="cl-content" style="max-width:760px;">
+    <div class="oss-lookup-bar">
+      <%= form_with url: club_open_sessions_path(@club), method: :get, class: "oss-lookup-form" do |f| %>
+        <span class="oss-lookup-form__label">오픈 게임 조회 :</span>
+        <%= f.date_field :session_date,
+              value: @selected_date&.iso8601,
+              class: "oss-lookup-form__date" %>
+        <button type="submit" class="btn btn--secondary btn--sm">
+          <iconify-icon icon="lucide:search" width="13"></iconify-icon> 조회
+        </button>
+        <% if @selected_date.present? %>
+          <%= link_to club_open_sessions_path(@club), class: "btn btn--ghost btn--sm" do %>
+            <iconify-icon icon="lucide:rotate-ccw" width="13"></iconify-icon> 예정 보기
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
     <% if @can_manage %>
       <div class="oss-admin-bar">
         <%= link_to new_game_session_path(club_id: @club.id, session_type: "open_game"), class: "btn btn--primary btn--sm" do %>

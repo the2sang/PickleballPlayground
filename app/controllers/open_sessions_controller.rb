@@ -8,9 +8,15 @@ class OpenSessionsController < ApplicationController
     sessions = @club.game_sessions.open_game.where.not(status: :cancelled)
     sessions = sessions.where(visibility: :public_visibility) unless viewer_sees_members_only?
 
+    @selected_date = requested_session_date
+    target_session = params[:open_session_id].present? ? sessions.find_by(id: params[:open_session_id]) : nil
+    @selected_date ||= target_session.scheduled_date if target_session&.session_started?
+
+    sessions = sessions.where(scheduled_date: @selected_date) if @selected_date
+
     @game_sessions = sessions.includes(participations: :user)
                              .order(:scheduled_date, :start_time, :court_name)
-                             .reject(&:session_started?)
+    @game_sessions = @game_sessions.reject(&:session_started?) unless @selected_date
     @can_manage = GameSessionPolicy.new(Current.user, @club.game_sessions.build(session_type: :open_game)).create?
   end
 
@@ -29,6 +35,12 @@ class OpenSessionsController < ApplicationController
   private
 
   def set_club = @club = Club.find(params[:club_id])
+
+  def requested_session_date
+    Date.iso8601(params[:session_date]) if params[:session_date].present?
+  rescue ArgumentError
+    nil
+  end
 
   def build_session
     @club.game_sessions.build(open_session_params.merge(session_type: :open_game))

@@ -1,4 +1,18 @@
 <style>
+  .oss-lookup-bar {
+    display:flex; justify-content:flex-end; margin:0 0 14px;
+  }
+  .oss-lookup-form {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .oss-lookup-form__label {
+    font-size:13px; font-weight:800; color:var(--hcp-black,#111);
+  }
+  .oss-lookup-form__date {
+    height:32px; border:1px solid var(--hcp-border,#e5e7eb); border-radius:6px;
+    padding:0 9px; font-size:13px; color:var(--hcp-black,#111); background:#fff;
+  }
+
   .oss-admin-bar { display:flex; gap:8px; flex-wrap:wrap; margin:16px 0; }
 
   .oss-day { margin-top:20px; }
@@ -28,6 +42,7 @@
   .oss-card__header[aria-expanded="true"] .oss-card__chevron { transform:rotate(180deg); }
 
   .oss-status--open { background:#16a34a; border-color:#16a34a; color:#fff; }
+  .oss-status--ended { background:#f97316; border-color:#f97316; color:#fff; }
   .oss-status--closed { opacity:0.7; }
 
   .oss-card__panel { padding:4px 14px 16px; border-top:1px solid var(--hcp-border,#f1f1f1); }
