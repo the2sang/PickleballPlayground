@@ -1,0 +1,83 @@
+<%#
+  오픈 게임 매칭 생성 옵션 모달.
+  locals: session, confirmed
+%>
+<%
+  min_players = OpenSessions::MatchPlanBuilder::MIN_PLAYERS
+  enough_players = confirmed.size >= min_players
+  default_rounds = [ confirmed.size - 1, 4 ].min.clamp(1, OpenSessions::MatchPlanBuilder::MAX_ROUNDS)
+  partner_options = confirmed.reject { |participant| participant.user_id == Current.user&.id }
+                             .map { |participant| [ participant.display_name, participant.user_id ] }
+%>
+
+<dialog class="oss-modal" data-modal-target="dialog" data-action="click->modal#backdropClose">
+  <div class="oss-modal__inner">
+    <div class="oss-modal__header">
+      <h2 class="oss-modal__title">매칭 생성</h2>
+      <button type="button" class="oss-modal__close" aria-label="닫기" data-action="click->modal#close">
+        <iconify-icon icon="lucide:x" width="16"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="oss-modal__body">
+      <p class="oss-modal__lead">
+        <strong><%= session.court_name.presence || session.title %></strong>
+        확정 신청자 <strong><%= confirmed.size %>명</strong>으로 게임 매칭을 생성합니다.
+      </p>
+
+      <% unless enough_players %>
+        <p class="oss-modal__notice">
+          <iconify-icon icon="lucide:info" width="12"></iconify-icon>
+          매칭 생성은 확정 참가자 <strong><%= min_players %>명 이상</strong>부터 가능합니다.
+        </p>
+        <div class="oss-modal__footer">
+          <button type="button" class="btn btn--ghost btn--sm" data-action="click->modal#close">닫기</button>
+        </div>
+      <% else %>
+        <%= form_with url: game_session_open_session_matching_path(session), method: :get, class: "oss-match-form" do |f| %>
+          <fieldset class="oss-match-form__group">
+            <legend>생성 방식</legend>
+            <label>
+              <%= radio_button_tag :mode, "automatic", true %>
+              자동 매칭
+            </label>
+            <label>
+              <%= radio_button_tag :mode, "manual" %>
+              수동 편성
+            </label>
+          </fieldset>
+
+          <div class="oss-match-form__grid">
+            <label>
+              <span>게임 라운드</span>
+              <%= number_field_tag :rounds, default_rounds, min: 1,
+                    max: OpenSessions::MatchPlanBuilder::MAX_ROUNDS %>
+            </label>
+            <label>
+              <span>고정 시작 라운드</span>
+              <%= number_field_tag :fixed_partner_starts_round, 1, min: 1,
+                    max: OpenSessions::MatchPlanBuilder::MAX_ROUNDS %>
+            </label>
+          </div>
+
+          <label class="oss-match-form__select">
+            <span>고정 파트너</span>
+            <%= select_tag :fixed_partner_user_id,
+                  options_for_select([ [ "선택 안 함", "" ] ] + partner_options),
+                  class: "oss-match-form__control" %>
+          </label>
+
+          <p class="oss-modal__notice">
+            <iconify-icon icon="lucide:shuffle" width="12"></iconify-icon>
+            고정 파트너를 선택하면 지정 라운드부터 같은 팀으로 우선 배치됩니다.
+          </p>
+
+          <div class="oss-modal__footer">
+            <button type="button" class="btn btn--ghost btn--sm" data-action="click->modal#close">취소</button>
+            <%= f.submit "매칭 페이지 열기", class: "btn btn--primary btn--sm" %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</dialog>

@@ -11,6 +11,10 @@ class GameSessionPolicy < ApplicationPolicy
   def edit?   = update?
   def destroy? = site_admin?
 
+  def create_matching?
+    user.present? && record.participations.confirmed.exists?(user_id: user.id)
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       if user.nil?

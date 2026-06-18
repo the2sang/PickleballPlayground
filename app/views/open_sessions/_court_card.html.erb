@@ -9,6 +9,7 @@
   my_participation = Current.user &&
     session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
   can_apply = Current.user.present? && session.open? && my_participation.nil? && !session.session_started?
+  can_create_matching = Current.user.present? && confirmed.any? { |p| p.user_id == Current.user.id }
   is_today  = session.scheduled_date == Date.today
   is_target_session = params[:open_session_id].to_s == session.id.to_s
   is_expanded = is_today || is_target_session
@@ -44,8 +45,7 @@
     </span>
   </button>
 
-  <div class="oss-card__panel" data-accordion-target="panel" <%= "hidden" unless is_expanded %>
-       <%= tag.attributes(data: { controller: "modal" }) if can_apply %>>
+  <div class="oss-card__panel" data-accordion-target="panel" <%= "hidden" unless is_expanded %>>
     <p class="oss-card__title"><%= session.title %></p>
 
     <div class="oss-summary">
@@ -58,9 +58,18 @@
       <% end %>
     </div>
 
-    <%= render "open_sessions/slot_grid",
-          session: session, confirmed: confirmed, waitlisted: waitlisted,
-          capacity: capacity, my_participation: my_participation, can_apply: can_apply %>
+    <% if can_apply %>
+      <div data-controller="modal">
+        <%= render "open_sessions/slot_grid",
+              session: session, confirmed: confirmed, waitlisted: waitlisted,
+              capacity: capacity, my_participation: my_participation, can_apply: can_apply %>
+        <%= render "open_sessions/apply_modal", session: session %>
+      </div>
+    <% else %>
+      <%= render "open_sessions/slot_grid",
+            session: session, confirmed: confirmed, waitlisted: waitlisted,
+            capacity: capacity, my_participation: my_participation, can_apply: can_apply %>
+    <% end %>
 
     <% if my_participation %>
       <div class="oss-mine-bar">
@@ -78,10 +87,6 @@
           <% end %>
         <% end %>
       </div>
-    <% end %>
-
-    <% if can_apply %>
-      <%= render "open_sessions/apply_modal", session: session %>
     <% end %>
 
     <p class="oss-guide">
@@ -104,13 +109,23 @@
       </p>
     <% end %>
 
-    <% if can_manage %>
-      <div class="oss-card__admin">
-        <%= link_to edit_game_session_path(session), class: "btn btn--secondary btn--sm" do %>
-          <iconify-icon icon="lucide:pencil" width="12"></iconify-icon> 수정
+    <% if can_manage || can_create_matching %>
+      <div class="oss-card__actions">
+        <% if can_manage %>
+          <%= link_to edit_game_session_path(session), class: "btn btn--secondary btn--sm" do %>
+            <iconify-icon icon="lucide:pencil" width="12"></iconify-icon> 수정
+          <% end %>
         <% end %>
         <%= link_to game_session_path(session), class: "btn btn--ghost btn--sm" do %>
           <iconify-icon icon="lucide:external-link" width="12"></iconify-icon> 상세
+        <% end %>
+        <% if can_create_matching %>
+          <div class="oss-match-action" data-controller="modal">
+            <button type="button" class="btn btn--primary btn--sm" data-action="click->modal#open">
+              <iconify-icon icon="lucide:shuffle" width="12"></iconify-icon> 매칭생성
+            </button>
+            <%= render "open_sessions/matching_modal", session: session, confirmed: confirmed %>
+          </div>
         <% end %>
       </div>
     <% end %>

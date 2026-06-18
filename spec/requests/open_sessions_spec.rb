@@ -194,6 +194,27 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).to include("신청 취소")
     end
 
+    it "확정 신청 회원에게는 매칭생성 버튼과 옵션 모달이 보인다" do
+      create(:participation, game_session: session, user: member, status: :confirmed)
+      create_list(:participation, 4, :profile_complete_user, game_session: session, status: :confirmed)
+      sign_in(member)
+
+      get club_open_sessions_path(club)
+
+      expect(response.body).to include("매칭생성")
+      expect(response.body).to include("게임 라운드")
+      expect(response.body).to include(game_session_open_session_matching_path(session))
+    end
+
+    it "대기 신청 회원에게는 매칭생성 버튼이 보이지 않는다" do
+      create(:participation, game_session: session, user: member, status: :waitlisted)
+      sign_in(member)
+
+      get club_open_sessions_path(club)
+
+      expect(response.body).not_to include("매칭생성")
+    end
+
     it "비로그인 사용자에게는 로그인 유도 링크가 보인다" do
       get club_open_sessions_path(club)
       expect(response.body).to include(new_session_path(return_to: club_open_sessions_path(club)))
@@ -243,6 +264,31 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).to include("중급")
       expect(response.body).to include("연령대")
       expect(response.body).to include("30대")
+    end
+  end
+
+  describe "GET /game_sessions/:game_session_id/open_session_matching" do
+    let(:session) { create(:game_session, :open_game, :with_court, club: club) }
+
+    it "확정 신청 회원에게 랜덤 매칭 페이지를 렌더한다" do
+      create(:participation, game_session: session, user: member, status: :confirmed)
+      create_list(:participation, 4, :profile_complete_user, game_session: session, status: :confirmed)
+      sign_in(member)
+
+      get game_session_open_session_matching_path(session), params: { mode: "automatic", rounds: 3 }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("랜덤 게임 매칭")
+      expect(response.body).to include("1라운드")
+      expect(response.body).to include("자동 매칭")
+    end
+
+    it "확정 신청자가 아니면 접근하지 못한다" do
+      sign_in(member)
+
+      get game_session_open_session_matching_path(session)
+
+      expect(response).to redirect_to(root_path)
     end
   end
 end
