@@ -36,6 +36,7 @@ class GameSessionsController < ApplicationController
   def new
     @game_session = @club.game_sessions.build(session_type: new_session_type)
     authorize @game_session
+    set_last_open_game_session if @game_session.open_game?
   end
 
   def create
@@ -44,6 +45,7 @@ class GameSessionsController < ApplicationController
     if @game_session.save
       redirect_to @game_session, notice: "세션이 등록되었습니다."
     else
+      set_last_open_game_session if @game_session.open_game?
       render :new, status: :unprocessable_entity
     end
   end
@@ -71,6 +73,10 @@ class GameSessionsController < ApplicationController
   private
 
   def set_club = @club = Club.find(params[:club_id])
+
+  def set_last_open_game_session
+    @last_open_game_session = @club.game_sessions.open_game.order(created_at: :desc).first
+  end
 
   def new_session_type
     GameSession.session_types.key?(params[:session_type]) ? params[:session_type] : :regular

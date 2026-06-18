@@ -1,6 +1,28 @@
+<%
+  show_last_session_fill = game_session.open_game? && !game_session.persisted?
+  last_open_game_session = local_assigns[:last_open_game_session]
+  last_open_game_session_values = if last_open_game_session
+    {
+      title: last_open_game_session.title,
+      venueName: last_open_game_session.venue_name,
+      address: last_open_game_session.address,
+      courtCount: last_open_game_session.court_count,
+      fee: last_open_game_session.fee,
+      maxParticipants: last_open_game_session.max_participants,
+      maxWaitlist: last_open_game_session.max_waitlist,
+      courtName: last_open_game_session.court_name,
+      notes: last_open_game_session.notes
+    }
+  end
+%>
+
 <%= form_with model: game_session,
                   url: game_session.persisted? ? game_session_path(game_session) : game_sessions_path,
-                  class: "cl-form" do |f| %>
+                  class: "cl-form",
+                  data: (show_last_session_fill ? {
+                    controller: "last-session-fill",
+                    last_session_fill_values_value: last_open_game_session_values.to_json
+                  } : {}) do |f| %>
   <%= hidden_field_tag :club_id, @club&.id if @club %>
   <%= f.hidden_field :session_type %>
   <% if game_session.errors.any? %>
@@ -9,19 +31,31 @@
     </div>
   <% end %>
 
+  <% if show_last_session_fill %>
+    <div class="cl-form__field">
+      <button type="button"
+              class="btn btn--secondary btn--sm"
+              data-action="last-session-fill#fill"
+              <%= "disabled" unless last_open_game_session %>>
+        <iconify-icon icon="lucide:copy-plus" width="13"></iconify-icon>
+        마지막 세션 정보 가져오기
+      </button>
+    </div>
+  <% end %>
+
   <div class="cl-form__field">
     <%= f.label :title, "세션 제목", class: "cl-form__label" %>
-    <%= f.text_field :title, class: "cl-form__input" %>
+    <%= f.text_field :title, class: "cl-form__input", data: { last_session_fill_target: "title" } %>
   </div>
 
   <div class="cl-form__grid">
     <div class="cl-form__field">
       <%= f.label :venue_name, "장소명", class: "cl-form__label" %>
-      <%= f.text_field :venue_name, class: "cl-form__input" %>
+      <%= f.text_field :venue_name, class: "cl-form__input", data: { last_session_fill_target: "venueName" } %>
     </div>
     <div class="cl-form__field">
       <%= f.label :address, "주소", class: "cl-form__label" %>
-      <%= f.text_field :address, class: "cl-form__input" %>
+      <%= f.text_field :address, class: "cl-form__input", data: { last_session_fill_target: "address" } %>
     </div>
   </div>
 
@@ -40,20 +74,20 @@
     </div>
     <div class="cl-form__field">
       <%= f.label :court_count, "코트 수", class: "cl-form__label" %>
-      <%= f.number_field :court_count, min: 1, class: "cl-form__input" %>
+      <%= f.number_field :court_count, min: 1, class: "cl-form__input", data: { last_session_fill_target: "courtCount" } %>
     </div>
     <div class="cl-form__field">
       <%= f.label :fee, "참가비 (원)", class: "cl-form__label" %>
-      <%= f.number_field :fee, min: 0, class: "cl-form__input" %>
+      <%= f.number_field :fee, min: 0, class: "cl-form__input", data: { last_session_fill_target: "fee" } %>
     </div>
     <div class="cl-form__field">
       <%= f.label :max_participants, "정원", class: "cl-form__label" %>
-      <%= f.number_field :max_participants, min: 1, max: GameSession::SLOT_LIMIT, placeholder: "무제한", class: "cl-form__input" %>
+      <%= f.number_field :max_participants, min: 1, max: GameSession::SLOT_LIMIT, placeholder: "무제한", class: "cl-form__input", data: { last_session_fill_target: "maxParticipants" } %>
     </div>
     <% if game_session.open_game? %>
       <div class="cl-form__field">
         <%= f.label :max_waitlist, "대기 인원", class: "cl-form__label" %>
-        <%= f.number_field :max_waitlist, min: 0, placeholder: "없음", class: "cl-form__input" %>
+        <%= f.number_field :max_waitlist, min: 0, placeholder: "없음", class: "cl-form__input", data: { last_session_fill_target: "maxWaitlist" } %>
       </div>
     <% end %>
     <div class="cl-form__field">
@@ -64,7 +98,7 @@
     </div>
     <div class="cl-form__field">
       <%= f.label :court_name, "코트명", class: "cl-form__label" %>
-      <%= f.text_field :court_name, placeholder: "예: A코트", class: "cl-form__input" %>
+      <%= f.text_field :court_name, placeholder: "예: A코트", class: "cl-form__input", data: { last_session_fill_target: "courtName" } %>
     </div>
   </div>
 
@@ -75,7 +109,7 @@
 
   <div class="cl-form__field">
     <%= f.label :notes, "공지사항", class: "cl-form__label" %>
-    <%= f.text_area :notes, rows: 3, class: "cl-form__textarea", placeholder: "참가자에게 전달할 공지사항을 입력하세요" %>
+    <%= f.text_area :notes, rows: 3, class: "cl-form__textarea", placeholder: "참가자에게 전달할 공지사항을 입력하세요", data: { last_session_fill_target: "notes" } %>
   </div>
 
   <%# ── 반복 설정 ──────────────────────────────────────── %>
