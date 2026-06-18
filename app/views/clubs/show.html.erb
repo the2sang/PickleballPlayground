@@ -216,6 +216,66 @@
 
   <div class="cl-content" style="margin-top:24px;">
     <div class="cl-section-header">
+      <p class="cl-section-label">클럽 오픈 게임 세션</p>
+      <%= link_to club_open_sessions_path(@club), class: "btn btn--secondary btn--sm" do %>
+        <iconify-icon icon="lucide:layout-grid" width="13"></iconify-icon> 전체 보기
+      <% end %>
+    </div>
+
+    <% if @open_game_sessions.empty? %>
+      <div class="cl-empty">
+        <div class="cl-empty__icon">
+          <iconify-icon icon="lucide:calendar-plus" width="18"></iconify-icon>
+        </div>
+        <p class="cl-empty__text">등록된 오픈 게임 세션이 없습니다.</p>
+      </div>
+    <% else %>
+      <div class="cl-list">
+        <% @open_game_sessions.each do |gs| %>
+          <% open_session_path = club_open_sessions_path(@club, open_session_id: gs.id, anchor: "open_session_#{gs.id}") %>
+          <%= link_to open_session_path, class: "cl-list-item", style: "display:flex; align-items:center; justify-content:space-between; text-decoration:none; color:inherit;" do %>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+              <div class="cl-list-item__icon">
+                <iconify-icon icon="lucide:layout-grid" width="14"></iconify-icon>
+              </div>
+              <div style="min-width:0;">
+                <p class="cl-list-item__title">
+                  <%= gs.title %>
+                  <% if gs.scheduled_date.to_date == Date.today %>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;background:#a3e635;color:#1a1a1a;border-radius:999px;font-size:10px;font-weight:700;padding:1px 8px;margin-left:6px;line-height:1.6;">오늘</span>
+                  <% end %>
+                </p>
+                <p class="cl-list-item__meta">
+                  <%= format_session_date(gs.scheduled_date) %> &middot;
+                  <%= gs.start_time.strftime("%H:%M") %>~<%= gs.end_time.strftime("%H:%M") %> &middot;
+                  <%= gs.venue_name %>
+                  <% if gs.court_name.present? %>
+                    &middot; <%= gs.court_name %>
+                  <% end %>
+                  &middot; <%= gs.level_label %>
+                </p>
+              </div>
+            </div>
+            <div class="cl-list-item__right" style="flex-shrink:0; display:flex; align-items:center; gap:8px;">
+              <% if gs.session_ended? %>
+                <span class="cl-badge" style="background:#f97316;color:#fff;">종료</span>
+              <% else %>
+                <span class="cl-badge" style="background:#16a34a;color:#fff;">접수중</span>
+              <% end %>
+              <span class="cl-list-item__count"><%= gs.confirmed_count %><% if gs.max_participants %>/<%= gs.max_participants %><% end %>명</span>
+              <% if gs.full? %>
+                <span class="cl-badge cl-badge--neutral">마감</span>
+              <% end %>
+              <iconify-icon icon="lucide:chevron-right" width="16" style="color:var(--hcp-cool-gray);"></iconify-icon>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="cl-content" style="margin-top:24px;">
+    <div class="cl-section-header">
       <p class="cl-section-label">대회</p>
       <% if policy(Tournament.new(club: @club)).create? %>
         <%= link_to new_club_tournament_path(@club), class: "btn btn--primary btn--sm" do %>

@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Clubs", type: :request do
+  before { host! "localhost" }
+
   describe "GET /clubs/:id (클럽 상세)" do
     let(:club) { create(:club, status: :approved) }
 
@@ -19,6 +21,36 @@ RSpec.describe "Clubs", type: :request do
       tournament = create(:tournament, club: club, name: "봄 대회")
       get club_path(club)
       expect(response.body).to include("봄 대회")
+    end
+
+    it "클럽 오픈 게임 세션 목록과 접수 페이지 링크를 표시한다" do
+      open_session = create(:game_session, :open_game, :with_court,
+                            club: club,
+                            title: "목요 오픈 게임")
+      cancelled_session = create(:game_session, :open_game, :cancelled,
+                                 club: club,
+                                 title: "취소된 오픈 게임")
+
+      get club_path(club)
+
+      document = Nokogiri::HTML(response.body)
+      link = document.at_css("a[href='#{club_open_sessions_path(club, open_session_id: open_session.id, anchor: "open_session_#{open_session.id}")}']")
+
+      expect(response.body).to include("클럽 오픈 게임 세션")
+      expect(response.body).to include("목요 오픈 게임")
+      expect(response.body).to include("접수중")
+      expect(response.body).not_to include(cancelled_session.title)
+      expect(link).to be_present
+    end
+
+    it "비로그인 사용자에게 회원전용 오픈 게임 세션을 숨긴다" do
+      public_session = create(:game_session, :open_game, club: club, title: "공개 오픈 게임")
+      members_session = create(:game_session, :open_game, :members_only, club: club, title: "회원 오픈 게임")
+
+      get club_path(club)
+
+      expect(response.body).to include(public_session.title)
+      expect(response.body).not_to include(members_session.title)
     end
 
     context "클럽 매니저" do
@@ -131,6 +163,8 @@ RSpec.describe "Clubs", type: :request do
 end
 
 RSpec.describe "GET /clubs/:id/manage (플래시카드 온보딩 넛지)", type: :request do
+  before { host! "localhost" }
+
   let(:club)    { create(:club, status: :approved) }
   let(:manager) { create(:user) }
 

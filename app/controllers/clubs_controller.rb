@@ -38,8 +38,14 @@ class ClubsController < ApplicationController
 
   def show
     authorize @club
-    @game_sessions = policy_scope(GameSession).where(club: @club).regular.order(scheduled_date: :asc)
-    @tournaments   = @club.tournaments.order(starts_on: :desc)
+    @game_sessions      = policy_scope(GameSession).where(club: @club).regular.order(scheduled_date: :asc)
+    @open_game_sessions = policy_scope(GameSession)
+                            .where(club: @club)
+                            .open_game
+                            .where.not(status: :cancelled)
+                            .includes(participations: :user)
+                            .order(:scheduled_date, :start_time, :court_name)
+    @tournaments        = @club.tournaments.order(starts_on: :desc)
   end
 
   def new
