@@ -15,6 +15,11 @@
     <%
       my_participation = Current.user &&
         @game_session.participations.find { |p| p.user_id == Current.user.id && !p.cancelled? }
+      open_session_anchor = "open_session_#{@game_session.id}"
+      open_session_return_path =
+        if @game_session.open_game?
+          club_open_sessions_path(@game_session.club, open_session_id: @game_session.id, anchor: open_session_anchor)
+        end
     %>
     <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -175,6 +180,12 @@
               </div>
             </dialog>
           </div>
+        <% end %>
+        <% if open_session_return_path %>
+          <%= link_to open_session_return_path, class: "btn btn--secondary btn--sm" do %>
+            <iconify-icon icon="lucide:clipboard-list" width="13"></iconify-icon>
+            접수 페이지로
+          <% end %>
         <% end %>
       </div>
       <% if !@game_session.session_ended? && @game_session.open? && !my_participation %>

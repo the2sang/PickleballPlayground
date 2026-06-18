@@ -54,4 +54,18 @@ RSpec.describe "GameSessions", type: :request do
       expect(response.body).to include('value="open_game"')
     end
   end
+
+  describe "GET /game_sessions/:id" do
+    it "오픈 게임 세션 상세에 접수 페이지 이동 버튼을 표시한다" do
+      session = create(:game_session, :open_game, :with_court, club: club)
+      create(:participation, game_session: session, user: manager, status: :confirmed)
+      sign_in(manager)
+
+      get game_session_path(session)
+
+      expect(response.body).to include("접수 페이지로")
+      expect(response.body).to include("open_session_id=#{session.id}")
+      expect(response.body).to include("#open_session_#{session.id}")
+    end
+  end
 end

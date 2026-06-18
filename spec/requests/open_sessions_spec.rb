@@ -46,6 +46,18 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).to include(open_one.title)
       expect(response.body).not_to include(regular_one.title)
     end
+
+    it "open_session_id 로 이동한 세션 카드를 펼친다" do
+      session = create(:game_session, :open_game, :with_court, club: club, scheduled_date: Date.current + 1)
+
+      get club_open_sessions_path(club, open_session_id: session.id)
+
+      html = Nokogiri::HTML(response.body)
+      card = html.at_css("#open_session_#{session.id}")
+      expect(card).to be_present
+      expect(card.at_css(".oss-card__header")["aria-expanded"]).to eq("true")
+      expect(card.at_css(".oss-card__panel")["hidden"]).to be_nil
+    end
   end
 
   describe "POST /clubs/:club_id/open_sessions" do
