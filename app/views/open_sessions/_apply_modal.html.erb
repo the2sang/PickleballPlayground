@@ -8,6 +8,7 @@
                     "intermediate_advanced" => "중상급", "advanced" => "상급" }
   user = Current.user
   full = session.full?
+  return_path = club_open_sessions_path(session.club, open_session_id: session.id, anchor: "open_session_#{session.id}")
 %>
 <dialog class="oss-modal" data-modal-target="dialog" data-action="click->modal#backdropClose">
   <div class="oss-modal__inner">
@@ -39,7 +40,7 @@
         <% end %>
 
         <%= form_with url: game_session_participations_path(session), method: :post do |f| %>
-          <%= hidden_field_tag :return_to, club_open_sessions_path(session.club) %>
+          <%= hidden_field_tag :return_to, return_path %>
           <div class="oss-modal__footer">
             <button type="button" class="btn btn--ghost btn--sm" data-action="click->modal#close">취소</button>
             <%= f.submit(full ? "대기 신청" : "참가 신청", class: "btn btn--primary btn--sm") %>
@@ -52,7 +53,7 @@
         </p>
         <div class="oss-modal__footer">
           <button type="button" class="btn btn--ghost btn--sm" data-action="click->modal#close">닫기</button>
-          <%= link_to "정보 등록하기", edit_profile_path(return_to: club_open_sessions_path(session.club)),
+          <%= link_to "정보 등록하기", edit_profile_path(return_to: return_path),
                 class: "btn btn--primary btn--sm" %>
         </div>
       <% end %>

@@ -12,6 +12,7 @@
   is_today  = session.scheduled_date == Date.today
   is_target_session = params[:open_session_id].to_s == session.id.to_s
   is_expanded = is_today || is_target_session
+  return_path = club_open_sessions_path(session.club, open_session_id: session.id, anchor: "open_session_#{session.id}")
 %>
 <article id="open_session_<%= session.id %>"
          class="oss-card <%= "oss-card--today" if is_today %>"
@@ -70,7 +71,7 @@
         <% if policy(my_participation).destroy? %>
           <%= button_to game_session_participation_path(session, my_participation),
                 method: :delete,
-                params: { return_to: club_open_sessions_path(session.club) },
+                params: { return_to: return_path },
                 class: "btn btn--secondary btn--sm",
                 form: { data: { turbo_confirm: "참가 신청을 취소하시겠습니까?" } } do %>
             <iconify-icon icon="lucide:x-circle" width="12"></iconify-icon> 신청 취소

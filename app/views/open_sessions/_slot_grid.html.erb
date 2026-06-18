@@ -3,7 +3,7 @@
   locals: session, confirmed, waitlisted, capacity, my_participation, can_apply
 %>
 <%
-  return_path = club_open_sessions_path(session.club)
+  return_path = club_open_sessions_path(session.club, open_session_id: session.id, anchor: "open_session_#{session.id}")
   roster_full = confirmed.size >= capacity
 %>
 <ol class="oss-slots">
