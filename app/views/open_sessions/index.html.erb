@@ -1,10 +1,10 @@
 <% content_for :title, "#{@club.name} 오픈 게임" %>
 
 <div class="cl-page">
-  <div class="cl-hero">
+  <div class="cl-hero cl-hero--game-sessions-banner">
     <div class="cl-hero__inner">
       <p class="cl-hero__eyebrow">
-        <%= link_to @club.name, club_path(@club), style: "font-size:22px;color:#f97316;" %>
+        <%= link_to @club.name, club_path(@club) %>
         <span class="sep">/</span>
       </p>
       <h1 class="cl-hero__title">오픈 게임 세션</h1>
