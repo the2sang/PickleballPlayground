@@ -58,17 +58,26 @@
         </p>
       </div>
 
-      <%= form_with url: admin_data_management_backups_path, method: :post, local: true,
-                    style: "display:flex;align-items:center;gap:12px;flex-wrap:wrap;" do %>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--hcp-mid-gray);">
-          <%= check_box_tag :include_sql_dump, "1", false %>
-          SQL dump 포함
-        </label>
-        <button class="btn btn--primary btn--sm" type="submit">
-          <iconify-icon icon="lucide:database-backup" style="font-size:13px;"></iconify-icon>
-          백업 생성
-        </button>
-      <% end %>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <%= form_with url: admin_data_management_backups_path, method: :post, local: true,
+                      style: "display:flex;align-items:center;gap:12px;flex-wrap:wrap;" do %>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--hcp-mid-gray);">
+            <%= check_box_tag :include_sql_dump, "1", false %>
+            SQL dump 포함
+          </label>
+          <button class="btn btn--primary btn--sm" type="submit">
+            <iconify-icon icon="lucide:database-backup" style="font-size:13px;"></iconify-icon>
+            백업 생성
+          </button>
+        <% end %>
+
+        <%= form_with url: admin_data_management_postgresql_backups_path, method: :post, local: true do %>
+          <button class="btn btn--ghost btn--sm" type="submit">
+            <iconify-icon icon="lucide:database-backup" style="font-size:13px;"></iconify-icon>
+            Postgresql 전환 백업생성
+          </button>
+        <% end %>
+      </div>
     </div>
 
     <div style="padding:14px 16px;border-bottom:1px solid var(--hcp-border-light);background:#f8fafc;">

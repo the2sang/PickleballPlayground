@@ -15,6 +15,23 @@ RSpec.describe "Admin::DataManagement", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("운영 백업 업로드 복원")
+      expect(response.body).to include("Postgresql 전환 백업생성")
+    end
+  end
+
+  describe "POST /admin/data_management/backups/postgresql" do
+    it "creates a PostgreSQL conversion backup" do
+      sign_in(admin)
+      result = Admin::DatabaseBackups::CreatePostgresqlService::Result.new(true, { id: "postgres-backup" }, nil)
+
+      expect(Admin::DatabaseBackups::CreatePostgresqlService).to receive(:call)
+        .with(user: admin)
+        .and_return(result)
+
+      post admin_data_management_postgresql_backups_path
+
+      expect(response).to redirect_to(admin_data_management_path(anchor: "db-backups"))
+      expect(flash[:notice]).to eq("PostgreSQL 전환 백업을 생성했습니다.")
     end
   end
 

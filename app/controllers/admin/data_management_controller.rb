@@ -36,6 +36,20 @@ module Admin
       end
     end
 
+    def create_postgresql_backup
+      authorize :data_management, policy_class: Admin::DataManagementPolicy
+
+      result = Admin::DatabaseBackups::CreatePostgresqlService.call(user: current_user)
+
+      if result.success?
+        redirect_to admin_data_management_path(anchor: "db-backups"),
+                    notice: "PostgreSQL 전환 백업을 생성했습니다."
+      else
+        redirect_to admin_data_management_path(anchor: "db-backups"),
+                    alert: "PostgreSQL 전환 백업 생성에 실패했습니다: #{result.error}"
+      end
+    end
+
     def restore_backup
       authorize :data_management, policy_class: Admin::DataManagementPolicy
 

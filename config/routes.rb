@@ -113,6 +113,7 @@ Rails.application.routes.draw do
     get  "data_management",                         to: "data_management#show",            as: :data_management
     post "data_management/execute",                 to: "data_management#execute",         as: :data_management_execute
     post "data_management/backups",                 to: "data_management#create_backup",   as: :data_management_backups
+    post "data_management/backups/postgresql",      to: "data_management#create_postgresql_backup", as: :data_management_postgresql_backups
     post "data_management/backups/restore",         to: "data_management#restore_backup",  as: :data_management_backup_restore
     get  "data_management/backups/:id/*file",       to: "data_management#download_backup", as: :data_management_backup, format: false
   end
