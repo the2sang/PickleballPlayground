@@ -45,12 +45,20 @@
                   max: OpenSessions::MatchPlanBuilder::MAX_ROUNDS %>
           </label>
           <label>
-            <span>고정 파트너</span>
+            <span>고정 선수 1</span>
+            <%= select_tag :fixed_user_id,
+                  options_for_select(
+                    [ [ "선택 안 함", "" ] ] +
+                      @participants.map { |participant| [ participant.display_name, participant.user_id ] },
+                    params[:fixed_user_id]
+                  ) %>
+          </label>
+          <label>
+            <span>고정 선수 2</span>
             <%= select_tag :fixed_partner_user_id,
                   options_for_select(
                     [ [ "선택 안 함", "" ] ] +
-                      @participants.reject { |participant| participant.user_id == Current.user.id }
-                                   .map { |participant| [ participant.display_name, participant.user_id ] },
+                      @participants.map { |participant| [ participant.display_name, participant.user_id ] },
                     params[:fixed_partner_user_id]
                   ) %>
           </label>
@@ -70,7 +78,7 @@
           <iconify-icon icon="lucide:pin" width="13"></iconify-icon>
           <%= @participants.find { |participant| participant.user_id == @plan.fixed_pair[:user_id] }&.display_name %>님과
           <%= @participants.find { |participant| participant.user_id == @plan.fixed_pair[:partner_user_id] }&.display_name %>님은
-          <%= @plan.fixed_pair[:starts_round] %>라운드부터 같은 파트너로 우선 배치됩니다.
+          <%= @plan.fixed_pair[:starts_round] %>라운드부터 같은 팀으로 우선 배치됩니다.
         </p>
       <% end %>
 

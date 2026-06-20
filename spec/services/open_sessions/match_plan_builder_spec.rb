@@ -12,7 +12,7 @@ RSpec.describe OpenSessions::MatchPlanBuilder do
       expect(plan.error).to eq("매칭 생성은 확정 참가자 5명 이상부터 가능합니다.")
     end
 
-    it "keeps the selected fixed partner from the configured round" do
+    it "keeps the selected fixed pair from the configured round" do
       session = create(:game_session, :open_game)
       participations = create_list(:participation, 8, :profile_complete_user,
                                    game_session: session, status: :confirmed)

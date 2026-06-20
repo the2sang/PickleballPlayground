@@ -49,6 +49,23 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).not_to include(regular_one.title)
     end
 
+    it "최근 등록한 오픈 게임 세션을 먼저 보여준다" do
+      older = create(:game_session, :open_game, :with_court,
+                     club: club,
+                     title: "먼저 등록한 게임",
+                     scheduled_date: Date.current + 1,
+                     created_at: 2.days.ago)
+      newer = create(:game_session, :open_game, :with_court,
+                     club: club,
+                     title: "최근 등록한 게임",
+                     scheduled_date: older.scheduled_date,
+                     created_at: 1.hour.ago)
+
+      get club_open_sessions_path(club)
+
+      expect(response.body.index(newer.title)).to be < response.body.index(older.title)
+    end
+
     it "open_session_id 로 이동한 세션 카드를 펼친다" do
       session = create(:game_session, :open_game, :with_court, club: club, scheduled_date: Date.current + 1)
 
@@ -203,6 +220,9 @@ RSpec.describe "OpenSessions", type: :request do
 
       expect(response.body).to include("매칭생성")
       expect(response.body).to include("게임 라운드")
+      expect(response.body).to include("고정 선수 1")
+      expect(response.body).to include("고정 선수 2")
+      expect(response.body).to include("매칭별로 한 쌍만 고정")
       expect(response.body).to include(game_session_open_session_matching_path(session))
     end
 
@@ -281,6 +301,28 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).to include("랜덤 게임 매칭")
       expect(response.body).to include("1라운드")
       expect(response.body).to include("자동 매칭")
+    end
+
+    it "참가자 중 임의의 두 명을 한 쌍으로 고정한다" do
+      create(:participation, game_session: session, user: member, status: :confirmed)
+      fixed_users = create_list(:participation, 2, :profile_complete_user,
+                                game_session: session, status: :confirmed).map(&:user)
+      create_list(:participation, 3, :profile_complete_user, game_session: session, status: :confirmed)
+      sign_in(member)
+
+      get game_session_open_session_matching_path(session),
+          params: {
+            mode: "automatic",
+            rounds: 3,
+            fixed_user_id: fixed_users.first.id,
+            fixed_partner_user_id: fixed_users.second.id,
+            fixed_partner_starts_round: 2
+          }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("#{fixed_users.first.display_name}님과")
+      expect(response.body).to include("#{fixed_users.second.display_name}님은")
+      expect(response.body).to include("2라운드부터 같은 팀")
     end
 
     it "확정 신청자가 아니면 접근하지 못한다" do

@@ -3,7 +3,7 @@ class OpenSessionsController < ApplicationController
   before_action :resume_session, only: :index
   before_action :set_club
 
-  # 클럽 단위 오픈 게임 세션 페이지. 코트별 세션을 날짜/시간 순으로 보여준다.
+  # 클럽 단위 오픈 게임 세션 페이지. 최근 등록된 세션을 먼저 보여준다.
   def index
     sessions = @club.game_sessions.open_game.where.not(status: :cancelled)
     sessions = sessions.where(visibility: :public_visibility) unless viewer_sees_members_only?
@@ -15,7 +15,7 @@ class OpenSessionsController < ApplicationController
     sessions = sessions.where(scheduled_date: @selected_date) if @selected_date
 
     @game_sessions = sessions.includes(participations: :user)
-                             .order(:scheduled_date, :start_time, :court_name)
+                             .order(created_at: :desc, id: :desc)
     @game_sessions = @game_sessions.reject(&:session_started?) unless @selected_date
     @can_manage = GameSessionPolicy.new(Current.user, @club.game_sessions.build(session_type: :open_game)).create?
   end

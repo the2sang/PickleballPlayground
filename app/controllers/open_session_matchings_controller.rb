@@ -9,7 +9,7 @@ class OpenSessionMatchingsController < ApplicationController
       game_session: @game_session,
       mode: params[:mode],
       rounds: params[:rounds],
-      fixed_user_id: Current.user.id,
+      fixed_user_id: params[:fixed_user_id],
       fixed_partner_user_id: params[:fixed_partner_user_id],
       fixed_partner_starts_round: params[:fixed_partner_starts_round]
     ).call

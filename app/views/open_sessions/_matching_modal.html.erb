@@ -6,8 +6,7 @@
   min_players = OpenSessions::MatchPlanBuilder::MIN_PLAYERS
   enough_players = confirmed.size >= min_players
   default_rounds = [ confirmed.size - 1, 4 ].min.clamp(1, OpenSessions::MatchPlanBuilder::MAX_ROUNDS)
-  partner_options = confirmed.reject { |participant| participant.user_id == Current.user&.id }
-                             .map { |participant| [ participant.display_name, participant.user_id ] }
+  participant_options = confirmed.map { |participant| [ participant.display_name, participant.user_id ] }
 %>
 
 <dialog class="oss-modal" data-modal-target="dialog" data-action="click->modal#backdropClose">
@@ -60,16 +59,24 @@
             </label>
           </div>
 
-          <label class="oss-match-form__select">
-            <span>고정 파트너</span>
-            <%= select_tag :fixed_partner_user_id,
-                  options_for_select([ [ "선택 안 함", "" ] ] + partner_options),
-                  class: "oss-match-form__control" %>
-          </label>
+          <div class="oss-match-form__grid">
+            <label>
+              <span>고정 선수 1</span>
+              <%= select_tag :fixed_user_id,
+                    options_for_select([ [ "선택 안 함", "" ] ] + participant_options),
+                    class: "oss-match-form__control" %>
+            </label>
+            <label>
+              <span>고정 선수 2</span>
+              <%= select_tag :fixed_partner_user_id,
+                    options_for_select([ [ "선택 안 함", "" ] ] + participant_options),
+                    class: "oss-match-form__control" %>
+            </label>
+          </div>
 
           <p class="oss-modal__notice">
             <iconify-icon icon="lucide:shuffle" width="12"></iconify-icon>
-            고정 파트너를 선택하면 지정 라운드부터 같은 팀으로 우선 배치됩니다.
+            매칭별로 한 쌍만 고정할 수 있으며, 선택한 두 명은 지정 라운드부터 같은 팀으로 우선 배치됩니다.
           </p>
 
           <div class="oss-modal__footer">
