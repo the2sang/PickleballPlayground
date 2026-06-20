@@ -76,16 +76,29 @@ class GameSession < ApplicationRecord
   end
 
   def session_started?
-    scheduled_date < Date.current ||
-      (scheduled_date == Date.current && start_time <= Time.current)
+    return false if scheduled_date.blank? || start_time.blank?
+
+    scheduled_time_for(start_time) <= Time.current
   end
 
   def session_ended?
-    scheduled_date < Date.current ||
-      (scheduled_date == Date.current && end_time < Time.current)
+    return false if scheduled_date.blank? || end_time.blank?
+
+    scheduled_time_for(end_time) < Time.current
   end
 
   private
+
+  def scheduled_time_for(time_of_day)
+    Time.zone.local(
+      scheduled_date.year,
+      scheduled_date.month,
+      scheduled_date.day,
+      time_of_day.hour,
+      time_of_day.min,
+      time_of_day.sec
+    )
+  end
 
   def end_time_after_start_time
     return unless start_time.present? && end_time.present?

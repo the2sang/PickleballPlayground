@@ -99,6 +99,25 @@ RSpec.describe "OpenSessions", type: :request do
       expect(card.at_css(".oss-card__panel")["hidden"]).to be_nil
     end
 
+    it "오늘 현재 시간 이후 세션은 종료가 아니라 모집중으로 표시한다" do
+      travel_to Time.zone.local(2026, 6, 20, 12, 0, 0) do
+        session = create(:game_session, :open_game, :with_court,
+                         club: club,
+                         title: "오늘 저녁 오픈게임",
+                         scheduled_date: Date.current,
+                         start_time: Time.zone.parse("19:00"),
+                         end_time: Time.zone.parse("21:00"))
+
+        get club_open_sessions_path(club, open_session_id: session.id)
+
+        html = Nokogiri::HTML(response.body)
+        card = html.at_css("#open_session_#{session.id}")
+        expect(card).to be_present
+        expect(card.text).to include("모집중")
+        expect(card.text).not_to include("종료")
+      end
+    end
+
     it "session_date 로 과거 오픈 게임 세션을 조회한다" do
       past_session = create(:game_session, :open_game, :with_court,
                             club: club,

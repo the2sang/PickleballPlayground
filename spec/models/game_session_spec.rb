@@ -60,4 +60,42 @@ RSpec.describe GameSession, type: :model do
       expect(session.waitlist_capacity).to eq(0)
     end
   end
+
+  describe "session time status" do
+    around do |example|
+      travel_to Time.zone.local(2026, 6, 20, 12, 0, 0) do
+        example.run
+      end
+    end
+
+    it "오늘 현재 시간 이후에 끝나는 세션은 종료로 보지 않는다" do
+      session = build(:game_session,
+                      scheduled_date: Date.current,
+                      start_time: Time.zone.parse("19:00"),
+                      end_time: Time.zone.parse("21:00"))
+
+      expect(session).not_to be_session_started
+      expect(session).not_to be_session_ended
+    end
+
+    it "오늘 진행 중인 세션은 시작됐지만 종료로 보지 않는다" do
+      session = build(:game_session,
+                      scheduled_date: Date.current,
+                      start_time: Time.zone.parse("10:00"),
+                      end_time: Time.zone.parse("13:00"))
+
+      expect(session).to be_session_started
+      expect(session).not_to be_session_ended
+    end
+
+    it "오늘 종료 시간이 지난 세션은 종료로 본다" do
+      session = build(:game_session,
+                      scheduled_date: Date.current,
+                      start_time: Time.zone.parse("09:00"),
+                      end_time: Time.zone.parse("11:00"))
+
+      expect(session).to be_session_started
+      expect(session).to be_session_ended
+    end
+  end
 end
