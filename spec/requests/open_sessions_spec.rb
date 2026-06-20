@@ -223,10 +223,10 @@ RSpec.describe "OpenSessions", type: :request do
       expect(response.body).to include("data-action=\"click->modal#open\"")
     end
 
-    it "세션 카드 상단 시간 텍스트를 크게 굵은 오렌지색으로 렌더한다" do
+    it "세션 카드 상단 시간 텍스트를 크게 굵은 도저블루로 렌더한다" do
       get club_open_sessions_path(club, session_date: session.scheduled_date.iso8601)
 
-      expect(response.body).to include(".oss-card__time { font-size:18px; font-weight:800; color:#f97316; }")
+      expect(response.body).to include(".oss-card__time { font-size:18px; font-weight:800; color:dodgerblue; }")
     end
 
     it "이미 신청한 회원에게는 신청 취소 버튼이 보인다" do
