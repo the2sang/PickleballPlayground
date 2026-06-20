@@ -9,7 +9,7 @@ class OpenGameSessionsController < ApplicationController
       .joins(:club)
       .includes(:club, participations: :user)
       .where.not(status: :cancelled)
-      .order("clubs.name ASC, scheduled_date ASC, start_time ASC")
+      .order(scheduled_date: :desc, start_time: :desc, id: :desc)
     sessions = sessions.where("clubs.name LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(@query)}%") if @query
 
     favorited_ids = Current.user ? Current.user.club_favorites.pluck(:club_id).to_set : Set.new
