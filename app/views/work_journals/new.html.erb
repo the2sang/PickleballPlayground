@@ -1,86 +1,33 @@
-<% content_for :title, "업무일지 등록 — #{@date.strftime('%Y년 %-m월 %-d일')}" %>
+<% content_for :title, "새 일지 만들기" %>
 
-<%
-  active_tab = @work_journal.errors.any? ? @work_journal.entry_type.to_s : "result"
-  result_wj  = (@work_journal.entry_type.to_s == "result") ? @work_journal :
-               WorkJournal.new(work_date: @date, entry_type: :result,
-                               content_format: "markdown", category: :task,
-                               status: :in_progress, progress: 0)
-  plan_wj    = (@work_journal.entry_type.to_s == "plan") ? @work_journal :
-               WorkJournal.new(work_date: @date, entry_type: :plan,
-                               content_format: "markdown", category: :task,
-                               status: :in_progress, progress: 0)
-%>
-
-<div class="page page--narrow">
-  <div class="page__header">
-    <%= link_to work_journals_path, class: "btn btn--ghost btn--sm" do %>
-      <iconify-icon icon="lucide:arrow-left"></iconify-icon> 캘린더로
-    <% end %>
+<div class="cl-page today-journal-page">
+  <div class="cl-hero cl-hero--game-sessions-banner">
+    <div class="cl-hero__inner">
+      <p class="cl-hero__eyebrow">
+        <%= link_to "오늘하루", work_journals_path %>
+        <span class="sep">/</span>
+      </p>
+      <h1 class="cl-hero__title">새 일지 만들기</h1>
+    </div>
   </div>
 
-  <div class="wj-tabs-container"
-       data-controller="work-journal-tab"
-       data-work-journal-tab-active-value="<%= active_tab %>">
-
-    <div class="wj-tabs" role="tablist">
-      <button class="wj-tab"
-              role="tab"
-              data-work-journal-tab-target="tab"
-              data-tab="result"
-              data-action="click->work-journal-tab#switch"
-              aria-selected="<%= active_tab == 'result' %>">
-        <iconify-icon icon="lucide:circle-check"></iconify-icon> 전주실적
-      </button>
-      <button class="wj-tab"
-              role="tab"
-              data-work-journal-tab-target="tab"
-              data-tab="plan"
-              data-action="click->work-journal-tab#switch"
-              aria-selected="<%= active_tab == 'plan' %>">
-        <iconify-icon icon="lucide:list-checks"></iconify-icon> 금주계획
-      </button>
+  <div class="cl-content today-journal-content today-journal-content--form">
+    <div class="oss-admin-bar">
+      <%= link_to work_journals_path, class: "btn btn--ghost btn--sm" do %>
+        <iconify-icon icon="lucide:arrow-left" width="13"></iconify-icon> 오늘하루로
+      <% end %>
     </div>
 
-    <div class="wj-panel"
-         role="tabpanel"
-         data-work-journal-tab-target="panel"
-         data-panel="result">
-      <div id="result-entries-list" class="wj-entries-list">
-        <% if @result_entries.empty? %>
-          <p id="result-entries-empty" class="wj-entries-list__empty">
-            등록된 실적이 없습니다.
-          </p>
-        <% else %>
-          <%= render partial: "entry_row", collection: @result_entries, as: :work_journal %>
-        <% end %>
+    <section class="today-journal-form-card">
+      <div class="today-journal-form-card__header">
+        <span class="oss-card__today-badge">오늘</span>
+        <div>
+          <p class="today-journal-toolbar__label"><%= @date.strftime("%Y년 %-m월 %-d일") %></p>
+          <h2 class="today-journal-toolbar__title">오늘 일지 작성</h2>
+        </div>
       </div>
-      <div id="result-entry-form" class="wj-entry-form-wrapper">
-        <%= render "entry_form",
-              work_journal: result_wj,
-              next_seq: @result_entries.size + 1 %>
-      </div>
-    </div>
 
-    <div class="wj-panel"
-         role="tabpanel"
-         data-work-journal-tab-target="panel"
-         data-panel="plan">
-      <div id="plan-entries-list" class="wj-entries-list">
-        <% if @plan_entries.empty? %>
-          <p id="plan-entries-empty" class="wj-entries-list__empty">
-            등록된 계획이 없습니다.
-          </p>
-        <% else %>
-          <%= render partial: "entry_row", collection: @plan_entries, as: :work_journal %>
-        <% end %>
-      </div>
-      <div id="plan-entry-form" class="wj-entry-form-wrapper">
-        <%= render "entry_form",
-              work_journal: plan_wj,
-              next_seq: @plan_entries.size + 1 %>
-      </div>
-    </div>
-
+      <%= render "form", work_journal: @work_journal %>
+    </section>
   </div>
 </div>

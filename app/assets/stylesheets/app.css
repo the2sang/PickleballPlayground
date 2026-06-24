@@ -14064,3 +14064,243 @@ lexxy-editor.lexxy-editor-field {
   margin-left: 6px;
   vertical-align: 1px;
 }
+
+/* 오늘하루 */
+.today-journal-page {
+  min-height: calc(100vh - var(--nav-height));
+  background: #f7f7f8;
+}
+
+.today-journal-content {
+  max-width: 760px;
+  padding-top: 20px;
+}
+
+.today-journal-content--form {
+  max-width: 680px;
+}
+
+.today-journal-lookup-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 14px;
+}
+
+.today-journal-lookup-row .oss-lookup-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.today-journal-lookup-row .oss-lookup-form__label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--hcp-black, #111);
+}
+
+.today-journal-lookup-row .oss-lookup-form__date {
+  height: 32px;
+  border: 1px solid var(--hcp-border, #e5e7eb);
+  border-radius: 6px;
+  padding: 0 9px;
+  font-size: 13px;
+  color: var(--hcp-black, #111);
+  background: #fff;
+}
+
+.today-journal-toolbar__label {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--hcp-cool-gray, #6b7280);
+}
+
+.today-journal-toolbar__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--hcp-black, #111);
+}
+
+.today-journal-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 160px;
+  color: var(--hcp-cool-gray, #6b7280);
+  font-size: 14px;
+}
+
+.today-journal-empty iconify-icon {
+  font-size: 22px;
+  color: #84cc16;
+}
+
+.today-journal-empty p {
+  margin: 0;
+}
+
+.today-journal-actions {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.today-journal-day__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--hcp-border, #e5e7eb);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--hcp-black, #111);
+}
+
+.today-journal-form-card,
+.today-journal-entry-card {
+  border: 1px solid var(--hcp-border, #e5e7eb);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.today-journal-entry-card {
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.today-journal-entry-card__trigger,
+.today-journal-form-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid var(--hcp-border-light, #f1f1f1);
+}
+
+.today-journal-entry-card__trigger {
+  width: 100%;
+  background: #fff;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.today-journal-entry-card__trigger:hover {
+  background: #fafafa;
+}
+
+.today-journal-entry-card__trigger[aria-expanded="true"] .oss-card__chevron {
+  transform: rotate(180deg);
+}
+
+.today-journal-entry-card__heading {
+  min-width: 0;
+}
+
+.today-journal-entry-card__title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.today-journal-entry-card__title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--hcp-black, #111);
+  overflow-wrap: anywhere;
+}
+
+.today-journal-entry-card__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.today-journal-entry-card__meta .oss-card__chevron {
+  color: var(--hcp-cool-gray, #9ca3af);
+  transition: transform 180ms ease;
+}
+
+.today-journal-entry-card__panel {
+  padding: 4px 14px 16px;
+  border-top: 0;
+}
+
+.today-journal-entry-card__content {
+  padding: 12px 0 14px;
+  color: var(--hcp-charcoal, #333);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.today-journal-entry-card__content.prose > :first-child {
+  margin-top: 0;
+}
+
+.today-journal-entry-card__content.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.today-journal-entry-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--hcp-border, #e5e7eb);
+}
+
+.today-journal-entry-card__actions form {
+  margin: 0;
+}
+
+.today-journal-form-card {
+  padding-bottom: 16px;
+}
+
+.today-journal-form {
+  padding: 16px 18px 0;
+}
+
+.today-journal-form .form__input,
+.today-journal-form .form__textarea {
+  border: 1px solid var(--hcp-border, #e5e7eb);
+  border-radius: 8px;
+}
+
+.today-journal-form__textarea {
+  min-height: 260px;
+  resize: vertical;
+}
+
+@media (max-width: 640px) {
+  .today-journal-lookup-row {
+    justify-content: stretch;
+  }
+
+  .today-journal-lookup-row .oss-lookup-form,
+  .today-journal-actions,
+  .today-journal-entry-card__trigger {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .today-journal-lookup-row .oss-lookup-form,
+  .today-journal-lookup-row .oss-lookup-form__date,
+  .today-journal-actions .btn,
+  .today-journal-entry-card__meta {
+    width: 100%;
+  }
+
+  .today-journal-entry-card__meta {
+    justify-content: space-between;
+  }
+}

@@ -14,10 +14,36 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
   test "index renders successfully" do
     get work_journals_url
     assert_response :success
+    assert_select "h1", text: "오늘하루"
+    assert_select ".cl-hero", count: 0
+    assert_select "a", text: /새 일지 만들기/
+    assert_select ".today-journal-actions"
+    assert_select ".today-journal-day__title"
+    assert_select "[data-controller~='accordion']"
+    assert_select ".today-journal-entry-card", text: /오늘 한 일/
+    assert_select ".today-journal-entry-card__trigger[aria-expanded='true']"
+    assert_select ".today-journal-entry-card__actions a", text: /상세/
+    assert_select ".today-journal-entry-card__badge", count: 0
+    assert_select ".today-journal-entry-card__progress", count: 0
+    assert_select ".today-journal-entry-card__details", count: 0
+    assert_select ".nav__dropdown-item[href=?]", work_journals_path, text: /오늘하루/
   end
 
   test "index handles invalid year/month gracefully" do
     get work_journals_url(year: 9999, month: 13)
+    assert_redirected_to work_journals_path
+  end
+
+  test "index filters journals by selected date" do
+    get work_journals_url(date: (Date.today - 1).iso8601)
+    assert_response :success
+    assert_select "input[name='date'][value=?]", (Date.today - 1).iso8601
+    assert_select ".today-journal-entry-card", text: /어제 회의/
+    assert_select ".today-journal-entry-card", text: /오늘 한 일/, count: 0
+  end
+
+  test "index handles invalid date search gracefully" do
+    get work_journals_url(date: "garbage")
     assert_redirected_to work_journals_path
   end
 
@@ -29,9 +55,12 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
 
   # --- new ---
 
-  test "new renders tab UI" do
+  test "new renders daily journal form" do
     get new_work_journal_url(date: "2026-04-15")
     assert_response :success
+    assert_select "h1", text: "새 일지 만들기"
+    assert_select "input[name='work_journal[title]']"
+    assert_select "textarea[name='work_journal[content]']"
   end
 
   test "new has hidden work_date field for result form" do
@@ -60,7 +89,7 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "create with valid params via html redirects to new path" do
+  test "create with valid params via html redirects to index" do
     assert_difference("WorkJournal.count") do
       post work_journals_url, params: { work_journal: {
         title: "신규 실적", content_format: "markdown",
@@ -68,7 +97,7 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
         work_date: Date.today.to_s, entry_type: "result"
       } }
     end
-    assert_redirected_to new_work_journal_path(date: Date.today.to_s)
+    assert_redirected_to work_journals_path(anchor: "work_journal_#{WorkJournal.order(:id).last.id}")
   end
 
   test "create auto-assigns sequence_number starting at 1" do
