@@ -27,6 +27,13 @@
       <% end %>
     </div>
 
+    <% if notice.present? %>
+      <div class="today-journal-notice" role="status">
+        <iconify-icon icon="lucide:circle-check" width="15"></iconify-icon>
+        <span><%= notice %></span>
+      </div>
+    <% end %>
+
     <% if @work_journals.empty? %>
       <div class="cl-info-card today-journal-empty">
         <iconify-icon icon="lucide:notebook-pen"></iconify-icon>

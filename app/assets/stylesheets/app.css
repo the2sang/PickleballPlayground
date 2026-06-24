@@ -14143,6 +14143,24 @@ lexxy-editor.lexxy-editor-field {
   margin: 0;
 }
 
+.today-journal-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 11px 13px;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.today-journal-notice iconify-icon {
+  flex-shrink: 0;
+}
+
 .today-journal-actions {
   display: flex;
   gap: 8px;

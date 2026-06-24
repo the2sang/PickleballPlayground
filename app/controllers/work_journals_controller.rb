@@ -35,16 +35,9 @@ class WorkJournalsController < ApplicationController
       @work_journal.entry_type
     )
     if @work_journal.save
-      @date = @work_journal.work_date
-      user  = Current.session.user
-      @result_entries = user.work_journals.for_date(@date).result.ordered
-      @plan_entries   = user.work_journals.for_date(@date).plan.ordered
       respond_to do |format|
-        format.turbo_stream
-        format.html do
-          redirect_to work_journals_path(anchor: helpers.dom_id(@work_journal)),
-                      notice: "오늘하루 일지가 저장되었습니다."
-        end
+        format.html { redirect_to_saved_journal }
+        format.turbo_stream { redirect_to_saved_journal }
       end
     else
       @date = @work_journal.work_date || Date.current
@@ -109,6 +102,12 @@ class WorkJournalsController < ApplicationController
       progress: 0,
       entry_type: :result
     }
+  end
+
+  def redirect_to_saved_journal
+    redirect_to work_journals_path(anchor: helpers.dom_id(@work_journal)),
+                notice: "오늘하루 일지가 저장되었습니다.",
+                status: :see_other
   end
 
   def work_journal_params

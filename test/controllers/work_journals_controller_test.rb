@@ -76,7 +76,7 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
 
   # --- create ---
 
-  test "create with valid params saves and responds with turbo stream" do
+  test "create with valid turbo params redirects to index with notice" do
     assert_difference("WorkJournal.count") do
       post work_journals_url,
            params: { work_journal: {
@@ -86,7 +86,9 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
            } },
            headers: { "Accept" => "text/vnd.turbo-stream.html" }
     end
-    assert_response :success
+    journal = WorkJournal.order(:id).last
+    assert_redirected_to work_journals_path(anchor: "work_journal_#{journal.id}")
+    assert_equal "오늘하루 일지가 저장되었습니다.", flash[:notice]
   end
 
   test "create with valid params via html redirects to index" do
@@ -98,6 +100,9 @@ class WorkJournalsControllerTest < ActionDispatch::IntegrationTest
       } }
     end
     assert_redirected_to work_journals_path(anchor: "work_journal_#{WorkJournal.order(:id).last.id}")
+    assert_equal "오늘하루 일지가 저장되었습니다.", flash[:notice]
+    follow_redirect!
+    assert_select ".today-journal-notice", text: /오늘하루 일지가 저장되었습니다/
   end
 
   test "create auto-assigns sequence_number starting at 1" do
