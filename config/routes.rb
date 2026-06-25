@@ -131,5 +131,7 @@ Rails.application.routes.draw do
   end
 
   get "puzzle", to: "pages#puzzle"
+  get "vote", to: "votes#index", as: :vote
+  post "vote", to: "votes#create", as: :votes
   root "clubs#index"
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_053614) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_015429) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -415,6 +415,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_053614) do
     t.integer "updated_by_id"
     t.index ["key"], name: "index_site_settings_on_key", unique: true
     t.index ["updated_by_id"], name: "index_site_settings_on_updated_by_id"
+  end
+
+  create_table "slogan_votes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "slogan_number", null: false
+    t.datetime "updated_at", null: false
+    t.string "voter_name", null: false
+    t.index ["slogan_number"], name: "index_slogan_votes_on_slogan_number", unique: true
   end
 
   create_table "stock_infos", force: :cascade do |t|
