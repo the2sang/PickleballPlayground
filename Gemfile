@@ -82,7 +82,7 @@ group :test do
   gem "shoulda-matchers"
 end
 
-gem "lexxy", "~> 0.9.19.alpha"
+gem "lexxy", "~> 0.9.23"
 gem "rubyzip"
 gem "faw_toast"
 gem "caxlsx"
